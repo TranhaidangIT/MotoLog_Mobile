@@ -9,9 +9,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Khởi tạo Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    // Firebase init thất bại (thường do cấu hình iOS chưa đúng)
+    // App vẫn chạy được ở chế độ local-only
+    debugPrint('⚠️ Firebase init error: $e');
+  }
 
   // Khóa hướng màn hình mặc định (portrait)
   await SystemChrome.setPreferredOrientations([
