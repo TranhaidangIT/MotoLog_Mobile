@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "430239783730",
+    "firebase_url": "https://motolog-23f9f-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "motolog-23f9f",
+    "storage_bucket": "motolog-23f9f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430239783730:android:1281e72c9366246d29d52b",
+        "android_client_info": {
+          "package_name": "com.example.motolog_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "430239783730-78bl92ripbp321uaqbldvtd64s48n45a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.motolog_mobile",
+            "certificate_hash": "f2e3854956fef18a9df2c5b049f2947a532bc8fd"
+          }
+        },
+        {
+          "client_id": "430239783730-qj1vsiu8ib3lif3snfro52ssv6ctojvr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVERAmMkWCwxvoPQaes9smIffsjX1yoK0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "430239783730-qj1vsiu8ib3lif3snfro52ssv6ctojvr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
