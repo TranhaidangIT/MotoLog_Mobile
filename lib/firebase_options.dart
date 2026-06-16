@@ -37,13 +37,13 @@ class DefaultFirebaseOptions {
 
   // ─── iOS (lấy từ GoogleService-Info.plist) ──────────────────────────────────
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAVERAmMkWCwxvoPQaes9smIffsjX1yoK0',
-    appId: '1:430239783730:ios:motolog_ios_app',
+    apiKey: 'AIzaSyBky9DlxmBal4jYNgjuNZCc9gLDsQ6iVU0',
+    appId: '1:430239783730:ios:7b37b2404715408829d52b',
     messagingSenderId: '430239783730',
     projectId: 'motolog-23f9f',
     storageBucket: 'motolog-23f9f.firebasestorage.app',
     iosClientId:
-        '430239783730-qj1vsiu8ib3lif3snfro52ssv6ctojvr.apps.googleusercontent.com',
+        '430239783730-3nsohtb58f0si0iafmd882nbqgefqsao.apps.googleusercontent.com',
     iosBundleId: 'com.example.motologMobile',
   );
 }

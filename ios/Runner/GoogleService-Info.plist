@@ -3,11 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>430239783730-qj1vsiu8ib3lif3snfro52ssv6ctojvr.apps.googleusercontent.com</string>
+	<string>430239783730-3nsohtb58f0si0iafmd882nbqgefqsao.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.430239783730-qj1vsiu8ib3lif3snfro52ssv6ctojvr</string>
+	<string>com.googleusercontent.apps.430239783730-3nsohtb58f0si0iafmd882nbqgefqsao</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>430239783730-5ngmutkhmm82ov0v9u77b0log40n4svo.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAVERAmMkWCwxvoPQaes9smIffsjX1yoK0</string>
+	<string>AIzaSyBky9DlxmBal4jYNgjuNZCc9gLDsQ6iVU0</string>
 	<key>GCM_SENDER_ID</key>
 	<string>430239783730</string>
 	<key>PLIST_VERSION</key>
@@ -19,16 +21,18 @@
 	<key>STORAGE_BUCKET</key>
 	<string>motolog-23f9f.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:430239783730:ios:placeholder_will_be_replaced</string>
+	<string>1:430239783730:ios:7b37b2404715408829d52b</string>
+	<key>DATABASE_URL</key>
+	<string>https://motolog-23f9f-default-rtdb.asia-southeast1.firebasedatabase.app</string>
 </dict>
 </plist>
