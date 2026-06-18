@@ -7,7 +7,8 @@ import 'vehicle_provider.dart';
 // ===== FUEL LIST PROVIDER =====
 
 /// Provider lấy danh sách đổ xăng theo xe đang chọn
-final fuelListProvider = FutureProvider.autoDispose<List<FuelEntry>>((ref) async {
+final fuelListProvider =
+    FutureProvider.autoDispose<List<FuelEntry>>((ref) async {
   final vehicleId = ref.watch(selectedVehicleIdProvider);
   if (vehicleId == null) return [];
   return FuelDao.instance.getByVehicle(vehicleId);
@@ -26,14 +27,16 @@ final fuelListByMonthProvider = FutureProvider.family.autoDispose<
 );
 
 /// Monthly fuel cost data for chart
-final fuelMonthlyCostsProvider = FutureProvider.family<
-    List<Map<String, dynamic>>, String>((ref, vehicleId) async {
+final fuelMonthlyCostsProvider =
+    FutureProvider.family<List<Map<String, dynamic>>, String>(
+        (ref, vehicleId) async {
   return FuelDao.instance.monthlyCosts(vehicleId);
 });
 
 // ===== FUEL NOTIFIER (CRUD) =====
 
-final fuelNotifierProvider = AsyncNotifierProvider.autoDispose<FuelNotifier, List<FuelEntry>>(
+final fuelNotifierProvider =
+    AsyncNotifierProvider.autoDispose<FuelNotifier, List<FuelEntry>>(
   FuelNotifier.new,
 );
 

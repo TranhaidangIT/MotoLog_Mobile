@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/router/app_router.dart';
+import 'widgets/quick_add_menu.dart';
 
 class MainShell extends StatefulWidget {
   final Widget child;
@@ -12,34 +14,26 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  int _currentIndex = 0;
-
   final List<_NavItem> _navItems = [
-    _NavItem(
-      label: 'Tổng quan',
-      icon: Icons.dashboard_outlined,
-      activeIcon: Icons.dashboard_rounded,
+    const _NavItem(
+      label: 'Home',
+      icon: Icons.home_outlined,
+      activeIcon: Icons.home_rounded,
       route: AppRoutes.dashboard,
     ),
-    _NavItem(
-      label: 'Xăng',
-      icon: Icons.local_gas_station_outlined,
-      activeIcon: Icons.local_gas_station_rounded,
-      route: AppRoutes.fuelList,
+    const _NavItem(
+      label: 'Garage',
+      icon: Icons.directions_bike_outlined,
+      activeIcon: Icons.directions_bike_rounded,
+      route: AppRoutes.garage,
     ),
-    _NavItem(
-      label: 'Bảo dưỡng',
-      icon: Icons.build_outlined,
-      activeIcon: Icons.build_rounded,
-      route: AppRoutes.maintenanceList,
-    ),
-    _NavItem(
+    const _NavItem(
       label: 'Thống kê',
       icon: Icons.bar_chart_outlined,
       activeIcon: Icons.bar_chart_rounded,
       route: AppRoutes.statistics,
     ),
-    _NavItem(
+    const _NavItem(
       label: 'Tài khoản',
       icon: Icons.person_outline_rounded,
       activeIcon: Icons.person_rounded,
@@ -48,18 +42,40 @@ class _MainShellState extends State<MainShell> {
   ];
 
   void _onTap(int index) {
-    if (_currentIndex == index) return;
-    setState(() => _currentIndex = index);
     context.go(_navItems[index].route);
   }
 
   @override
   Widget build(BuildContext context) {
+    final location = GoRouterState.of(context).matchedLocation;
+
+    // Xác định tab active hiện tại từ route location
+    int currentIndex = 0;
+    if (location.startsWith('/home/garage')) {
+      currentIndex = 1;
+    } else if (location.startsWith('/home/statistics')) {
+      currentIndex = 2;
+    } else if (location.startsWith('/home/profile')) {
+      currentIndex = 3;
+    } else {
+      currentIndex = 0; // Mặc định về tab Home
+    }
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: widget.child,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => QuickAddMenu.show(context),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, size: 28),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
+        height: 72,
         decoration: BoxDecoration(
           color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
           border: Border(
@@ -70,26 +86,57 @@ class _MainShellState extends State<MainShell> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 20,
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
               offset: const Offset(0, -4),
             ),
           ],
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(
-                _navItems.length,
-                (i) => _NavBarItem(
-                  item: _navItems[i],
-                  isActive: _currentIndex == i,
-                  onTap: () => _onTap(i),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              // 2 Tab bên trái: Home, Garage
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _NavBarItem(
+                      item: _navItems[0],
+                      isActive: currentIndex == 0,
+                      onTap: () => _onTap(0),
+                    ),
+                    _NavBarItem(
+                      item: _navItems[1],
+                      isActive: currentIndex == 1,
+                      onTap: () => _onTap(1),
+                    ),
+                  ],
                 ),
               ),
-            ),
+
+              // Khoảng trống ở giữa dành cho FAB
+              const SizedBox(width: 68),
+
+              // 2 Tab bên phải: Stats, Profile
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _NavBarItem(
+                      item: _navItems[2],
+                      isActive: currentIndex == 2,
+                      onTap: () => _onTap(2),
+                    ),
+                    _NavBarItem(
+                      item: _navItems[3],
+                      isActive: currentIndex == 3,
+                      onTap: () => _onTap(3),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -124,42 +171,33 @@ class _NavBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        isActive ? AppColors.primary : Theme.of(context).colorScheme.onSurface.withOpacity(0.5);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isActive
+        ? AppColors.primary
+        : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight);
 
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: Icon(
-                isActive ? item.activeIcon : item.icon,
-                key: ValueKey(isActive),
-                color: color,
-                size: 24,
-              ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            isActive ? item.activeIcon : item.icon,
+            color: color,
+            size: 24,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            item.label,
+            style: GoogleFonts.outfit(
+              fontSize: 11,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+              color: color,
             ),
-            const SizedBox(height: 4),
-            Text(
-              item.label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
-                color: color,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

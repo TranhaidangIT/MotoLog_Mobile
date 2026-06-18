@@ -61,9 +61,11 @@ class MaintenanceDao {
   Future<List<MaintenanceEntry>> getUpcomingDue({String? vehicleId}) async {
     final db = await _db;
     final now = DateTime.now().toIso8601String();
-    final inOneWeek = DateTime.now().add(const Duration(days: 7)).toIso8601String();
+    final inOneWeek =
+        DateTime.now().add(const Duration(days: 7)).toIso8601String();
 
-    String where = 'next_due_date IS NOT NULL AND next_due_date BETWEEN ? AND ?';
+    String where =
+        'next_due_date IS NOT NULL AND next_due_date BETWEEN ? AND ?';
     final args = <Object?>[now, inOneWeek];
 
     if (vehicleId != null) {

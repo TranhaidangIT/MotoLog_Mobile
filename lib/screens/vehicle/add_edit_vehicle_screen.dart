@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/validators.dart';
@@ -14,7 +17,8 @@ class AddEditVehicleScreen extends ConsumerStatefulWidget {
   const AddEditVehicleScreen({super.key, this.vehicleId});
 
   @override
-  ConsumerState<AddEditVehicleScreen> createState() => _AddEditVehicleScreenState();
+  ConsumerState<AddEditVehicleScreen> createState() =>
+      _AddEditVehicleScreenState();
 }
 
 class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
@@ -27,14 +31,21 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
   final _odometerCtrl = TextEditingController();
 
   String _selectedFuelType = AppConstants.fuelGasoline;
-  String _selectedColor = '#FF6B00';
+  String _selectedColor = '#003087';
+  String? _selectedImagePath;
   bool _isLoading = false;
   bool _isEdit = false;
   Vehicle? _existingVehicle;
 
   final List<String> _colorOptions = [
-    '#FF6B00', '#2563EB', '#10B981', '#F59E0B',
-    '#8B5CF6', '#EC4899', '#1A1A2E', '#6B7280',
+    '#003087', // PayPal Blue
+    '#6D28D9', // Deep Purple
+    '#0E7490', // Teal
+    '#065F46', // Deep Green
+    '#92400E', // Bronze
+    '#7C3AED', // Bright Purple
+    '#FFD166', // Yellow
+    '#FF6B6B', // Coral
   ];
 
   @override
@@ -46,7 +57,8 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
 
   Future<void> _loadExisting() async {
     final vehicles = await ref.read(vehicleNotifierProvider.future);
-    _existingVehicle = vehicles.where((v) => v.id == widget.vehicleId).firstOrNull;
+    _existingVehicle =
+        vehicles.where((v) => v.id == widget.vehicleId).firstOrNull;
     if (_existingVehicle != null && mounted) {
       final v = _existingVehicle!;
       _nameCtrl.text = v.name;
@@ -58,6 +70,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
       setState(() {
         _selectedFuelType = v.fuelType;
         _selectedColor = v.color;
+        _selectedImagePath = v.imageUrl;
       });
     }
   }
@@ -71,6 +84,75 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
     _yearCtrl.dispose();
     _odometerCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: source,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+      if (picked != null) {
+        setState(() {
+          _selectedImagePath = picked.path;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+    }
+  }
+
+  void _showImageSourceSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined,
+                  color: AppColors.primary),
+              title: Text('Chụp ảnh mới',
+                  style: GoogleFonts.outfit(fontWeight: FontWeight.w600)),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined,
+                  color: AppColors.primary),
+              title: Text('Chọn từ thư viện',
+                  style: GoogleFonts.outfit(fontWeight: FontWeight.w600)),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+            if (_selectedImagePath != null)
+              ListTile(
+                leading: const Icon(Icons.delete_outline_rounded,
+                    color: AppColors.error),
+                title: Text('Xoá ảnh',
+                    style: GoogleFonts.outfit(
+                        color: AppColors.error, fontWeight: FontWeight.w600)),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    _selectedImagePath = null;
+                  });
+                },
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _save() async {
@@ -88,6 +170,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
       odometer: double.parse(_odometerCtrl.text.trim()),
       fuelType: _selectedFuelType,
       color: _selectedColor,
+      imageUrl: _selectedImagePath,
       userId: userId,
     );
 
@@ -149,38 +232,61 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Vehicle preview card
-              Container(
-                height: 120,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [_hexToColor(_selectedColor), _hexToColor(_selectedColor).withOpacity(0.7)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              // Image picker container
+              Center(
+                child: GestureDetector(
+                  onTap: _showImageSourceSheet,
+                  child: Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.borderLight,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.02),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: _selectedImagePath != null
+                          ? (_selectedImagePath!.startsWith('http')
+                              ? Image.network(_selectedImagePath!,
+                                  fit: BoxFit.cover)
+                              : (_selectedImagePath!.startsWith('assets/') ||
+                                      _selectedImagePath!.startsWith('img/'))
+                                  ? Image.asset(_selectedImagePath!,
+                                      fit: BoxFit.cover)
+                                  : Image.file(File(_selectedImagePath!),
+                                      fit: BoxFit.cover))
+                          : Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.photo_camera_outlined,
+                                  size: 32,
+                                  color: AppColors.textHintLight,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Thêm ảnh xe',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textSecondaryLight,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(AppConstants.radiusXL),
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Positioned(
-                      right: 20,
-                      child: Icon(
-                        Icons.two_wheeler_rounded,
-                        size: 80,
-                        color: Colors.white.withOpacity(0.2),
-                      ),
-                    ),
-                    Text(
-                      _nameCtrl.text.isEmpty ? 'Tên xe' : _nameCtrl.text,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
                 ),
               ),
               const SizedBox(height: 24),
@@ -212,11 +318,17 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                           width: 3,
                         ),
                         boxShadow: isSelected
-                            ? [BoxShadow(color: _hexToColor(hex).withOpacity(0.5), blurRadius: 8)]
+                            ? [
+                                BoxShadow(
+                                    color:
+                                        _hexToColor(hex).withValues(alpha: 0.5),
+                                    blurRadius: 8)
+                              ]
                             : null,
                       ),
                       child: isSelected
-                          ? const Icon(Icons.check, color: Colors.white, size: 18)
+                          ? const Icon(Icons.check,
+                              color: Colors.white, size: 18)
                           : null,
                     ),
                   );
@@ -229,7 +341,8 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
               TextFormField(
                 controller: _nameCtrl,
                 textCapitalization: TextCapitalization.words,
-                validator: (v) => AppValidators.required(v, fieldName: 'Tên xe'),
+                validator: (v) =>
+                    AppValidators.required(v, fieldName: 'Tên xe'),
                 onChanged: (_) => setState(() {}),
                 decoration: const InputDecoration(
                   hintText: 'VD: Xe đi làm',
@@ -247,8 +360,10 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                         _buildLabel('Hãng xe *'),
                         TextFormField(
                           controller: _brandCtrl,
-                          validator: (v) => AppValidators.required(v, fieldName: 'Hãng xe'),
-                          decoration: const InputDecoration(hintText: 'Honda, Yamaha...'),
+                          validator: (v) =>
+                              AppValidators.required(v, fieldName: 'Hãng xe'),
+                          decoration: const InputDecoration(
+                              hintText: 'Honda, Yamaha...'),
                         ),
                       ],
                     ),
@@ -261,8 +376,10 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                         _buildLabel('Dòng xe *'),
                         TextFormField(
                           controller: _modelCtrl,
-                          validator: (v) => AppValidators.required(v, fieldName: 'Dòng xe'),
-                          decoration: const InputDecoration(hintText: 'Wave, Exciter...'),
+                          validator: (v) =>
+                              AppValidators.required(v, fieldName: 'Dòng xe'),
+                          decoration: const InputDecoration(
+                              hintText: 'Wave, Exciter...'),
                         ),
                       ],
                     ),
@@ -308,7 +425,8 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                         TextFormField(
                           controller: _odometerCtrl,
                           keyboardType: TextInputType.number,
-                          validator: (v) => AppValidators.required(v, fieldName: 'Odometer'),
+                          validator: (v) =>
+                              AppValidators.required(v, fieldName: 'Odometer'),
                           decoration: const InputDecoration(hintText: '12450'),
                         ),
                       ],
@@ -336,7 +454,20 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _save,
-                  child: Text(_isEdit ? 'Cập nhật xe' : 'Thêm xe'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    _isEdit ? 'Lưu chỉnh sửa' : 'Lưu xe',
+                    style: GoogleFonts.outfit(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),

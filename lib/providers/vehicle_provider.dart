@@ -8,7 +8,8 @@ import '../data/services/firestore_service.dart';
 // ===== SELECTED VEHICLE =====
 
 /// ID của xe đang được chọn
-final selectedVehicleIdProvider = StateNotifierProvider<SelectedVehicleIdNotifier, String?>(
+final selectedVehicleIdProvider =
+    StateNotifierProvider<SelectedVehicleIdNotifier, String?>(
   (ref) => SelectedVehicleIdNotifier(),
 );
 
@@ -49,7 +50,8 @@ final selectedVehicleProvider = FutureProvider<Vehicle?>((ref) async {
 
 // ===== VEHICLE NOTIFIER (CRUD) =====
 
-final vehicleNotifierProvider = AsyncNotifierProvider<VehicleNotifier, List<Vehicle>>(
+final vehicleNotifierProvider =
+    AsyncNotifierProvider<VehicleNotifier, List<Vehicle>>(
   VehicleNotifier.new,
 );
 
@@ -62,7 +64,7 @@ class VehicleNotifier extends AsyncNotifier<List<Vehicle>> {
   /// Thêm xe mới
   Future<void> add(Vehicle vehicle) async {
     await VehicleDao.instance.insert(vehicle);
-    
+
     // Sync to Firestore
     final firestoreService = ref.read(firestoreServiceProvider);
     if (firestoreService != null) {

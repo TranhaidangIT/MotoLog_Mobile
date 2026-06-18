@@ -37,15 +37,24 @@ class _AddEditMaintenanceScreenState
   // Quick title suggestions per type
   Map<MaintenanceType, List<String>> get _suggestions => {
         MaintenanceType.routine: [
-          'Thay nhớt', 'Vệ sinh bộ chế hòa khí', 'Kiểm tra phanh',
-          'Vệ sinh bugi', 'Bơm lốp xe',
+          'Thay nhớt',
+          'Vệ sinh bộ chế hòa khí',
+          'Kiểm tra phanh',
+          'Vệ sinh bugi',
+          'Bơm lốp xe',
         ],
         MaintenanceType.repair: [
-          'Sửa phanh', 'Sửa đèn', 'Thay ắc-quy', 'Sửa điện',
+          'Sửa phanh',
+          'Sửa đèn',
+          'Thay ắc-quy',
+          'Sửa điện',
           'Sửa động cơ',
         ],
         MaintenanceType.parts: [
-          'Thay lốp xe', 'Thay má phanh', 'Thay bugi', 'Thay dây côn',
+          'Thay lốp xe',
+          'Thay má phanh',
+          'Thay bugi',
+          'Thay dây côn',
           'Thay xích đĩa',
         ],
       };
@@ -103,8 +112,11 @@ class _AddEditMaintenanceScreenState
       title: _titleCtrl.text.trim(),
       date: _selectedDate,
       odometer: double.parse(_odometerCtrl.text.replaceAll(',', '')),
-      cost: double.tryParse(_costCtrl.text.replaceAll(',', '').replaceAll('.', '')) ?? 0,
-      garageName: _garageCtrl.text.trim().isEmpty ? null : _garageCtrl.text.trim(),
+      cost: double.tryParse(
+              _costCtrl.text.replaceAll(',', '').replaceAll('.', '')) ??
+          0,
+      garageName:
+          _garageCtrl.text.trim().isEmpty ? null : _garageCtrl.text.trim(),
       nextDueDate: _nextDueDate,
       note: _noteCtrl.text.trim().isEmpty ? null : _noteCtrl.text.trim(),
     );
@@ -173,11 +185,11 @@ class _AddEditMaintenanceScreenState
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? color.withOpacity(0.15)
+                                ? color.withValues(alpha: 0.15)
                                 : Theme.of(context)
                                     .colorScheme
-                                    .surfaceVariant
-                                    .withOpacity(0.5),
+                                    .surfaceContainerHighest
+                                    .withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                               color: isSelected ? color : Colors.transparent,
@@ -240,7 +252,8 @@ class _AddEditMaintenanceScreenState
               _buildLabel('Tên công việc *'),
               TextFormField(
                 controller: _titleCtrl,
-                validator: (v) => AppValidators.required(v, fieldName: 'Tên công việc'),
+                validator: (v) =>
+                    AppValidators.required(v, fieldName: 'Tên công việc'),
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.build_outlined),
                   hintText: 'VD: Thay nhớt máy',
@@ -273,7 +286,8 @@ class _AddEditMaintenanceScreenState
                         TextFormField(
                           controller: _odometerCtrl,
                           keyboardType: TextInputType.number,
-                          validator: (v) => AppValidators.required(v, fieldName: 'Km'),
+                          validator: (v) =>
+                              AppValidators.required(v, fieldName: 'Km'),
                           decoration: const InputDecoration(
                             hintText: '12,450',
                             suffixText: 'km',
@@ -338,7 +352,7 @@ class _AddEditMaintenanceScreenState
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.4))
+                                .withValues(alpha: 0.4))
                         : null,
                   ),
                 ),

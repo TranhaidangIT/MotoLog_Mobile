@@ -42,10 +42,8 @@ class FirestoreService {
 
   /// Stream danh sách xe của user
   Stream<List<Vehicle>> vehiclesStream() {
-    return _vehicles
-        .orderBy('created_at', descending: true)
-        .snapshots()
-        .map((snap) => snap.docs
+    return _vehicles.orderBy('created_at', descending: true).snapshots().map(
+        (snap) => snap.docs
             .map((doc) =>
                 Vehicle.fromFirestore(doc.data() as Map<String, dynamic>))
             .toList());
@@ -84,10 +82,8 @@ class FirestoreService {
   }
 
   /// Stream bản ghi bảo dưỡng
-  Stream<List<MaintenanceEntry>> maintenanceEntriesStream(
-      {String? vehicleId}) {
-    Query query =
-        _maintenanceEntries.orderBy('next_date', descending: false);
+  Stream<List<MaintenanceEntry>> maintenanceEntriesStream({String? vehicleId}) {
+    Query query = _maintenanceEntries.orderBy('next_date', descending: false);
     if (vehicleId != null) {
       query = query.where('vehicle_id', isEqualTo: vehicleId);
     }
@@ -115,7 +111,8 @@ class FirestoreService {
       final vehiclesSnap = await _vehicles.get();
       for (var doc in vehiclesSnap.docs) {
         if (doc.exists) {
-          final vehicle = Vehicle.fromFirestore(doc.data() as Map<String, dynamic>);
+          final vehicle =
+              Vehicle.fromFirestore(doc.data() as Map<String, dynamic>);
           await VehicleDao.instance.insert(vehicle);
         }
       }
@@ -124,7 +121,8 @@ class FirestoreService {
       final fuelSnap = await _fuelEntries.get();
       for (var doc in fuelSnap.docs) {
         if (doc.exists) {
-          final entry = FuelEntry.fromFirestore(doc.data() as Map<String, dynamic>);
+          final entry =
+              FuelEntry.fromFirestore(doc.data() as Map<String, dynamic>);
           await FuelDao.instance.insert(entry);
         }
       }
@@ -133,7 +131,8 @@ class FirestoreService {
       final maintSnap = await _maintenanceEntries.get();
       for (var doc in maintSnap.docs) {
         if (doc.exists) {
-          final entry = MaintenanceEntry.fromFirestore(doc.data() as Map<String, dynamic>);
+          final entry = MaintenanceEntry.fromFirestore(
+              doc.data() as Map<String, dynamic>);
           await MaintenanceDao.instance.insert(entry);
         }
       }

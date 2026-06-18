@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
-import '../../screens/splash/splash_screen.dart';
+import '../../providers/shared_preferences_provider.dart';
+import '../../core/constants/app_constants.dart';
 import '../../screens/onboarding/onboarding_screen.dart';
 import '../../screens/auth/login_screen.dart';
 import '../../screens/auth/register_screen.dart';
@@ -17,16 +18,17 @@ import '../../screens/maintenance/maintenance_list_screen.dart';
 import '../../screens/maintenance/add_edit_maintenance_screen.dart';
 import '../../screens/statistics/statistics_screen.dart';
 import '../../screens/profile/profile_screen.dart';
+import '../../screens/garage/garage_screen.dart';
 
 /// Route names
 class AppRoutes {
   AppRoutes._();
-  static const String splash = '/';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String register = '/register';
   static const String home = '/home';
   static const String dashboard = '/home/dashboard';
+  static const String garage = '/home/garage';
   static const String vehicleDetail = '/vehicle/:id';
   static const String addVehicle = '/vehicle/add';
   static const String editVehicle = '/vehicle/:id/edit';
@@ -44,20 +46,21 @@ class AppRoutes {
 final appRouterProvider = Provider<GoRouter>((ref) {
   // Lắng nghe auth state để refresh router
   final authState = ref.watch(authStateProvider);
+  final prefs = ref.watch(sharedPreferencesProvider);
+  final onboardingDone = prefs.getBool(AppConstants.keyOnboardingDone) ?? false;
 
   return GoRouter(
-    initialLocation: AppRoutes.splash,
+    initialLocation: onboardingDone ? AppRoutes.login : AppRoutes.onboarding,
     debugLogDiagnostics: false,
     refreshListenable: _AuthChangeNotifier(ref),
     redirect: (context, state) {
       final user = authState.valueOrNull;
       final isLoggedIn = user != null;
-      final isSplash = state.matchedLocation == AppRoutes.splash;
       final isOnboarding = state.matchedLocation == AppRoutes.onboarding;
       final isAuthRoute = state.matchedLocation.startsWith('/login');
 
-      // Splash và onboarding luôn cho qua
-      if (isSplash || isOnboarding) return null;
+      // Onboarding luôn cho qua
+      if (isOnboarding) return null;
 
       // Chưa đăng nhập → về login
       if (!isLoggedIn && !isAuthRoute) return AppRoutes.login;
@@ -68,12 +71,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      // ===== AUTH & SPLASH =====
-      GoRoute(
-        path: AppRoutes.splash,
-        name: 'splash',
-        builder: (context, state) => const SplashScreen(),
-      ),
+      // ===== AUTH =====
+
       GoRoute(
         path: AppRoutes.onboarding,
         name: 'onboarding',
@@ -100,6 +99,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.dashboard,
             name: 'dashboard',
             builder: (context, state) => const DashboardScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.garage,
+            name: 'garage',
+            builder: (context, state) => const GarageScreen(),
           ),
           GoRoute(
             path: AppRoutes.fuelList,
@@ -129,16 +133,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'add',
                 name: 'addMaintenance',
-                builder: (context, state) =>
-                    const AddEditMaintenanceScreen(),
+                builder: (context, state) => const AddEditMaintenanceScreen(),
               ),
               GoRoute(
                 path: ':maintId/edit',
                 name: 'editMaintenance',
                 builder: (context, state) {
                   final maintId = state.pathParameters['maintId']!;
-                  return AddEditMaintenanceScreen(
-                      maintenanceId: maintId);
+                  return AddEditMaintenanceScreen(maintenanceId: maintId);
                 },
               ),
             ],
@@ -196,7 +198,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ),
             const SizedBox(height: 8),
             TextButton(
-              onPressed: () => context.go(AppRoutes.splash),
+              onPressed: () => context.go(AppRoutes.login),
               child: const Text('Về trang chủ'),
             ),
           ],
@@ -214,4 +216,3 @@ class _AuthChangeNotifier extends ChangeNotifier {
     });
   }
 }
-

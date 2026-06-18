@@ -6,32 +6,36 @@ import 'vehicle_provider.dart';
 
 // ===== MAINTENANCE LIST PROVIDER =====
 
-final maintenanceListProvider = FutureProvider.autoDispose<List<MaintenanceEntry>>((ref) async {
+final maintenanceListProvider =
+    FutureProvider.autoDispose<List<MaintenanceEntry>>((ref) async {
   final vehicleId = ref.watch(selectedVehicleIdProvider);
   if (vehicleId == null) return [];
   return MaintenanceDao.instance.getByVehicle(vehicleId);
 });
 
 /// Lấy các bảo dưỡng sắp đến hạn (7 ngày)
-final upcomingMaintenanceProvider = FutureProvider.autoDispose<List<MaintenanceEntry>>((ref) async {
+final upcomingMaintenanceProvider =
+    FutureProvider.autoDispose<List<MaintenanceEntry>>((ref) async {
   final vehicleId = ref.watch(selectedVehicleIdProvider);
   return MaintenanceDao.instance.getUpcomingDue(vehicleId: vehicleId);
 });
 
 /// Monthly maintenance costs for chart
-final maintenanceMonthlyCostsProvider = FutureProvider.family<
-    List<Map<String, dynamic>>, String>((ref, vehicleId) async {
+final maintenanceMonthlyCostsProvider =
+    FutureProvider.family<List<Map<String, dynamic>>, String>(
+        (ref, vehicleId) async {
   return MaintenanceDao.instance.monthlyCosts(vehicleId);
 });
 
 // ===== MAINTENANCE NOTIFIER (CRUD) =====
 
-final maintenanceNotifierProvider =
-    AsyncNotifierProvider.autoDispose<MaintenanceNotifier, List<MaintenanceEntry>>(
+final maintenanceNotifierProvider = AsyncNotifierProvider.autoDispose<
+    MaintenanceNotifier, List<MaintenanceEntry>>(
   MaintenanceNotifier.new,
 );
 
-class MaintenanceNotifier extends AutoDisposeAsyncNotifier<List<MaintenanceEntry>> {
+class MaintenanceNotifier
+    extends AutoDisposeAsyncNotifier<List<MaintenanceEntry>> {
   @override
   Future<List<MaintenanceEntry>> build() async {
     final vehicleId = ref.watch(selectedVehicleIdProvider);
@@ -98,6 +102,7 @@ final maintenanceCostThisMonthProvider = FutureProvider.family<double, String>(
     final now = DateTime.now();
     final from = DateTime(now.year, now.month, 1);
     final to = DateTime(now.year, now.month + 1, 0);
-    return MaintenanceDao.instance.totalCostInRange(vehicleId, from: from, to: to);
+    return MaintenanceDao.instance
+        .totalCostInRange(vehicleId, from: from, to: to);
   },
 );

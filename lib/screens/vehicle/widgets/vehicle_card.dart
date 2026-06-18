@@ -4,7 +4,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../data/models/vehicle.dart';
 
-/// Card hiển thị thông tin xe — dùng trên Dashboard
+/// Card hiển thị thông tin xe — dùng trên Dashboard (CoverFlow)
 class VehicleCard extends StatelessWidget {
   final Vehicle vehicle;
   final bool isSelected;
@@ -26,29 +26,32 @@ class VehicleCard extends StatelessWidget {
     }
   }
 
+  // Text color that contrasts with the card background
+  Color get _textOnCard {
+    // For neon green cards use black text for readability
+    final bg = _vehicleColor;
+    final luminance = bg.computeLuminance();
+    return luminance > 0.4 ? Colors.black87 : Colors.white;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textOnCard = _textOnCard;
+    final subtleOnCard = textOnCard.withValues(alpha: 0.7);
+    final extraSubtle = textOnCard.withValues(alpha: 0.15);
 
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: AppConstants.animNormal,
+        curve: Curves.easeOutCubic,
         width: 280,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? LinearGradient(
-                  colors: [
-                    _vehicleColor,
-                    _vehicleColor.withOpacity(0.7),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                )
-              : null,
+          // Selected: solid vehicle color; unselected: surface card
           color: isSelected
-              ? null
+              ? _vehicleColor
               : (isDark ? AppColors.surfaceDark : AppColors.surfaceLight),
           borderRadius: BorderRadius.circular(AppConstants.radiusXL),
           border: Border.all(
@@ -60,14 +63,15 @@ class VehicleCard extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: _vehicleColor.withOpacity(0.4),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
+                    color: _vehicleColor.withValues(alpha: 0.45),
+                    blurRadius: 24,
+                    spreadRadius: -4,
+                    offset: const Offset(0, 10),
                   ),
                 ]
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -75,16 +79,19 @@ class VehicleCard extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            // Background icon
+            // Watermark icon bottom-right
             Positioned(
-              right: -10,
-              bottom: -10,
-              child: Icon(
-                Icons.two_wheeler_rounded,
-                size: 80,
-                color: isSelected
-                    ? Colors.white.withOpacity(0.15)
-                    : _vehicleColor.withOpacity(0.08),
+              right: 0,
+              bottom: 0,
+              child: Opacity(
+                opacity: isSelected ? 0.15 : 0.08,
+                child: Image.asset(
+                  'img/logo/logo.png',
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.contain,
+                  color: isSelected ? Colors.white : _vehicleColor,
+                ),
               ),
             ),
 
@@ -92,7 +99,7 @@ class VehicleCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Brand / Model
+                // ── Brand / Name row ─────────────────────────
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -101,8 +108,9 @@ class VehicleCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
+                        letterSpacing: -0.3,
                         color: isSelected
-                            ? Colors.white
+                            ? textOnCard
                             : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
@@ -112,17 +120,17 @@ class VehicleCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         color: isSelected
-                            ? Colors.white.withOpacity(0.8)
+                            ? subtleOnCard
                             : Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.6),
+                                .withValues(alpha: 0.55),
                       ),
                     ),
                   ],
                 ),
 
-                // Plate + Odometer
+                // ── Plate + Odometer ─────────────────────────
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -131,17 +139,17 @@ class VehicleCard extends StatelessWidget {
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? Colors.white.withOpacity(0.2)
-                            : _vehicleColor.withOpacity(0.1),
+                            ? extraSubtle
+                            : _vehicleColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         vehicle.plateNumber,
                         style: TextStyle(
                           fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1,
-                          color: isSelected ? Colors.white : _vehicleColor,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.5,
+                          color: isSelected ? textOnCard : _vehicleColor,
                         ),
                       ),
                     ),
@@ -150,13 +158,13 @@ class VehicleCard extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.speed_rounded,
-                          size: 14,
+                          size: 13,
                           color: isSelected
-                              ? Colors.white.withOpacity(0.8)
+                              ? subtleOnCard
                               : Theme.of(context)
                                   .colorScheme
                                   .onSurface
-                                  .withOpacity(0.5),
+                                  .withValues(alpha: 0.45),
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -165,11 +173,31 @@ class VehicleCard extends StatelessWidget {
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: isSelected
-                                ? Colors.white.withOpacity(0.9)
+                                ? textOnCard.withValues(alpha: 0.9)
                                 : Theme.of(context)
                                     .colorScheme
                                     .onSurface
-                                    .withOpacity(0.7),
+                                    .withValues(alpha: 0.65),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // Fuel type badge
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? extraSubtle
+                                : _vehicleColor.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            vehicle.fuelType,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: isSelected ? textOnCard : _vehicleColor,
+                            ),
                           ),
                         ),
                       ],

@@ -3,10 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'providers/shared_preferences_provider.dart';
 import 'app.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  // Khởi tạo SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
 
   // Khởi tạo Firebase
   try {
@@ -14,12 +21,10 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
-    // Firebase init thất bại (thường do cấu hình iOS chưa đúng)
-    // App vẫn chạy được ở chế độ local-only
     debugPrint('⚠️ Firebase init error: $e');
   }
 
-  // Khóa hướng màn hình mặc định (portrait)
+  // Khóa hướng màn hình mặc định
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -35,8 +40,13 @@ void main() async {
   );
 
   runApp(
-    const ProviderScope(
-      child: MotoLogApp(),
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+      ],
+      child: const MotoLogApp(),
     ),
   );
+  
+  FlutterNativeSplash.remove();
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/models/fuel_entry.dart';
@@ -16,38 +17,90 @@ class FuelListScreen extends ConsumerWidget {
     final selectedId = ref.watch(selectedVehicleIdProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.backgroundLight,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
+          // ─── APP BAR ───
           SliverAppBar(
             floating: true,
             snap: true,
-            title: const Text('Nhật ký xăng'),
+            backgroundColor: AppColors.backgroundLight,
+            elevation: 0,
+            title: Text(
+              'Nhật ký xăng',
+              style: GoogleFonts.outfit(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimaryLight,
+              ),
+            ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.filter_list_rounded),
+                icon: const Icon(Icons.filter_list_rounded,
+                    color: AppColors.textPrimaryLight),
                 onPressed: () {},
               ),
             ],
           ),
+
           if (selectedId == null)
-            const SliverFillRemaining(
-              child: Center(child: Text('Chọn xe để xem nhật ký xăng')),
+            SliverFillRemaining(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.two_wheeler_rounded,
+                        size: 60, color: AppColors.textHintLight),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Chọn xe để xem nhật ký xăng',
+                      style: GoogleFonts.outfit(
+                        fontSize: 15,
+                        color: AppColors.textSecondaryLight,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             )
           else
             fuelAsync.when(
               loading: () => const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(
+                    child: CircularProgressIndicator(color: AppColors.primary)),
               ),
               error: (e, _) => SliverFillRemaining(
                 child: Center(child: Text('Lỗi: $e')),
               ),
               data: (list) {
                 if (list.isEmpty) {
-                  return SliverFillRemaining(
-                    child: _EmptyFuelState(),
-                  );
+                  return SliverFillRemaining(child: _EmptyFuelState());
                 }
+
+                // Totals
+                final totalCost =
+                    list.fold<double>(0, (s, e) => s + e.totalCost);
+                final totalLiters =
+                    list.fold<double>(0, (s, e) => s + e.liters);
+                final avgConsumption = list.length > 1
+                    ? list
+                            .asMap()
+                            .entries
+                            .map((e) {
+                              final prev = e.key < list.length - 1
+                                  ? list[e.key + 1]
+                                  : null;
+                              return e.value.consumptionWith(prev);
+                            })
+                            .where((c) => c != null)
+                            .fold<double>(0, (s, c) => s + c!) /
+                        list.asMap().entries.where((e) {
+                          final prev =
+                              e.key < list.length - 1 ? list[e.key + 1] : null;
+                          return e.value.consumptionWith(prev) != null;
+                        }).length
+                    : 0.0;
 
                 // Group by month
                 final grouped = <String, List<FuelEntry>>{};
@@ -57,49 +110,118 @@ class FuelListScreen extends ConsumerWidget {
                 }
 
                 return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final keys = grouped.keys.toList();
-                      final monthKey = keys[index];
-                      final entries = grouped[monthKey]!;
-                      final totalCost = entries.fold<double>(
-                          0, (sum, e) => sum + e.totalCost);
-                      final totalLiters =
-                          entries.fold<double>(0, (sum, e) => sum + e.liters);
+                  delegate: SliverChildListDelegate([
+                    // ─── SUMMARY BANNER (Xanh lá) ───
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF16A34A), Color(0xFF22C55E)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.25),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.local_gas_station_rounded,
+                                    color: Colors.white70, size: 18),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Tổng tiêu thụ xăng',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 13,
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                _BannerStat(
+                                  value: AppFormatters.currency(totalCost),
+                                  label: 'Tổng chi phí',
+                                ),
+                                Container(
+                                    width: 1,
+                                    height: 36,
+                                    color: Colors.white24),
+                                _BannerStat(
+                                  value: AppFormatters.liters(totalLiters),
+                                  label: 'Tổng số lít',
+                                ),
+                                Container(
+                                    width: 1,
+                                    height: 36,
+                                    color: Colors.white24),
+                                _BannerStat(
+                                  value: avgConsumption > 0
+                                      ? '${avgConsumption.toStringAsFixed(1)} L/100'
+                                      : '—',
+                                  label: 'TB tiêu hao',
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
 
+                    // ─── GROUPED LIST ───
+                    ...grouped.entries.map((group) {
+                      final entries = group.value;
+                      final monthTotal =
+                          entries.fold<double>(0, (s, e) => s + e.totalCost);
+                      final monthLiters =
+                          entries.fold<double>(0, (s, e) => s + e.liters);
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Month header
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Tháng $monthKey',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                  'Tháng ${group.key}',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.textSecondaryLight,
+                                  ),
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(
-                                      AppFormatters.currency(totalCost),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelMedium
-                                          ?.copyWith(
-                                            color: AppColors.primary,
-                                            fontWeight: FontWeight.w700,
-                                          ),
+                                      AppFormatters.currency(monthTotal),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.primary,
+                                      ),
                                     ),
                                     Text(
-                                      AppFormatters.liters(totalLiters),
-                                      style:
-                                          Theme.of(context).textTheme.bodySmall,
+                                      AppFormatters.liters(monthLiters),
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 11,
+                                        color: AppColors.textHintLight,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -107,32 +229,54 @@ class FuelListScreen extends ConsumerWidget {
                             ),
                           ),
 
-                          // Entries
-                          ...entries.asMap().entries.map((e) {
-                            final entry = e.value;
-                            final prev = e.key < entries.length - 1
-                                ? entries[e.key + 1]
-                                : null;
-                            final consumption =
-                                entry.consumptionWith(prev);
-
-                            return _FuelEntryCard(
-                              entry: entry,
-                              consumption: consumption,
-                              onTap: () => context.push(
-                                  '/home/fuel/${entry.id}/edit'),
-                              onDelete: () async {
-                                await ref
-                                    .read(fuelNotifierProvider.notifier)
-                                    .delete(entry.id);
-                              },
-                            );
-                          }),
+                          // Entry cards grouped in container
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                border:
+                                    Border.all(color: AppColors.borderLight),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.03),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: entries.asMap().entries.map((e) {
+                                  final entry = e.value;
+                                  final prev = e.key < entries.length - 1
+                                      ? entries[e.key + 1]
+                                      : null;
+                                  final consumption =
+                                      entry.consumptionWith(prev);
+                                  return _FuelEntryTile(
+                                    entry: entry,
+                                    consumption: consumption,
+                                    isLast: e.key == entries.length - 1,
+                                    onTap: () => context
+                                        .push('/home/fuel/${entry.id}/edit'),
+                                    onDelete: () async {
+                                      await ref
+                                          .read(fuelNotifierProvider.notifier)
+                                          .delete(entry.id);
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
                         ],
                       );
-                    },
-                    childCount: grouped.length,
-                  ),
+                    }),
+
+                    const SizedBox(height: 100),
+                  ]),
                 );
               },
             ),
@@ -141,22 +285,61 @@ class FuelListScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'fuel_fab',
         onPressed: () => context.push('/home/fuel/add'),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Đổ xăng'),
+        label: Text('Đổ xăng',
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w600)),
       ),
     );
   }
 }
 
-class _FuelEntryCard extends StatelessWidget {
+// ── Banner stat item ──
+class _BannerStat extends StatelessWidget {
+  final String value;
+  final String label;
+
+  const _BannerStat({required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: GoogleFonts.outfit(
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: GoogleFonts.outfit(
+            fontSize: 11,
+            color: Colors.white70,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Fuel Entry Tile (inside grouped container) ──
+class _FuelEntryTile extends StatelessWidget {
   final FuelEntry entry;
   final double? consumption;
+  final bool isLast;
   final VoidCallback onTap;
   final VoidCallback onDelete;
 
-  const _FuelEntryCard({
+  const _FuelEntryTile({
     required this.entry,
     required this.consumption,
+    required this.isLast,
     required this.onTap,
     required this.onDelete,
   });
@@ -169,86 +352,118 @@ class _FuelEntryCard extends StatelessWidget {
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        color: AppColors.error,
+        decoration: BoxDecoration(
+          color: AppColors.error,
+          borderRadius: isLast
+              ? const BorderRadius.vertical(bottom: Radius.circular(14))
+              : BorderRadius.zero,
+        ),
         child: const Icon(Icons.delete_outline, color: Colors.white),
       ),
       onDismissed: (_) => onDelete(),
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: AppColors.fuelGasoline.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.zero,
+          bottom: isLast ? const Radius.circular(14) : Radius.zero,
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  // Icon
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.fuelBg,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.local_gas_station_rounded,
+                        color: AppColors.fuelText, size: 20),
                   ),
-                  child: const Icon(Icons.local_gas_station_rounded,
-                      color: AppColors.fuelGasoline, size: 22),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            AppFormatters.currency(entry.totalCost),
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(fontWeight: FontWeight.w700),
-                          ),
-                          Text(
-                            AppFormatters.date(entry.date),
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          _Tag(
-                              label: AppFormatters.liters(entry.liters),
-                              color: AppColors.fuelGasoline),
-                          const SizedBox(width: 6),
-                          _Tag(
-                              label: AppFormatters.km(entry.odometer),
-                              color: AppColors.secondary),
-                          if (consumption != null) ...[
-                            const SizedBox(width: 6),
-                            _Tag(
-                              label: AppFormatters.consumption(consumption),
-                              color: consumption! > 6
-                                  ? AppColors.error
-                                  : AppColors.success,
+                  const SizedBox(width: 12),
+
+                  // Info
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              AppFormatters.currency(entry.totalCost),
+                              style: GoogleFonts.outfit(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimaryLight,
+                              ),
+                            ),
+                            Text(
+                              AppFormatters.date(entry.date),
+                              style: GoogleFonts.outfit(
+                                fontSize: 11,
+                                color: AppColors.textHintLight,
+                              ),
                             ),
                           ],
-                        ],
-                      ),
-                      if (entry.stationName != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          entry.stationName!,
-                          style: Theme.of(context).textTheme.bodySmall,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            _Tag(
+                              label: AppFormatters.liters(entry.liters),
+                              bgColor: AppColors.fuelBg,
+                              textColor: AppColors.fuelText,
+                            ),
+                            const SizedBox(width: 6),
+                            _Tag(
+                              label: AppFormatters.km(entry.odometer),
+                              bgColor: const Color(0xFFEFF6FF),
+                              textColor: const Color(0xFF1D4ED8),
+                            ),
+                            if (consumption != null) ...[
+                              const SizedBox(width: 6),
+                              _Tag(
+                                label: AppFormatters.consumption(consumption),
+                                bgColor: consumption! > 6
+                                    ? AppColors.alertBg
+                                    : AppColors.fuelBg,
+                                textColor: consumption! > 6
+                                    ? AppColors.alertText
+                                    : AppColors.fuelText,
+                              ),
+                            ],
+                          ],
+                        ),
+                        if (entry.stationName != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            '📍 ${entry.stationName!}',
+                            style: GoogleFonts.outfit(
+                              fontSize: 11,
+                              color: AppColors.textHintLight,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+            if (!isLast)
+              const Divider(
+                  height: 1,
+                  indent: 68,
+                  endIndent: 16,
+                  color: AppColors.borderLight),
+          ],
         ),
       ),
     );
@@ -257,24 +472,26 @@ class _FuelEntryCard extends StatelessWidget {
 
 class _Tag extends StatelessWidget {
   final String label;
-  final Color color;
+  final Color bgColor;
+  final Color textColor;
 
-  const _Tag({required this.label, required this.color});
+  const _Tag(
+      {required this.label, required this.bgColor, required this.textColor});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(4),
+        color: bgColor,
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         label,
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w600,
-          color: color,
+          color: textColor,
         ),
       ),
     );
@@ -291,26 +508,30 @@ class _EmptyFuelState extends StatelessWidget {
           Container(
             width: 100,
             height: 100,
-            decoration: BoxDecoration(
-              color: AppColors.fuelGasoline.withOpacity(0.1),
+            decoration: const BoxDecoration(
+              color: AppColors.fuelBg,
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.local_gas_station_rounded,
-                size: 52, color: AppColors.fuelGasoline),
+                size: 52, color: AppColors.fuelText),
           ),
           const SizedBox(height: 20),
           Text(
             'Chưa có lần đổ xăng nào',
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.w700),
+            style: GoogleFonts.outfit(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimaryLight,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             'Nhấn nút bên dưới để thêm lần đổ xăng đầu tiên',
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: GoogleFonts.outfit(
+              fontSize: 13,
+              color: AppColors.textSecondaryLight,
+            ),
           ),
         ],
       ),

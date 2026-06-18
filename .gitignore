@@ -46,8 +46,3 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
-
-# ⚠️ NOTE: google-services.json được commit lên git
-# để GitHub Actions CI/CD có thể build được với Firebase.
-# Đây là dự án học thuật (public repo) nên chấp nhận được.
-# Nếu là production thực tế, hãy dùng GitHub Secrets thay thế.

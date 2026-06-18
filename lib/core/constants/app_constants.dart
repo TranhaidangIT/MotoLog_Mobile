@@ -24,7 +24,11 @@ class AppConstants {
   static const String fuelGasoline = 'Xăng';
   static const String fuelElectric = 'Điện';
   static const String fuelDiesel = 'Diesel';
-  static const List<String> fuelTypes = [fuelGasoline, fuelElectric, fuelDiesel];
+  static const List<String> fuelTypes = [
+    fuelGasoline,
+    fuelElectric,
+    fuelDiesel
+  ];
 
   // Maintenance Types
   static const String maintenanceRoutine = 'ROUTINE';

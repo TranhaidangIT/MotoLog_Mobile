@@ -35,7 +35,9 @@ class _AddEditFuelScreenState extends ConsumerState<AddEditFuelScreen> {
   // Auto-calculate total cost
   double get _totalCost {
     final liters = double.tryParse(_litersCtrl.text.replaceAll(',', '.')) ?? 0;
-    final price = double.tryParse(_priceCtrl.text.replaceAll(',', '').replaceAll('.', '')) ?? 0;
+    final price = double.tryParse(
+            _priceCtrl.text.replaceAll(',', '').replaceAll('.', '')) ??
+        0;
     return liters * price;
   }
 
@@ -102,8 +104,10 @@ class _AddEditFuelScreenState extends ConsumerState<AddEditFuelScreen> {
       date: _selectedDate,
       odometer: double.parse(_odometerCtrl.text.replaceAll(',', '')),
       liters: double.parse(_litersCtrl.text.replaceAll(',', '.')),
-      pricePerLiter: double.parse(_priceCtrl.text.replaceAll(',', '').replaceAll('.', '')),
-      stationName: _stationCtrl.text.trim().isEmpty ? null : _stationCtrl.text.trim(),
+      pricePerLiter:
+          double.parse(_priceCtrl.text.replaceAll(',', '').replaceAll('.', '')),
+      stationName:
+          _stationCtrl.text.trim().isEmpty ? null : _stationCtrl.text.trim(),
       isFull: _isFull,
       note: _noteCtrl.text.trim().isEmpty ? null : _noteCtrl.text.trim(),
     );
@@ -217,7 +221,8 @@ class _AddEditFuelScreenState extends ConsumerState<AddEditFuelScreen> {
                         _buildLabel('Số lít *'),
                         TextFormField(
                           controller: _litersCtrl,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
                           validator: AppValidators.liters,
                           decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.local_gas_station_outlined),
@@ -237,7 +242,8 @@ class _AddEditFuelScreenState extends ConsumerState<AddEditFuelScreen> {
                         TextFormField(
                           controller: _priceCtrl,
                           keyboardType: TextInputType.number,
-                          validator: (v) => AppValidators.positiveNumber(v, fieldName: 'Giá'),
+                          validator: (v) =>
+                              AppValidators.positiveNumber(v, fieldName: 'Giá'),
                           decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.attach_money_rounded),
                             hintText: '21,000',
@@ -253,9 +259,13 @@ class _AddEditFuelScreenState extends ConsumerState<AddEditFuelScreen> {
 
               // Full tank switch
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceContainerHighest
+                      .withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -264,7 +274,7 @@ class _AddEditFuelScreenState extends ConsumerState<AddEditFuelScreen> {
                     const Text('Đổ đầy bình'),
                     Switch(
                       value: _isFull,
-                      activeColor: AppColors.primary,
+                      activeThumbColor: AppColors.primary,
                       onChanged: (v) => setState(() => _isFull = v),
                     ),
                   ],

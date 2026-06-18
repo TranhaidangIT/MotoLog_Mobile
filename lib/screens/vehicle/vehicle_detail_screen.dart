@@ -18,12 +18,13 @@ class VehicleDetailScreen extends ConsumerWidget {
     final vehicleAsync = ref.watch(vehicleNotifierProvider);
 
     return vehicleAsync.when(
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(body: Center(child: Text('Lỗi: $e'))),
       data: (vehicles) {
         final vehicle = vehicles.where((v) => v.id == vehicleId).firstOrNull;
         if (vehicle == null) {
-          return Scaffold(
+          return const Scaffold(
             body: Center(child: Text('Không tìm thấy xe')),
           );
         }
@@ -81,7 +82,8 @@ class _VehicleDetailViewState extends ConsumerState<_VehicleDetailView>
             stretch: true,
             backgroundColor: _vehicleColor,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+              icon:
+                  const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
               onPressed: () => context.pop(),
             ),
             actions: [
@@ -97,7 +99,8 @@ class _VehicleDetailViewState extends ConsumerState<_VehicleDetailView>
                       context: context,
                       builder: (ctx) => AlertDialog(
                         title: const Text('Xóa xe'),
-                        content: Text('Bạn có chắc muốn xóa "${v.name}"?\nTất cả dữ liệu liên quan sẽ bị xóa.'),
+                        content: Text(
+                            'Bạn có chắc muốn xóa "${v.name}"?\nTất cả dữ liệu liên quan sẽ bị xóa.'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(ctx, false),
@@ -105,13 +108,16 @@ class _VehicleDetailViewState extends ConsumerState<_VehicleDetailView>
                           ),
                           TextButton(
                             onPressed: () => Navigator.pop(ctx, true),
-                            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+                            child: const Text('Xóa',
+                                style: TextStyle(color: Colors.red)),
                           ),
                         ],
                       ),
                     );
                     if (confirm == true && context.mounted) {
-                      await ref.read(vehicleNotifierProvider.notifier).delete(v.id);
+                      await ref
+                          .read(vehicleNotifierProvider.notifier)
+                          .delete(v.id);
                       if (context.mounted) context.pop();
                     }
                   }
@@ -126,7 +132,10 @@ class _VehicleDetailViewState extends ConsumerState<_VehicleDetailView>
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [_vehicleColor, _vehicleColor.withOpacity(0.7)],
+                    colors: [
+                      _vehicleColor,
+                      _vehicleColor.withValues(alpha: 0.7)
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -139,7 +148,7 @@ class _VehicleDetailViewState extends ConsumerState<_VehicleDetailView>
                       child: Icon(
                         Icons.two_wheeler_rounded,
                         size: 140,
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withValues(alpha: 0.15),
                       ),
                     ),
                     Padding(
@@ -161,20 +170,24 @@ class _VehicleDetailViewState extends ConsumerState<_VehicleDetailView>
                             '${v.brand} ${v.model} · ${v.year}',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.white.withOpacity(0.85),
+                              color: Colors.white.withValues(alpha: 0.85),
                             ),
                           ),
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              _InfoChip(label: v.plateNumber, icon: Icons.badge_outlined),
+                              _InfoChip(
+                                  label: v.plateNumber,
+                                  icon: Icons.badge_outlined),
                               const SizedBox(width: 8),
                               _InfoChip(
                                 label: AppFormatters.km(v.odometer),
                                 icon: Icons.speed_rounded,
                               ),
                               const SizedBox(width: 8),
-                              _InfoChip(label: v.fuelType, icon: Icons.local_gas_station_outlined),
+                              _InfoChip(
+                                  label: v.fuelType,
+                                  icon: Icons.local_gas_station_outlined),
                             ],
                           ),
                         ],
@@ -242,7 +255,7 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -252,7 +265,8 @@ class _InfoChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             label,
-            style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+                fontSize: 12, color: Colors.white, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -261,9 +275,8 @@ class _InfoChip extends StatelessWidget {
 }
 
 class _FuelTile extends StatelessWidget {
-  final fuel;
-  const _FuelTile({required this.entry}) : fuel = entry;
   final dynamic entry;
+  const _FuelTile({required this.entry});
 
   @override
   Widget build(BuildContext context) {
@@ -273,11 +286,11 @@ class _FuelTile extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.fuelGasoline.withOpacity(0.12),
+            color: AppColors.accentYellow.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Icon(Icons.local_gas_station_rounded,
-              color: AppColors.fuelGasoline, size: 20),
+              color: AppColors.accentYellow, size: 20),
         ),
         title: Text(AppFormatters.currency(entry.totalCost)),
         subtitle: Text(
@@ -292,7 +305,7 @@ class _FuelTile extends StatelessWidget {
 }
 
 class _MaintTile extends StatelessWidget {
-  final entry;
+  final dynamic entry;
   const _MaintTile({required this.entry});
 
   @override
@@ -303,10 +316,11 @@ class _MaintTile extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.secondary.withOpacity(0.12),
+            color: AppColors.accentPurple.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Icon(Icons.build_rounded, color: AppColors.secondary, size: 20),
+          child: const Icon(Icons.build_rounded,
+              color: AppColors.accentPurple, size: 20),
         ),
         title: Text(entry.title),
         subtitle: Text(AppFormatters.date(entry.date)),

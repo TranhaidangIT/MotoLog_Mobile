@@ -1,7 +1,6 @@
 {
   "project_info": {
     "project_number": "430239783730",
-    "firebase_url": "https://motolog-23f9f-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "motolog-23f9f",
     "storage_bucket": "motolog-23f9f.firebasestorage.app"
   },
@@ -15,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "430239783730-78bl92ripbp321uaqbldvtd64s48n45a.apps.googleusercontent.com",
+          "client_id": "430239783730-5ngmutkhmm82ov0v9u77b0log40n4svo.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.motolog_mobile",
-            "certificate_hash": "f2e3854956fef18a9df2c5b049f2947a532bc8fd"
+            "certificate_hash": "36d9db1745f799efc146cda5612253104f3ce11b"
           }
         },
         {

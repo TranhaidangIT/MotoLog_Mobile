@@ -123,7 +123,8 @@ class AppValidators {
   }
 
   /// Combine validators
-  static String? Function(String?) combine(List<String? Function(String?)> validators) {
+  static String? Function(String?) combine(
+      List<String? Function(String?)> validators) {
     return (String? value) {
       for (final validator in validators) {
         final result = validator(value);

@@ -3,8 +3,8 @@ import 'package:uuid/uuid.dart';
 /// Loại bảo dưỡng
 enum MaintenanceType {
   routine, // Bảo dưỡng định kỳ
-  repair,  // Sửa chữa
-  parts,   // Thay phụ tùng
+  repair, // Sửa chữa
+  parts, // Thay phụ tùng
 }
 
 extension MaintenanceTypeExt on MaintenanceType {
