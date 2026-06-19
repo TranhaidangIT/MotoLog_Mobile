@@ -1,10 +1,16 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/router/app_router.dart';
+import '../../data/local/database_helper.dart';
+import '../../data/services/firestore_service.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/settings_provider.dart';
+import '../../providers/vehicle_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -14,6 +20,8 @@ class ProfileScreen extends ConsumerWidget {
     final currentUser = ref.watch(currentUserProvider);
     final displayName = currentUser?.displayName ?? 'Người dùng';
     final email = currentUser?.email ?? '';
+    final selectedUnits = ref.watch(unitsProvider);
+    final selectedLanguage = ref.watch(languageProvider);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
@@ -157,13 +165,47 @@ class ProfileScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      onTap: () {
+                      onTap: () async {
+                        final firestoreService = ref.read(firestoreServiceProvider);
+                        if (firestoreService == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Vui lòng đăng nhập để đồng bộ dữ liệu.'),
+                            ),
+                          );
+                          return;
+                        }
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Đang tiến hành đồng bộ dữ liệu...'),
+                            content: Text('Đang tiến hành đồng bộ dữ liệu từ đám mây...'),
                             duration: Duration(seconds: 1),
                           ),
                         );
+
+                        try {
+                          await firestoreService.syncCloudToLocal();
+                          ref.invalidate(vehicleNotifierProvider);
+                          ref.invalidate(selectedVehicleIdProvider);
+                          
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Đồng bộ dữ liệu thành công!'),
+                                backgroundColor: AppColors.success,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Lỗi đồng bộ: $e'),
+                                backgroundColor: AppColors.error,
+                              ),
+                            );
+                          }
+                        }
                       },
                     ),
                     const Divider(height: 1, color: AppColors.borderLight),
@@ -176,12 +218,86 @@ class ProfileScreen extends ConsumerWidget {
                         color: AppColors.textHintLight,
                         size: 20,
                       ),
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Xuất dữ liệu thành công!'),
-                          ),
-                        );
+                      onTap: () async {
+                        try {
+                          final db = await DatabaseHelper.instance.database;
+                          final user = ref.read(authStateStreamProvider).valueOrNull;
+                          final userId = user?.uid;
+
+                          // Query only current user's vehicles to preserve privacy
+                          final vehicles = await db.query(
+                            'vehicles',
+                            where: userId != null ? 'user_id = ?' : null,
+                            whereArgs: userId != null ? [userId] : null,
+                          );
+
+                          final vehicleIds = vehicles.map((v) => v['id'] as String).toList();
+
+                          List<Map<String, dynamic>> fuelEntries = [];
+                          List<Map<String, dynamic>> maintenanceEntries = [];
+
+                          if (vehicleIds.isNotEmpty) {
+                            final placeholders = List.filled(vehicleIds.length, '?').join(',');
+                            fuelEntries = await db.query(
+                              'fuel_entries',
+                              where: 'vehicle_id IN ($placeholders)',
+                              whereArgs: vehicleIds,
+                            );
+                            maintenanceEntries = await db.query(
+                              'maintenance_entries',
+                              where: 'vehicle_id IN ($placeholders)',
+                              whereArgs: vehicleIds,
+                            );
+                          }
+
+                          final exportData = {
+                            'exported_at': DateTime.now().toIso8601String(),
+                            'user_email': user?.email,
+                            'vehicles': vehicles,
+                            'fuel_entries': fuelEntries,
+                            'maintenance_entries': maintenanceEntries,
+                          };
+
+                          final jsonString = const JsonEncoder.withIndent('  ').convert(exportData);
+                          await Clipboard.setData(ClipboardData(text: jsonString));
+
+                          if (context.mounted) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                title: Text(
+                                  'Xuất dữ liệu thành công',
+                                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+                                ),
+                                content: Text(
+                                  'Toàn bộ dữ liệu (xe, nhiên liệu, bảo dưỡng) đã được sao chép vào bộ nhớ tạm (Clipboard) dưới dạng JSON. Bạn có thể dán vào ứng dụng ghi chú hoặc gửi qua email để sao lưu.',
+                                  style: GoogleFonts.outfit(),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: Text(
+                                      'Đóng',
+                                      style: GoogleFonts.outfit(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Lỗi xuất dữ liệu: $e')),
+                            );
+                          }
+                        }
                       },
                     ),
                     const Divider(height: 1, color: AppColors.borderLight),
@@ -193,7 +309,7 @@ class ProfileScreen extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Lít (L) / VNĐ',
+                            selectedUnits.label,
                             style: GoogleFonts.outfit(
                               fontSize: 13,
                               color: AppColors.textSecondaryLight,
@@ -208,7 +324,59 @@ class ProfileScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
+                          builder: (context) => SafeArea(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(height: 12),
+                                Container(
+                                  width: 40,
+                                  height: 4,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Chọn đơn vị đo lường',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                ...UnitsOption.values.map(
+                                  (opt) => ListTile(
+                                    title: Text(
+                                      opt.label,
+                                      style: GoogleFonts.outfit(
+                                        fontWeight: selectedUnits == opt
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                    trailing: selectedUnits == opt
+                                        ? const Icon(Icons.check_circle_rounded, color: AppColors.primary)
+                                        : null,
+                                    onTap: () {
+                                      ref.read(unitsProvider.notifier).setUnits(opt);
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     const Divider(height: 1, color: AppColors.borderLight),
                     // Ngôn ngữ
@@ -219,7 +387,7 @@ class ProfileScreen extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Tiếng Việt',
+                            selectedLanguage.label,
                             style: GoogleFonts.outfit(
                               fontSize: 13,
                               color: AppColors.textSecondaryLight,
@@ -234,7 +402,59 @@ class ProfileScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
+                          builder: (context) => SafeArea(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(height: 12),
+                                Container(
+                                  width: 40,
+                                  height: 4,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Chọn ngôn ngữ',
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                ...LanguageOption.values.map(
+                                  (opt) => ListTile(
+                                    title: Text(
+                                      opt.label,
+                                      style: GoogleFonts.outfit(
+                                        fontWeight: selectedLanguage == opt
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                    trailing: selectedLanguage == opt
+                                        ? const Icon(Icons.check_circle_rounded, color: AppColors.primary)
+                                        : null,
+                                    onTap: () {
+                                      ref.read(languageProvider.notifier).setLanguage(opt);
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

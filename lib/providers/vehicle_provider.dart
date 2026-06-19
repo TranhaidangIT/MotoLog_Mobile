@@ -38,7 +38,9 @@ class SelectedVehicleIdNotifier extends StateNotifier<String?> {
 
 /// Provider lấy danh sách tất cả xe từ DB
 final vehicleListProvider = FutureProvider<List<Vehicle>>((ref) async {
-  return VehicleDao.instance.getAll();
+  final user = ref.watch(authStateStreamProvider).valueOrNull;
+  if (user == null) return [];
+  return VehicleDao.instance.getAll(userId: user.uid);
 });
 
 /// Provider lấy xe đang được chọn
@@ -58,40 +60,46 @@ final vehicleNotifierProvider =
 class VehicleNotifier extends AsyncNotifier<List<Vehicle>> {
   @override
   Future<List<Vehicle>> build() async {
-    return VehicleDao.instance.getAll();
+    final user = ref.watch(authStateStreamProvider).valueOrNull;
+    if (user == null) return [];
+    return VehicleDao.instance.getAll(userId: user.uid);
   }
 
   /// Thêm xe mới
   Future<void> add(Vehicle vehicle) async {
-    await VehicleDao.instance.insert(vehicle);
+    final user = ref.read(authStateStreamProvider).valueOrNull;
+    final vehicleWithUser = vehicle.copyWith(userId: user?.uid);
+    await VehicleDao.instance.insert(vehicleWithUser);
 
     // Sync to Firestore
     final firestoreService = ref.read(firestoreServiceProvider);
     if (firestoreService != null) {
       try {
-        await firestoreService.saveVehicle(vehicle);
+        await firestoreService.saveVehicle(vehicleWithUser);
       } catch (e) {
         print('Firestore sync add vehicle error: $e');
       }
     }
 
     // Tự động chọn xe đầu tiên
-    final vehicles = await VehicleDao.instance.getAll();
+    final vehicles = await VehicleDao.instance.getAll(userId: user?.uid);
     if (vehicles.length == 1) {
-      ref.read(selectedVehicleIdProvider.notifier).select(vehicle.id);
+      ref.read(selectedVehicleIdProvider.notifier).select(vehicleWithUser.id);
     }
     ref.invalidateSelf();
   }
 
   /// Cập nhật xe
   Future<void> updateEntry(Vehicle vehicle) async {
-    await VehicleDao.instance.update(vehicle);
+    final user = ref.read(authStateStreamProvider).valueOrNull;
+    final vehicleWithUser = vehicle.copyWith(userId: user?.uid);
+    await VehicleDao.instance.update(vehicleWithUser);
 
     // Sync to Firestore
     final firestoreService = ref.read(firestoreServiceProvider);
     if (firestoreService != null) {
       try {
-        await firestoreService.saveVehicle(vehicle);
+        await firestoreService.saveVehicle(vehicleWithUser);
       } catch (e) {
         print('Firestore sync update vehicle error: $e');
       }

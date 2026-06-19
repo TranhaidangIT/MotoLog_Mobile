@@ -80,5 +80,11 @@
 		</array>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSCameraUsageDescription</key>
+		<string>Ứng dụng cần truy cập máy ảnh để chụp ảnh xe của bạn.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Ứng dụng cần truy cập thư viện ảnh để chọn ảnh xe từ thiết bị.</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Ứng dụng cần truy cập micrô nếu bạn quay video.</string>
 	</dict>
 </plist>

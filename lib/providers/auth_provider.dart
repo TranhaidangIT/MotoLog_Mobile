@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../data/local/database_helper.dart';
 import '../data/services/firestore_service.dart';
+import '../firebase_options.dart';
 import 'vehicle_provider.dart';
 
 // ─── Firebase Auth instance ───────────────────────────────────────────────────
@@ -77,7 +80,12 @@ class AuthNotifier extends AsyncNotifier<void> {
   Future<void> signInWithGoogle() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final googleUser = await GoogleSignIn().signIn();
+      final googleSignIn = GoogleSignIn(
+        clientId: defaultTargetPlatform == TargetPlatform.iOS
+            ? DefaultFirebaseOptions.ios.iosClientId
+            : null,
+      );
+      final googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         throw Exception('Đăng nhập Google bị huỷ');
       }
@@ -117,8 +125,21 @@ class AuthNotifier extends AsyncNotifier<void> {
   Future<void> signOut() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      await GoogleSignIn().signOut();
+      final googleSignIn = GoogleSignIn(
+        clientId: defaultTargetPlatform == TargetPlatform.iOS
+            ? DefaultFirebaseOptions.ios.iosClientId
+            : null,
+      );
+      await googleSignIn.signOut();
       await _auth.signOut();
+      
+      // Clear local database cache & selected vehicle ID on sign out
+      await ref.read(selectedVehicleIdProvider.notifier).select(null);
+      await DatabaseHelper.instance.clearAll();
+      
+      // Invalidate providers to force UI reload with clean state
+      ref.invalidate(selectedVehicleIdProvider);
+      ref.invalidate(vehicleNotifierProvider);
     });
   }
 }
