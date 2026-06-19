@@ -91,3 +91,83 @@ Sau khi GitHub Actions báo biên dịch thành công (hiển thị tích xanh l
    - Dưới mục *Ứng dụng nhà phát triển (Developer App)*, bấm vào địa chỉ Email Apple ID của bạn.
    - Bấm chọn **"Tin cậy [Email của bạn]"** (Trust) và xác nhận.
    - Quay lại màn hình chính và mở ứng dụng **MotoLog** lên sử dụng bình thường!
+
+---
+
+## 5. Hướng Dẫn Truy Vấn & Kiểm Tra Dữ Liệu Trên Firebase (Cloud Firestore)
+
+Để kiểm tra xem dữ liệu từ thiết bị của bạn đã được đồng bộ lên Cloud Firestore đúng cấu trúc phân tách theo tài khoản (UID) hay chưa, bạn có thể thực hiện theo các cách sau:
+
+### Cách 1: Sử dụng Giao diện Web (Firebase Console)
+Đây là cách trực quan nhất để quản lý và kiểm tra dữ liệu:
+1. Truy cập **[Firebase Console](https://console.firebase.google.com/)**.
+2. Chọn dự án **`motolog-23f9f`**.
+3. Tại menu bên trái, chọn **Build** $\rightarrow$ **Firestore Database**.
+4. Bạn sẽ thấy cây dữ liệu dạng:
+   - **Collection `users`**: Chứa danh sách các User Documents. Mỗi document được định danh bằng **Firebase UID** duy nhất (ví dụ: `d8K1JgslS...`).
+   - Bên trong mỗi Document của User sẽ có:
+     - Document chứa profile: `display_name`, `email`, `photo_url`.
+     - **Sub-collection `vehicles`**: Chứa thông tin các xe của riêng tài khoản đó.
+     - **Sub-collection `fuel_entries`**: Chứa các lần đổ xăng.
+     - **Sub-collection `maintenance_entries`**: Chứa lịch sử bảo dưỡng.
+
+---
+
+### Cách 2: Sử dụng Firebase CLI (Lệnh Truy Vấn Trên Windows Terminal)
+Bạn có thể cài đặt công cụ **Firebase CLI** để truy vấn trực tiếp từ PowerShell hoặc Command Prompt của Windows.
+
+#### Điều kiện cần:
+Cài đặt Firebase CLI qua Node.js (npm):
+```bash
+npm install -g firebase-tools
+```
+Đăng nhập vào tài khoản Firebase của bạn:
+```bash
+firebase login
+```
+
+#### Các lệnh kiểm tra dữ liệu:
+
+1. **Lấy danh sách các tài khoản người dùng đã đồng bộ:**
+   ```bash
+   # Lấy danh sách tài liệu từ collection 'users' để xem các UID hiện có
+   firebase firestore:get /users --project motolog-23f9f
+   ```
+
+2. **Kiểm tra thông tin chi tiết của một tài khoản cụ thể (theo UID):**
+   Thay thế `UID_CỦA_USER` bằng mã UID thực tế bạn muốn kiểm tra:
+   ```bash
+   firebase firestore:get /users/UID_CỦA_USER --project motolog-23f9f
+   ```
+
+3. **Xem danh sách xe của một tài khoản cụ thể:**
+   ```bash
+   firebase firestore:get /users/UID_CỦA_USER/vehicles --project motolog-23f9f
+   ```
+
+4. **Xem danh sách nhật ký đổ xăng của một tài khoản:**
+   ```bash
+   firebase firestore:get /users/UID_CỦA_USER/fuel_entries --project motolog-23f9f
+   ```
+
+---
+
+### Cách 3: Sử dụng Google Cloud CLI (gcloud)
+Nếu bạn đã liên kết dự án với Google Cloud SDK, bạn có thể dùng công cụ `gcloud` để liệt kê dữ liệu:
+
+1. **Đăng nhập Google Cloud:**
+   ```bash
+   gcloud auth login
+   ```
+2. **Thiết lập dự án hiện tại:**
+   ```bash
+   gcloud config set project motolog-23f9f
+   ```
+3. **Liệt kê danh sách các Document trong collection `users`:**
+   ```bash
+   gcloud firestore documents list --collection=users
+   ```
+4. **Liệt kê danh sách xe của một User (ví dụ UID là `UID_CỦA_USER`):**
+   ```bash
+   gcloud firestore documents list --collection=users/UID_CỦA_USER/vehicles
+   ```
