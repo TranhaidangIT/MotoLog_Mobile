@@ -106,4 +106,13 @@ class AppFormatters {
     if (distanceKm <= 0) return null;
     return (liters / distanceKm) * 100;
   }
+
+  /// Calculate growth percentage between current and previous periods
+  static double calcGrowthPercentage(double current, double previous) {
+    if (previous <= 0) {
+      if (current > 0) return 100.0;
+      return 0.0;
+    }
+    return ((current - previous) / previous) * 100;
+  }
 }

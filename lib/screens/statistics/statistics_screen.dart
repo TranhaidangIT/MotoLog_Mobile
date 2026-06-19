@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/utils/stats_calculator.dart';
 import '../../providers/fuel_provider.dart';
 import '../../providers/maintenance_provider.dart';
 import '../../providers/vehicle_provider.dart';
@@ -60,45 +61,31 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
         : null;
 
     double grandTotal = 0;
+    double previousTotal = 0;
+
     if (fuelDataAsync != null && maintDataAsync != null) {
+      final now = DateTime.now();
+      final chartMonths = StatsCalculator.generateMonths(now, _selectedFilter.months);
+      final previousMonths = StatsCalculator.generateMonths(now, _selectedFilter.months, offset: _selectedFilter.months);
+
       fuelDataAsync.maybeWhen(
         data: (fuelList) {
-          final now = DateTime.now();
-          final chartMonths = <String>[];
-          for (int i = _selectedFilter.months - 1; i >= 0; i--) {
-            final d = DateTime(now.year, now.month - i, 1);
-            chartMonths.add('${d.year}-${d.month.toString().padLeft(2, '0')}');
-          }
-          final fuelMap = {
-            for (final d in fuelList)
-              d['month'] as String: (d['cost'] as num).toDouble()
-          };
-          for (final m in chartMonths) {
-            grandTotal += fuelMap[m] ?? 0;
-          }
+          grandTotal += StatsCalculator.calculateTotal(fuelList, chartMonths);
+          previousTotal += StatsCalculator.calculateTotal(fuelList, previousMonths);
         },
         orElse: () {},
       );
 
       maintDataAsync.maybeWhen(
         data: (maintList) {
-          final now = DateTime.now();
-          final chartMonths = <String>[];
-          for (int i = _selectedFilter.months - 1; i >= 0; i--) {
-            final d = DateTime(now.year, now.month - i, 1);
-            chartMonths.add('${d.year}-${d.month.toString().padLeft(2, '0')}');
-          }
-          final maintMap = {
-            for (final d in maintList)
-              d['month'] as String: (d['cost'] as num).toDouble()
-          };
-          for (final m in chartMonths) {
-            grandTotal += maintMap[m] ?? 0;
-          }
+          grandTotal += StatsCalculator.calculateTotal(maintList, chartMonths);
+          previousTotal += StatsCalculator.calculateTotal(maintList, previousMonths);
         },
         orElse: () {},
       );
     }
+
+    final percentage = AppFormatters.calcGrowthPercentage(grandTotal, previousTotal);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
@@ -202,6 +189,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     // ─── GRAND TOTAL DISPLAY ───
                     _GrandTotalDisplay(
                       amount: grandTotal,
+                      percentage: percentage,
                       filter: _selectedFilter,
                     ),
                     const SizedBox(height: 20),
@@ -240,9 +228,14 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
 // ── Grand Total Display ──
 class _GrandTotalDisplay extends StatelessWidget {
   final double amount;
+  final double percentage;
   final _TimeFilter filter;
 
-  const _GrandTotalDisplay({required this.amount, required this.filter});
+  const _GrandTotalDisplay({
+    required this.amount,
+    required this.percentage,
+    required this.filter,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -261,6 +254,17 @@ class _GrandTotalDisplay extends StatelessWidget {
         periodText = 'năm trước';
         break;
     }
+
+    final isIncrease = percentage > 0;
+    final isDecrease = percentage < 0;
+    final percentSign = isIncrease ? '+' : '';
+    final percentText = '$percentSign${percentage.toStringAsFixed(0)}%';
+
+    final badgeColor = isIncrease
+        ? AppColors.primary
+        : isDecrease
+            ? Colors.green
+            : AppColors.textSecondaryLight;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -290,24 +294,24 @@ class _GrandTotalDisplay extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.12),
+                color: badgeColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.trending_up_rounded,
-                    color: AppColors.primary,
+                  Icon(
+                    isDecrease ? Icons.trending_down_rounded : Icons.trending_up_rounded,
+                    color: badgeColor,
                     size: 12,
                   ),
                   const SizedBox(width: 2),
                   Text(
-                    '+8%',
+                    percentText,
                     style: GoogleFonts.outfit(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.primary,
+                      color: badgeColor,
                     ),
                   ),
                 ],

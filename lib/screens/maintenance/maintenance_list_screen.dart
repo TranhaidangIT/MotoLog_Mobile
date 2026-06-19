@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/utils/reminder_calculator.dart';
 import '../../data/models/maintenance_entry.dart';
 import '../../providers/maintenance_provider.dart';
 import '../../providers/vehicle_provider.dart';
@@ -85,50 +86,20 @@ class MaintenanceListScreen extends ConsumerWidget {
                 }
 
                 // Calculate oil and clutch warning stats
-                final oilMaint = list
-                    .where((e) =>
-                        e.title.toLowerCase().contains('nhớt') ||
-                        e.title.toLowerCase().contains('oil'))
-                    .firstOrNull;
-                double oilRemaining = 200;
-                double oilTargetKm = (selectedVehicle?.odometer ?? 12344) + 200;
-                if (oilMaint != null && oilMaint.nextDueKm != null) {
-                  final diff =
-                      oilMaint.nextDueKm! - (selectedVehicle?.odometer ?? 0);
-                  if (diff > 0) {
-                    oilRemaining = diff;
-                    oilTargetKm = oilMaint.nextDueKm!;
-                  }
-                } else if (selectedVehicle != null) {
-                  final odo = selectedVehicle.odometer;
-                  final nextMilestone =
-                      (((odo / 2000).floor() + 1) * 2000).toDouble();
-                  oilRemaining = nextMilestone - odo;
-                  oilTargetKm = nextMilestone;
-                }
+                final odo = selectedVehicle?.odometer ?? 0.0;
+                final oilStats = ReminderCalculator.calculateOilReminder(
+                  maintenanceList: list,
+                  currentOdometer: odo,
+                );
+                final oilRemaining = oilStats.remainingKm;
+                final oilTargetKm = oilStats.targetKm;
 
-                final clutchMaint = list
-                    .where((e) =>
-                        e.title.toLowerCase().contains('nồi') ||
-                        e.title.toLowerCase().contains('clutch'))
-                    .firstOrNull;
-                double clutchRemaining = 1000;
-                double clutchTargetKm =
-                    (selectedVehicle?.odometer ?? 12344) + 1000;
-                if (clutchMaint != null && clutchMaint.nextDueKm != null) {
-                  final diff =
-                      clutchMaint.nextDueKm! - (selectedVehicle?.odometer ?? 0);
-                  if (diff > 0) {
-                    clutchRemaining = diff;
-                    clutchTargetKm = clutchMaint.nextDueKm!;
-                  }
-                } else if (selectedVehicle != null) {
-                  final odo = selectedVehicle.odometer;
-                  final nextMilestone =
-                      (((odo / 5000).floor() + 1) * 5000).toDouble();
-                  clutchRemaining = nextMilestone - odo;
-                  clutchTargetKm = nextMilestone;
-                }
+                final clutchStats = ReminderCalculator.calculateClutchReminder(
+                  maintenanceList: list,
+                  currentOdometer: odo,
+                );
+                final clutchRemaining = clutchStats.remainingKm;
+                final clutchTargetKm = clutchStats.targetKm;
 
                 return SliverList(
                   delegate: SliverChildListDelegate([

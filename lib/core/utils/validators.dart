@@ -116,8 +116,10 @@ class AppValidators {
     if (value == null || value.trim().isEmpty) {
       return 'Biển số xe không được để trống';
     }
-    if (value.trim().length < 5) {
-      return 'Biển số xe không hợp lệ';
+    final cleanValue = value.trim().toUpperCase();
+    final regex = RegExp(r'^\d{2}-?[A-Z]{1,2}\d?[\s-]?\d{3,5}(?:\.\d{2})?$');
+    if (!regex.hasMatch(cleanValue)) {
+      return 'Biển số xe không đúng định dạng VN';
     }
     return null;
   }
