@@ -70,6 +70,7 @@ flutter:
     - img/backroud/
     - img/xe-2-banh/
     - img/xe-4-banh/
+    - img/phu-tung/
     - assets/images/
 
 flutter_launcher_icons:
