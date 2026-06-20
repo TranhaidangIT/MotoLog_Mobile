@@ -31,8 +31,8 @@ void main() {
 
     // LOG-002: Tính tỷ lệ tăng trưởng phần trăm (%) - Tăng chi phí
     test('LOG-002: Tính phần trăm tăng trưởng (+20%)', () {
-      final currentMonthCost = 600000.0;
-      final previousMonthCost = 500000.0;
+      const currentMonthCost = 600000.0;
+      const previousMonthCost = 500000.0;
       
       final growth = AppFormatters.calcGrowthPercentage(currentMonthCost, previousMonthCost);
       expect(growth, equals(20.0));
@@ -40,8 +40,8 @@ void main() {
 
     // LOG-003: Tính tỷ lệ giảm chi tiêu (%) - Tiết kiệm
     test('LOG-003: Tính phần trăm giảm chi tiêu (-50%)', () {
-      final currentMonthCost = 500000.0;
-      final previousMonthCost = 1000000.0;
+      const currentMonthCost = 500000.0;
+      const previousMonthCost = 1000000.0;
       
       final savings = AppFormatters.calcGrowthPercentage(currentMonthCost, previousMonthCost);
       expect(savings, equals(-50.0));

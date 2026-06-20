@@ -201,7 +201,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.borderLight),
           ),
@@ -307,7 +307,7 @@ class _ScheduleCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.borderLight),
         boxShadow: [

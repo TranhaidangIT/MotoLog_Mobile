@@ -141,7 +141,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 24),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(32),
                         boxShadow: [
                           BoxShadow(

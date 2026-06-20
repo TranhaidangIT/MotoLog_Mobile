@@ -126,34 +126,34 @@ D:\MotoLog_Mobile\
 
 | Màn hình | File | Trạng thái |
 |---|---|---|
-| Onboarding | `screens/onboarding/onboarding_screen.dart` | ✅ Đã khớp spec (illustration nền + card trắng bo góc 32) |
-| Login | `screens/auth/login_screen.dart` | ✅ Đã khớp spec (logo + form + Google + Facebook) |
+| Onboarding | `screens/onboarding/onboarding_screen.dart` | ✅ Đúng spec |
+| Login | `screens/auth/login_screen.dart` | ✅ Đúng spec |
 | Register | `screens/auth/register_screen.dart` | ✅ Giữ nguyên |
-| Dashboard | `screens/dashboard/dashboard_screen.dart` | 🔄 Cần review / tinh chỉnh Hero Card xanh lá |
-| Garage | `screens/garage/garage_screen.dart` | 🔄 Cần review |
-| Fuel Log | `screens/fuel/fuel_list_screen.dart` | 🔄 Cần review (Banner xanh + danh sách) |
-| Add Fuel | `screens/fuel/add_edit_fuel_screen.dart` | 🔄 Cần review |
-| Bảo dưỡng | `screens/maintenance/maintenance_list_screen.dart` | ✅ **REDESIGNED** — 10 hạng mục + ảnh phụ tùng + tabs + progress bar |
-| Add Maintenance | `screens/maintenance/add_edit_maintenance_screen.dart` | 🔄 Cần review |
-| Analytics | `screens/statistics/statistics_screen.dart` | 🔄 Cần review (Tabs 1M/3M/6M/1Y + biểu đồ cột) |
-| Profile | `screens/profile/profile_screen.dart` | 🔄 Cần review |
-| Bottom Nav | `screens/main/main_shell.dart` | 🔄 Cần review (5 tab, nút Add nổi giữa) |
-| Add Vehicle | `screens/vehicle/add_edit_vehicle_screen.dart` | 🔄 Cần review |
+| Dashboard | `screens/dashboard/dashboard_screen.dart` | ✅ **DONE** — Đã thêm 6 Quick Action buttons |
+| Garage | `screens/garage/garage_screen.dart` | ✅ Đúng spec (card list + FAB thêm xe) |
+| Fuel Log | `screens/fuel/fuel_list_screen.dart` | ✅ Đúng spec (Banner xanh + grouped list) |
+| Add Fuel | `screens/fuel/add_edit_fuel_screen.dart` | ✅ Giữ nguyên (form đầy đủ) |
+| Bảo dưỡng | `screens/maintenance/maintenance_list_screen.dart` | ✅ **DONE** — 10 hạng mục + ảnh + tabs + progress bar |
+| Add Maintenance | `screens/maintenance/add_edit_maintenance_screen.dart` | ✅ Giữ nguyên (form đầy đủ) |
+| Analytics | `screens/statistics/statistics_screen.dart` | ✅ Đúng spec (Tabs 1M/3M/6M/1Y + biểu đồ cột 2 màu) |
+| Profile | `screens/profile/profile_screen.dart` | ✅ Đúng spec (Avatar + settings list) |
+| Bottom Nav | `screens/main/main_shell.dart` | ✅ Đúng spec (4 tab + FAB nổi giữa) |
+| Add Vehicle | `screens/vehicle/add_edit_vehicle_screen.dart` | ✅ Giữ nguyên (form đầy đủ) |
 
 ---
 
 ## Thứ tự triển khai (tuần tự)
 
-1. ✅ `maintenance_list_screen.dart` — Done
-2. ⏳ `dashboard_screen.dart` — Hero Card xanh lá, Quick Stats 2 cột, Recent Activities
-3. ⏳ `main_shell.dart` — Bottom Nav 5 tab, nút Add nổi giữa màu xanh
-4. ⏳ `fuel_list_screen.dart` — Banner xanh + danh sách
-5. ⏳ `statistics_screen.dart` — Tabs + biểu đồ cột
-6. ⏳ `profile_screen.dart` — Avatar, settings list
-7. ⏳ `garage_screen.dart` — Danh sách xe dạng card
-8. ⏳ `add_edit_fuel_screen.dart` — Form thêm xăng
-9. ⏳ `add_edit_maintenance_screen.dart` — Form thêm bảo dưỡng
-10. ⏳ `add_edit_vehicle_screen.dart` — Form thêm xe
+1. ✅ `maintenance_list_screen.dart` — Done (10 hạng mục + ảnh + progress bar)
+2. ✅ `dashboard_screen.dart` — Done (Hero Card xanh lá, 6 Quick Actions, thống kê tháng này, hoạt động gần đây)
+3. ✅ `main_shell.dart` — Done (Bottom Nav 4 tab + FAB nổi giữa màu xanh)
+4. ✅ `fuel_list_screen.dart` — Done (Banner xanh + grouped list)
+5. ✅ `statistics_screen.dart` — Done (Time filter chips + biểu đồ cột kép + period summary)
+6. ✅ `profile_screen.dart` — Done (Avatar + settings list + đồng bộ/xuất dữ liệu)
+7. ✅ `garage_screen.dart` — Done (Danh sách xe dạng card + FAB thêm xe)
+8. ✅ `add_edit_fuel_screen.dart` — Done (Giữ nguyên form đầy đủ)
+9. ✅ `add_edit_maintenance_screen.dart` — Done (Giữ nguyên form đầy đủ)
+10. ✅ `add_edit_vehicle_screen.dart` — Done (Giữ nguyên form đầy đủ)
 
 ---
 

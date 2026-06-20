@@ -65,7 +65,7 @@ class ProfileScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: Colors.white,
+                        color: AppColors.surface,
                         width: 2,
                       ),
                       boxShadow: [
@@ -129,7 +129,7 @@ class ProfileScreen extends ConsumerWidget {
               // ─── SETTINGS CONTAINER ───
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.borderLight),
                   boxShadow: [
@@ -476,7 +476,7 @@ class ProfileScreen extends ConsumerWidget {
                       color: AppColors.error,
                       width: 1.5,
                     ),
-                    backgroundColor: Colors.white,
+                    backgroundColor: AppColors.background,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

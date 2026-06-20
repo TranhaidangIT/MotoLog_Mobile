@@ -12,6 +12,10 @@ class Vehicle {
   final String fuelType;
   final String? imageUrl;
   final String color;
+  final String? engineCapacity;
+  final DateTime? inspectionDate;
+  final DateTime? insuranceDate;
+  final bool? isRegistered;
   final String? userId;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -27,6 +31,10 @@ class Vehicle {
     required this.fuelType,
     this.imageUrl,
     this.color = '#FF6B00',
+    this.engineCapacity,
+    this.inspectionDate,
+    this.insuranceDate,
+    this.isRegistered,
     this.userId,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -47,6 +55,10 @@ class Vehicle {
       fuelType: map['fuel_type'] as String,
       imageUrl: map['image_url'] as String?,
       color: map['color'] as String? ?? '#FF6B00',
+      engineCapacity: map['engine_capacity'] as String?,
+      inspectionDate: map['inspection_date'] != null ? DateTime.parse(map['inspection_date'] as String) : null,
+      insuranceDate: map['insurance_date'] != null ? DateTime.parse(map['insurance_date'] as String) : null,
+      isRegistered: map['is_registered'] != null ? (map['is_registered'] as int) == 1 : null,
       userId: map['user_id'] as String?,
       createdAt: DateTime.parse(map['created_at'] as String),
       updatedAt: DateTime.parse(map['updated_at'] as String),
@@ -66,6 +78,10 @@ class Vehicle {
       'fuel_type': fuelType,
       'image_url': imageUrl,
       'color': color,
+      'engine_capacity': engineCapacity,
+      'inspection_date': inspectionDate?.toIso8601String(),
+      'insurance_date': insuranceDate?.toIso8601String(),
+      'is_registered': isRegistered != null ? (isRegistered! ? 1 : 0) : null,
       'user_id': userId,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
@@ -85,6 +101,10 @@ class Vehicle {
       'fuel_type': fuelType,
       'image_url': imageUrl,
       'color': color,
+      'engine_capacity': engineCapacity,
+      'inspection_date': inspectionDate?.toIso8601String(),
+      'insurance_date': insuranceDate?.toIso8601String(),
+      'is_registered': isRegistered != null ? (isRegistered! ? 1 : 0) : null,
       'user_id': userId,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
@@ -107,6 +127,10 @@ class Vehicle {
     String? fuelType,
     String? imageUrl,
     String? color,
+    String? engineCapacity,
+    DateTime? inspectionDate,
+    DateTime? insuranceDate,
+    bool? isRegistered,
     String? userId,
   }) {
     return Vehicle(
@@ -120,6 +144,10 @@ class Vehicle {
       fuelType: fuelType ?? this.fuelType,
       imageUrl: imageUrl ?? this.imageUrl,
       color: color ?? this.color,
+      engineCapacity: engineCapacity ?? this.engineCapacity,
+      inspectionDate: inspectionDate ?? this.inspectionDate,
+      insuranceDate: insuranceDate ?? this.insuranceDate,
+      isRegistered: isRegistered ?? this.isRegistered,
       userId: userId ?? this.userId,
       createdAt: createdAt,
       updatedAt: DateTime.now(),

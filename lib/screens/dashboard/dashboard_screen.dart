@@ -68,7 +68,7 @@ class DashboardScreen extends ConsumerWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surface,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
@@ -555,7 +555,7 @@ class _DashboardContentState extends ConsumerState<_DashboardContent> {
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 32),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: AppColors.surface,
                                 borderRadius: BorderRadius.circular(14),
                                 border:
                                     Border.all(color: AppColors.borderLight),
@@ -581,7 +581,7 @@ class _DashboardContentState extends ConsumerState<_DashboardContent> {
 
                           return Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: AppColors.surface,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(color: AppColors.borderLight),
                               boxShadow: [

@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'firebase_options.dart';
 import 'providers/shared_preferences_provider.dart';
-import 'app.dart';
+import 'core/router/app_router.dart';
+import 'theme/app_theme.dart';
 
 void main() async {
-  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
+  WidgetsFlutterBinding.ensureInitialized();
+  
   // Khởi tạo SharedPreferences
   final prefs = await SharedPreferences.getInstance();
 
@@ -36,6 +35,7 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
     ),
   );
 
@@ -47,6 +47,20 @@ void main() async {
       child: const MotoLogApp(),
     ),
   );
-  
-  FlutterNativeSplash.remove();
+}
+
+class MotoLogApp extends ConsumerWidget {
+  const MotoLogApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(appRouterProvider);
+
+    return MaterialApp.router(
+      title: 'MotoLog',
+      theme: AppTheme.theme,
+      routerConfig: router,
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }

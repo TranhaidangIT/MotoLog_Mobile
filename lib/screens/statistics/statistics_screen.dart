@@ -147,7 +147,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: AppColors.borderLight),
                       ),
@@ -349,7 +349,7 @@ class _PeriodSummaryFooter extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.borderLight),
               boxShadow: [
@@ -389,7 +389,7 @@ class _PeriodSummaryFooter extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.borderLight),
               boxShadow: [
@@ -484,7 +484,7 @@ class _DoubleBarChart extends ConsumerWidget {
                   return Container(
                     height: 200,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppColors.borderLight),
                     ),
@@ -529,7 +529,7 @@ class _DoubleBarChart extends ConsumerWidget {
 
                 return Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.borderLight),
                     boxShadow: [
@@ -740,7 +740,7 @@ class _SummaryCards extends ConsumerWidget {
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppColors.borderLight),
             boxShadow: [
@@ -902,7 +902,7 @@ class _DetailSection extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.borderLight),
               ),
