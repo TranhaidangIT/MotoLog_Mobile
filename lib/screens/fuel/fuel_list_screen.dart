@@ -234,7 +234,7 @@ class FuelListScreen extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: AppColors.surface,
                                 borderRadius: BorderRadius.circular(14),
                                 border:
                                     Border.all(color: AppColors.borderLight),

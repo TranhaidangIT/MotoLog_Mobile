@@ -23,7 +23,7 @@ void main() {
         )
       ];
 
-      final currentOdo = 5000.0;
+      const currentOdo = 5000.0;
       final stats = ReminderCalculator.calculateOilReminder(
         maintenanceList: maintenanceList,
         currentOdometer: currentOdo,
@@ -50,7 +50,7 @@ void main() {
         )
       ];
 
-      final currentOdo = 5500.0;
+      const currentOdo = 5500.0;
       final stats = ReminderCalculator.calculateOilReminder(
         maintenanceList: maintenanceList,
         currentOdometer: currentOdo,
@@ -91,7 +91,7 @@ void main() {
       // Danh sách lịch sử cập nhật (mới nhất xếp trước)
       final list = <MaintenanceEntry>[newMaint, oldMaint];
       
-      final currentOdo = 5500.0;
+      const currentOdo = 5500.0;
       final stats = ReminderCalculator.calculateOilReminder(
         maintenanceList: list,
         currentOdometer: currentOdo,

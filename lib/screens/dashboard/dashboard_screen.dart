@@ -68,7 +68,7 @@ class DashboardScreen extends ConsumerWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surface,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
@@ -309,6 +309,64 @@ class _DashboardContentState extends ConsumerState<_DashboardContent> {
         ),
         const SizedBox(height: 24),
 
+        // -------- QUICK ACTIONS (6 nút theo mockup) --------
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1.05,
+            children: [
+              _QuickActionButton(
+                icon: Icons.local_gas_station_rounded,
+                label: 'Đổ xăng',
+                bgColor: AppColors.fuelBg,
+                iconColor: AppColors.fuelText,
+                onTap: () => context.push('/home/fuel/add'),
+              ),
+              _QuickActionButton(
+                icon: Icons.build_rounded,
+                label: 'Bảo dưỡng',
+                bgColor: AppColors.maintBg,
+                iconColor: AppColors.maintText,
+                onTap: () => context.push('/home/maintenance'),
+              ),
+              _QuickActionButton(
+                icon: Icons.receipt_long_rounded,
+                label: 'Chi phí',
+                bgColor: const Color(0xFFEFF6FF),
+                iconColor: const Color(0xFF3B82F6),
+                onTap: () => context.go(AppRoutes.statistics),
+              ),
+              _QuickActionButton(
+                icon: Icons.bar_chart_rounded,
+                label: 'Thống kê',
+                bgColor: const Color(0xFFF3E8FF),
+                iconColor: const Color(0xFF8B5CF6),
+                onTap: () => context.go(AppRoutes.statistics),
+              ),
+              _QuickActionButton(
+                icon: Icons.two_wheeler_rounded,
+                label: 'Xe của tôi',
+                bgColor: const Color(0xFFFFF7ED),
+                iconColor: const Color(0xFFF59E0B),
+                onTap: () => context.go(AppRoutes.garage),
+              ),
+              _QuickActionButton(
+                icon: Icons.notifications_rounded,
+                label: 'Nhắc lịch',
+                bgColor: const Color(0xFFFEE2E2),
+                iconColor: AppColors.error,
+                onTap: () => context.push('/home/maintenance'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+
         // -------- WRAPPED CONTENT IN PADDING --------
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -317,7 +375,7 @@ class _DashboardContentState extends ConsumerState<_DashboardContent> {
             children: [
               // -------- THỐNG KÊ THÁNG NÀY --------
               Text(
-                'Tháng này',
+                'Tổng quan tháng này',
                 style: GoogleFonts.outfit(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -497,7 +555,7 @@ class _DashboardContentState extends ConsumerState<_DashboardContent> {
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 32),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: AppColors.surface,
                                 borderRadius: BorderRadius.circular(14),
                                 border:
                                     Border.all(color: AppColors.borderLight),
@@ -523,7 +581,7 @@ class _DashboardContentState extends ConsumerState<_DashboardContent> {
 
                           return Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: AppColors.surface,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(color: AppColors.borderLight),
                               boxShadow: [
@@ -909,6 +967,54 @@ class _EmptyVehicleState extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ══════════════════════════════════════════════
+//  QUICK ACTION BUTTON
+// ══════════════════════════════════════════════
+class _QuickActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color bgColor;
+  final Color iconColor;
+  final VoidCallback onTap;
+
+  const _QuickActionButton({
+    required this.icon,
+    required this.label,
+    required this.bgColor,
+    required this.iconColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: iconColor, size: 26),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: iconColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

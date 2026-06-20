@@ -131,7 +131,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           hintText: 'Nhập họ và tên',
                           prefixIcon: const Icon(Icons.person_outline,
                               color: AppColors.textSecondaryLight),
-                          fillColor: Colors.white,
+                          fillColor: AppColors.surface,
                           filled: true,
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 14),
@@ -173,7 +173,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           hintText: 'example@gmail.com',
                           prefixIcon: const Icon(Icons.email_outlined,
                               color: AppColors.textSecondaryLight),
-                          fillColor: Colors.white,
+                          fillColor: AppColors.surface,
                           filled: true,
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 14),
@@ -225,7 +225,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             onPressed: () =>
                                 setState(() => _obscurePass = !_obscurePass),
                           ),
-                          fillColor: Colors.white,
+                          fillColor: AppColors.surface,
                           filled: true,
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 14),
@@ -279,7 +279,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             onPressed: () => setState(
                                 () => _obscureConfirm = !_obscureConfirm),
                           ),
-                          fillColor: Colors.white,
+                          fillColor: AppColors.surface,
                           filled: true,
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 14),

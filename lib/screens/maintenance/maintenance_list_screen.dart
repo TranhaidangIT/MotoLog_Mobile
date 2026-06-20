@@ -3,17 +3,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/maintenance_schedule.dart';
 import '../../core/utils/formatters.dart';
-import '../../core/utils/reminder_calculator.dart';
 import '../../data/models/maintenance_entry.dart';
 import '../../providers/maintenance_provider.dart';
 import '../../providers/vehicle_provider.dart';
 
-class MaintenanceListScreen extends ConsumerWidget {
+class MaintenanceListScreen extends ConsumerStatefulWidget {
   const MaintenanceListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MaintenanceListScreen> createState() =>
+      _MaintenanceListScreenState();
+}
+
+class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen> {
+  int _selectedTabIndex = 0; // 0: Tất cả, 1: Sắp tới, 2: Đã hoàn thành
+
+  @override
+  Widget build(BuildContext context) {
     final maintAsync = ref.watch(maintenanceListProvider);
     final selectedId = ref.watch(selectedVehicleIdProvider);
     final vehiclesAsync = ref.watch(vehicleNotifierProvider);
@@ -80,108 +88,24 @@ class MaintenanceListScreen extends ConsumerWidget {
                 child: Center(child: Text('Lỗi: $e')),
               ),
               data: (list) {
-                if (list.isEmpty) {
-                  return const SliverFillRemaining(
-                      child: _EmptyMaintenanceState());
-                }
+                final currentOdo = selectedVehicle?.odometer ?? 0.0;
+                
+                // Calculate status for each schedule item
+                final scheduledItems = MaintenanceSchedule.items.map((item) {
+                  return _calculateScheduleStatus(item, list, currentOdo);
+                }).toList();
 
-                // Calculate oil and clutch warning stats
-                final odo = selectedVehicle?.odometer ?? 0.0;
-                final oilStats = ReminderCalculator.calculateOilReminder(
-                  maintenanceList: list,
-                  currentOdometer: odo,
-                );
-                final oilRemaining = oilStats.remainingKm;
-                final oilTargetKm = oilStats.targetKm;
-
-                final clutchStats = ReminderCalculator.calculateClutchReminder(
-                  maintenanceList: list,
-                  currentOdometer: odo,
-                );
-                final clutchRemaining = clutchStats.remainingKm;
-                final clutchTargetKm = clutchStats.targetKm;
+                // Sort by remaining km
+                scheduledItems.sort((a, b) => a.remainingKm.compareTo(b.remainingKm));
 
                 return SliverList(
                   delegate: SliverChildListDelegate([
-                    // ─── REMINDER ROW ───
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _ReminderCard(
-                              title: 'Thay nhớt',
-                              remainingKm: oilRemaining,
-                              targetKm: oilTargetKm,
-                              bgColor: const Color(0xFFFEF3C7),
-                              textColor: const Color(0xFFB45309),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _ReminderCard(
-                              title: 'Vệ sinh nồi',
-                              remainingKm: clutchRemaining,
-                              targetKm: clutchTargetKm,
-                              bgColor: const Color(0xFFFEE2E2),
-                              textColor: const Color(0xFFEF4444),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // ─── FILTER TABS ───
+                    _buildFilterTabs(),
+                    const SizedBox(height: 16),
 
-                    // ─── LIST ───
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'Lịch sử bảo dưỡng',
-                        style: GoogleFonts.outfit(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimaryLight,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppColors.borderLight),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.03),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: list
-                              .asMap()
-                              .entries
-                              .map(
-                                (e) => _MaintenanceTile(
-                                  entry: e.value,
-                                  isLast: e.key == list.length - 1,
-                                  onTap: () => context.push(
-                                      '/home/maintenance/${e.value.id}/edit'),
-                                  onDelete: () async {
-                                    await ref
-                                        .read(maintenanceNotifierProvider
-                                            .notifier)
-                                        .delete(e.value.id);
-                                  },
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-                    ),
+                    // ─── CONTENT ───
+                    _buildContent(list, scheduledItems),
                     const SizedBox(height: 100),
                   ]),
                 );
@@ -189,84 +113,284 @@ class MaintenanceListScreen extends ConsumerWidget {
             ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'maint_fab',
-        onPressed: () => context.push('/home/maintenance/add'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        elevation: 4,
-        icon: const Icon(Icons.add_rounded),
-        label: Text('Thêm',
-            style: GoogleFonts.outfit(fontWeight: FontWeight.w600)),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SizedBox(
+            height: 54,
+            child: ElevatedButton.icon(
+              onPressed: () => context.push('/home/maintenance/add'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              icon: const Icon(Icons.add_rounded),
+              label: Text(
+                'Thêm bảo dưỡng',
+                style: GoogleFonts.outfit(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
+    );
+  }
+
+  Widget _buildFilterTabs() {
+    final tabs = ['Tất cả', 'Sắp tới', 'Đã hoàn thành'];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: List.generate(tabs.length, (index) {
+          final isSelected = _selectedTabIndex == index;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedTabIndex = index),
+              child: Container(
+                margin: EdgeInsets.only(right: index < tabs.length - 1 ? 8 : 0),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.white : Colors.transparent,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: isSelected ? AppColors.primary : AppColors.borderLight,
+                    width: 1.5,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  tabs[index],
+                  style: GoogleFonts.outfit(
+                    fontSize: 13,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                    color: isSelected ? AppColors.primary : AppColors.textSecondaryLight,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildContent(List<MaintenanceEntry> history, List<_ScheduleStatus> scheduledItems) {
+    if (_selectedTabIndex == 2) {
+      // Đã hoàn thành (History)
+      if (history.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(32),
+          child: Center(
+            child: Text('Chưa có lịch sử bảo dưỡng nào.'),
+          ),
+        );
+      }
+      // Sort history descending by date
+      final sortedHistory = List<MaintenanceEntry>.from(history)
+        ..sort((a, b) => b.date.compareTo(a.date));
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.borderLight),
+          ),
+          child: Column(
+            children: sortedHistory.asMap().entries.map((e) {
+              return _HistoryTile(
+                entry: e.value,
+                isLast: e.key == sortedHistory.length - 1,
+                onTap: () => context.push('/home/maintenance/${e.value.id}/edit'),
+              );
+            }).toList(),
+          ),
+        ),
+      );
+    }
+
+    // Tất cả & Sắp tới (Schedule)
+    List<_ScheduleStatus> itemsToShow = scheduledItems;
+    if (_selectedTabIndex == 1) {
+      // Sắp tới: remaining <= 2000 km (or 15% of defaultDueKm)
+      itemsToShow = scheduledItems.where((s) => s.remainingKm <= s.item.defaultDueKm * 0.2 || s.remainingKm <= 2000).toList();
+    }
+
+    if (itemsToShow.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(32),
+        child: Center(
+          child: Text('Không có mục bảo dưỡng nào sắp tới.'),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: itemsToShow.map((s) => _ScheduleCard(status: s)).toList(),
+      ),
+    );
+  }
+
+  _ScheduleStatus _calculateScheduleStatus(ScheduleItem item, List<MaintenanceEntry> history, double currentOdo) {
+    // Find latest matching entry by date
+    final matchingEntries = history.where((e) {
+      final titleLower = e.title.toLowerCase();
+      return item.keywords.any((k) => titleLower.contains(k));
+    }).toList();
+    
+    matchingEntries.sort((a, b) => b.date.compareTo(a.date));
+    final lastEntry = matchingEntries.firstOrNull;
+
+    double remainingKm = 0.0;
+    
+    if (lastEntry != null) {
+      if (lastEntry.nextDueKm != null && lastEntry.nextDueKm! > 0) {
+        remainingKm = lastEntry.nextDueKm! - currentOdo;
+      } else {
+        final distanceSinceLast = currentOdo - lastEntry.odometer;
+        remainingKm = item.defaultDueKm - distanceSinceLast;
+      }
+    } else {
+      // Never done before
+      final milestonesPassed = (currentOdo / item.defaultDueKm).floor();
+      final nextMilestone = (milestonesPassed + 1) * item.defaultDueKm;
+      remainingKm = nextMilestone - currentOdo;
+    }
+
+    // Floor at 0 if negative
+    if (remainingKm < 0) remainingKm = 0;
+
+    return _ScheduleStatus(
+      item: item,
+      remainingKm: remainingKm,
+      progress: 1.0 - (remainingKm / item.defaultDueKm).clamp(0.0, 1.0),
     );
   }
 }
 
-// ── Reminder Card ──
-class _ReminderCard extends StatelessWidget {
-  final String title;
+class _ScheduleStatus {
+  final ScheduleItem item;
   final double remainingKm;
-  final double targetKm;
-  final Color bgColor;
-  final Color textColor;
+  final double progress; // 0.0 -> 1.0 (1.0 is full/due)
 
-  const _ReminderCard({
-    required this.title,
+  _ScheduleStatus({
+    required this.item,
     required this.remainingKm,
-    required this.targetKm,
-    required this.bgColor,
-    required this.textColor,
+    required this.progress,
   });
+}
+
+// ─── WIDGETS ───
+
+class _ScheduleCard extends StatelessWidget {
+  final _ScheduleStatus status;
+
+  const _ScheduleCard({required this.status});
 
   @override
   Widget build(BuildContext context) {
+    final isCritical = status.remainingKm <= 500;
+    final progressColor = isCritical ? AppColors.error : AppColors.primary;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: textColor.withValues(alpha: 0.1),
-          width: 1.5,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.warning_amber_rounded, color: textColor, size: 16),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  title,
-                  style: GoogleFonts.outfit(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: textColor,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderLight),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
-          const SizedBox(height: 12),
-          Text(
-            'Còn ${AppFormatters.km(remainingKm)} nữa',
-            style: GoogleFonts.outfit(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: textColor,
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Image
+          Container(
+            width: 56,
+            height: 56,
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppColors.backgroundLight,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Image.asset(
+              status.item.imageAsset,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const Icon(Icons.build_rounded, color: AppColors.textHintLight),
             ),
           ),
-          const SizedBox(height: 2),
-          Text(
-            'Dự kiến: ${AppFormatters.km(targetKm)}',
-            style: GoogleFonts.outfit(
-              fontSize: 11,
-              color: textColor.withValues(alpha: 0.8),
+          const SizedBox(width: 16),
+          // Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  status.item.title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimaryLight,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  status.item.frequencyLabel,
+                  style: GoogleFonts.outfit(
+                    fontSize: 12,
+                    color: AppColors.textSecondaryLight,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Progress Bar
+                Row(
+                  children: [
+                    Text(
+                      'Còn ',
+                      style: GoogleFonts.outfit(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: progressColor,
+                      ),
+                    ),
+                    Text(
+                      AppFormatters.km(status.remainingKm),
+                      style: GoogleFonts.outfit(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: progressColor,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: status.progress,
+                    backgroundColor: progressColor.withValues(alpha: 0.1),
+                    color: progressColor,
+                    minHeight: 4,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -275,238 +399,99 @@ class _ReminderCard extends StatelessWidget {
   }
 }
 
-// ── Maintenance Tile ──
-class _MaintenanceTile extends StatelessWidget {
+class _HistoryTile extends StatelessWidget {
   final MaintenanceEntry entry;
   final bool isLast;
   final VoidCallback onTap;
-  final VoidCallback onDelete;
 
-  const _MaintenanceTile({
+  const _HistoryTile({
     required this.entry,
     required this.isLast,
     required this.onTap,
-    required this.onDelete,
   });
 
-  Color get _typeColor {
-    switch (entry.type) {
-      case MaintenanceType.routine:
-        return AppColors.primary;
-      case MaintenanceType.repair:
-      case MaintenanceType.parts:
-        return AppColors.secondary;
-    }
-  }
-
-  Color get _typeBg {
-    switch (entry.type) {
-      case MaintenanceType.routine:
-        return AppColors.primary.withValues(alpha: 0.12);
-      case MaintenanceType.repair:
-      case MaintenanceType.parts:
-        return AppColors.secondary.withValues(alpha: 0.12);
-    }
-  }
-
-  IconData get _typeIcon => Icons.build_rounded;
-
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      key: Key(entry.id),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        decoration: BoxDecoration(
-          color: AppColors.error,
-          borderRadius: isLast
-              ? const BorderRadius.vertical(bottom: Radius.circular(14))
-              : BorderRadius.zero,
-        ),
-        child: const Icon(Icons.delete_outline, color: Colors.white),
-      ),
-      onDismissed: (_) => onDelete(),
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  // Icon
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: _typeBg,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(_typeIcon, color: _typeColor, size: 22),
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppColors.maintBg,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  const SizedBox(width: 12),
-
-                  // Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                entry.title,
-                                style: GoogleFonts.outfit(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimaryLight,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              AppFormatters.currency(entry.cost),
+                  child: const Icon(Icons.build_rounded, color: AppColors.maintText, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              entry.title,
                               style: GoogleFonts.outfit(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w800,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
                                 color: AppColors.textPrimaryLight,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 7, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: _typeBg,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                entry.type.label,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                  color: _typeColor,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              AppFormatters.date(entry.date),
-                              style: GoogleFonts.outfit(
-                                  fontSize: 11,
-                                  color: AppColors.textSecondaryLight),
-                            ),
-                          ],
-                        ),
-                        if (entry.nextDueDate != null) ...[
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.schedule_rounded,
-                                size: 12,
-                                color: entry.isOverdue
-                                    ? AppColors.alertText
-                                    : entry.isDueSoon
-                                        ? AppColors.warning
-                                        : AppColors.textHintLight,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Hạn: ${AppFormatters.relativeDate(entry.nextDueDate)}',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 11,
-                                  fontWeight:
-                                      (entry.isOverdue || entry.isDueSoon)
-                                          ? FontWeight.w600
-                                          : FontWeight.normal,
-                                  color: entry.isOverdue
-                                      ? AppColors.alertText
-                                      : entry.isDueSoon
-                                          ? AppColors.warning
-                                          : AppColors.textHintLight,
-                                ),
-                              ),
-                            ],
                           ),
-                        ],
-                        if (entry.garageName != null) ...[
-                          const SizedBox(height: 2),
+                          const SizedBox(width: 8),
                           Text(
-                            '📍 ${entry.garageName}',
+                            AppFormatters.currency(entry.cost),
                             style: GoogleFonts.outfit(
-                              fontSize: 11,
-                              color: AppColors.textHintLight,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textPrimaryLight,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.maintBg,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              entry.type.label,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.maintText,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            AppFormatters.date(entry.date),
+                            style: GoogleFonts.outfit(fontSize: 11, color: AppColors.textSecondaryLight),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            if (!isLast)
-              const Divider(
-                  height: 1,
-                  indent: 72,
-                  endIndent: 16,
-                  color: AppColors.borderLight),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyMaintenanceState extends StatelessWidget {
-  const _EmptyMaintenanceState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: const BoxDecoration(
-              color: AppColors.fuelBg,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.build_rounded,
-                size: 52, color: AppColors.fuelText),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Chưa có lịch sử bảo dưỡng',
-            style: GoogleFonts.outfit(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimaryLight,
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Thêm lần bảo dưỡng, sửa chữa\nhoặc thay phụ tùng',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              fontSize: 13,
-              color: AppColors.textSecondaryLight,
-            ),
-          ),
+          if (!isLast) const Divider(height: 1, indent: 72, endIndent: 16, color: AppColors.borderLight),
         ],
       ),
     );

@@ -127,13 +127,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 8),
                     // Brand Name
                     Text.rich(
-                      TextSpan(
+                      const TextSpan(
                         children: [
-                          const TextSpan(
+                          TextSpan(
                             text: 'Moto',
                             style: TextStyle(color: AppColors.textPrimaryLight),
                           ),
-                          const TextSpan(
+                          TextSpan(
                             text: 'Log',
                             style: TextStyle(color: AppColors.primary),
                           ),
@@ -192,7 +192,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           hintText: 'Nhập email của bạn',
                           prefixIcon: const Icon(Icons.email_outlined,
                               color: AppColors.textSecondaryLight),
-                          fillColor: Colors.white,
+                          fillColor: AppColors.surface,
                           filled: true,
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 14),
@@ -245,7 +245,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             onPressed: () =>
                                 setState(() => _obscurePass = !_obscurePass),
                           ),
-                          fillColor: Colors.white,
+                          fillColor: AppColors.surface,
                           filled: true,
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 14),
@@ -351,7 +351,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            backgroundColor: Colors.white,
+                            backgroundColor: AppColors.background,
                             foregroundColor: AppColors.textPrimaryLight,
                           ),
                           child: Row(
@@ -389,7 +389,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            backgroundColor: Colors.white,
+                            backgroundColor: AppColors.background,
                             foregroundColor: AppColors.textPrimaryLight,
                           ),
                           child: Row(

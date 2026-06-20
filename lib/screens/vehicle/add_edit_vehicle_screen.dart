@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../core/constants/app_colors.dart';
+import '../../theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/validators.dart';
 import '../../data/models/vehicle.dart';
@@ -31,8 +31,11 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
   final _odometerCtrl = TextEditingController();
 
   String _selectedFuelType = AppConstants.fuelGasoline;
+  String _selectedVehicleType = 'Xe tay ga';
   String _selectedColor = '#003087';
   String? _selectedImagePath;
+
+  final List<String> _vehicleTypes = ['Xe tay ga', 'Xe số', 'Xe côn tay / PKL'];
   bool _isLoading = false;
   bool _isEdit = false;
   Vehicle? _existingVehicle;
@@ -71,6 +74,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
         _selectedFuelType = v.fuelType;
         _selectedColor = v.color;
         _selectedImagePath = v.imageUrl;
+        _selectedVehicleType = v.engineCapacity ?? 'Xe tay ga';
       });
     }
   }
@@ -138,10 +142,10 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
             if (_selectedImagePath != null)
               ListTile(
                 leading: const Icon(Icons.delete_outline_rounded,
-                    color: AppColors.error),
+                    color: AppColors.dangerRed),
                 title: Text('Xoá ảnh',
                     style: GoogleFonts.outfit(
-                        color: AppColors.error, fontWeight: FontWeight.w600)),
+                        color: AppColors.dangerRed, fontWeight: FontWeight.w600)),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
@@ -171,6 +175,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
       fuelType: _selectedFuelType,
       color: _selectedColor,
       imageUrl: _selectedImagePath,
+      engineCapacity: _selectedVehicleType,
       userId: userId,
     );
 
@@ -185,7 +190,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(_isEdit ? 'Đã cập nhật xe' : 'Đã thêm xe thành công'),
-        backgroundColor: AppColors.success,
+        backgroundColor: AppColors.primary,
       ),
     );
     context.pop();
@@ -240,10 +245,10 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                     width: 140,
                     height: 140,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: AppColors.borderLight,
+                        color: AppColors.divider,
                         width: 1.5,
                       ),
                       boxShadow: [
@@ -272,7 +277,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                                 const Icon(
                                   Icons.photo_camera_outlined,
                                   size: 32,
-                                  color: AppColors.textHintLight,
+                                  color: AppColors.textSecondary,
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
@@ -280,7 +285,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                                   style: GoogleFonts.outfit(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.textSecondaryLight,
+                                    color: AppColors.textSecondary,
                                   ),
                                 ),
                               ],
@@ -290,6 +295,20 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                 ),
               ),
               const SizedBox(height: 24),
+
+              // Vehicle Type
+              _buildLabel('Kiểu dáng xe *'),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedVehicleType,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.two_wheeler_outlined),
+                ),
+                items: _vehicleTypes
+                    .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                    .toList(),
+                onChanged: (v) => setState(() => _selectedVehicleType = v!),
+              ),
+              const SizedBox(height: 16),
 
               // Color picker
               Text(
@@ -438,7 +457,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
 
               _buildLabel('Loại nhiên liệu *'),
               DropdownButtonFormField<String>(
-                value: _selectedFuelType,
+                initialValue: _selectedFuelType,
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.local_gas_station_outlined),
                 ),

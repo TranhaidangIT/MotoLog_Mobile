@@ -41,6 +41,10 @@ class DatabaseHelper {
         fuel_type    TEXT NOT NULL DEFAULT 'Xăng',
         image_url    TEXT,
         color        TEXT NOT NULL DEFAULT '#FF6B00',
+        engine_capacity TEXT,
+        inspection_date TEXT,
+        insurance_date TEXT,
+        is_registered INTEGER,
         user_id      TEXT,
         created_at   TEXT NOT NULL,
         updated_at   TEXT NOT NULL
@@ -95,6 +99,12 @@ class DatabaseHelper {
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Xử lý migration khi nâng cấp version DB
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN engine_capacity TEXT');
+      await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN inspection_date TEXT');
+      await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN insurance_date TEXT');
+      await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN is_registered INTEGER');
+    }
   }
 
   /// Xóa toàn bộ data (dùng khi logout)

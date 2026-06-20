@@ -7,7 +7,7 @@ class AppConstants {
 
   // Database
   static const String dbName = 'motolog.db';
-  static const int dbVersion = 1;
+  static const int dbVersion = 2;
 
   // Tables
   static const String tableVehicles = 'vehicles';
