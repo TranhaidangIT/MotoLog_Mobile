@@ -16,6 +16,9 @@ class Vehicle {
   final DateTime? inspectionDate;
   final DateTime? insuranceDate;
   final bool? isRegistered;
+  final String? registrationImageUrl;
+  final String? inspectionImageUrl;
+  final String? insuranceImageUrl;
   final String? userId;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -35,6 +38,9 @@ class Vehicle {
     this.inspectionDate,
     this.insuranceDate,
     this.isRegistered,
+    this.registrationImageUrl,
+    this.inspectionImageUrl,
+    this.insuranceImageUrl,
     this.userId,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -59,6 +65,9 @@ class Vehicle {
       inspectionDate: map['inspection_date'] != null ? DateTime.parse(map['inspection_date'] as String) : null,
       insuranceDate: map['insurance_date'] != null ? DateTime.parse(map['insurance_date'] as String) : null,
       isRegistered: map['is_registered'] != null ? (map['is_registered'] as int) == 1 : null,
+      registrationImageUrl: map['registration_image_url'] as String?,
+      inspectionImageUrl: map['inspection_image_url'] as String?,
+      insuranceImageUrl: map['insurance_image_url'] as String?,
       userId: map['user_id'] as String?,
       createdAt: DateTime.parse(map['created_at'] as String),
       updatedAt: DateTime.parse(map['updated_at'] as String),
@@ -82,6 +91,9 @@ class Vehicle {
       'inspection_date': inspectionDate?.toIso8601String(),
       'insurance_date': insuranceDate?.toIso8601String(),
       'is_registered': isRegistered != null ? (isRegistered! ? 1 : 0) : null,
+      'registration_image_url': registrationImageUrl,
+      'inspection_image_url': inspectionImageUrl,
+      'insurance_image_url': insuranceImageUrl,
       'user_id': userId,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
@@ -105,6 +117,9 @@ class Vehicle {
       'inspection_date': inspectionDate?.toIso8601String(),
       'insurance_date': insuranceDate?.toIso8601String(),
       'is_registered': isRegistered != null ? (isRegistered! ? 1 : 0) : null,
+      'registration_image_url': registrationImageUrl,
+      'inspection_image_url': inspectionImageUrl,
+      'insurance_image_url': insuranceImageUrl,
       'user_id': userId,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
@@ -131,6 +146,9 @@ class Vehicle {
     DateTime? inspectionDate,
     DateTime? insuranceDate,
     bool? isRegistered,
+    String? registrationImageUrl,
+    String? inspectionImageUrl,
+    String? insuranceImageUrl,
     String? userId,
   }) {
     return Vehicle(
@@ -148,6 +166,9 @@ class Vehicle {
       inspectionDate: inspectionDate ?? this.inspectionDate,
       insuranceDate: insuranceDate ?? this.insuranceDate,
       isRegistered: isRegistered ?? this.isRegistered,
+      registrationImageUrl: registrationImageUrl ?? this.registrationImageUrl,
+      inspectionImageUrl: inspectionImageUrl ?? this.inspectionImageUrl,
+      insuranceImageUrl: insuranceImageUrl ?? this.insuranceImageUrl,
       userId: userId ?? this.userId,
       createdAt: createdAt,
       updatedAt: DateTime.now(),

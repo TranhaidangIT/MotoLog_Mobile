@@ -20,6 +20,8 @@ import '../../screens/register_screen.dart';
 import '../../screens/profile_screen.dart';
 import '../../screens/vehicle/add_edit_vehicle_screen.dart';
 import '../../screens/garage_screen.dart';
+import '../../screens/parts_screen.dart';
+import '../../screens/add_part_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -37,6 +39,8 @@ class AppRoutes {
   static const String register = '/register';
   static const String addMaintenance = '/add-maintenance';
   static const String addVehicle = '/add-vehicle';
+  static const String parts = '/parts';
+  static const String addPart = '/add-part';
 
   // Backwards compatibility cho UI cũ không báo lỗi
   static const String dashboard = '/home/dashboard';
@@ -156,6 +160,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.garage,
         name: 'garage',
         builder: (context, state) => const GarageScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.parts,
+        name: 'parts',
+        builder: (context, state) => const PartsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.addPart,
+        name: 'addPart',
+        builder: (context, state) => const AddPartScreen(),
       ),
     ],
   );

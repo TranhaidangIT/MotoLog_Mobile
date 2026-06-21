@@ -55,6 +55,7 @@ class MaintenanceEntry {
   final DateTime? nextDueDate;
   final double? nextDueKm;
   final String? note;
+  final String? imagePath;
   final DateTime createdAt;
 
   MaintenanceEntry({
@@ -69,6 +70,7 @@ class MaintenanceEntry {
     this.nextDueDate,
     this.nextDueKm,
     this.note,
+    this.imagePath,
     DateTime? createdAt,
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
@@ -91,6 +93,7 @@ class MaintenanceEntry {
           ? (map['next_due_km'] as num).toDouble()
           : null,
       note: map['note'] as String?,
+      imagePath: map['image_path'] as String?,
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
@@ -109,6 +112,7 @@ class MaintenanceEntry {
       'next_due_date': nextDueDate?.toIso8601String(),
       'next_due_km': nextDueKm,
       'note': note,
+      'image_path': imagePath,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -127,6 +131,7 @@ class MaintenanceEntry {
       'next_date': nextDueDate?.toIso8601String(),
       'next_due_km': nextDueKm,
       'note': note,
+      'image_path': imagePath,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -149,6 +154,7 @@ class MaintenanceEntry {
           ? (map['next_due_km'] as num).toDouble()
           : null,
       note: map['note'] as String?,
+      imagePath: map['image_path'] as String?,
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
@@ -164,6 +170,7 @@ class MaintenanceEntry {
     DateTime? nextDueDate,
     double? nextDueKm,
     String? note,
+    String? imagePath,
   }) {
     return MaintenanceEntry(
       id: id,
@@ -177,6 +184,7 @@ class MaintenanceEntry {
       nextDueDate: nextDueDate ?? this.nextDueDate,
       nextDueKm: nextDueKm ?? this.nextDueKm,
       note: note ?? this.note,
+      imagePath: imagePath ?? this.imagePath,
       createdAt: createdAt,
     );
   }

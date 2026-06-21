@@ -84,6 +84,17 @@ class QuickAddMenu extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildMenuItem(
                     context,
+                    label: 'Phụ tùng',
+                    icon: Icons.settings_input_component_rounded,
+                    color: const Color(0xFF7B1FA2),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.push(AppRoutes.addPart);
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _buildMenuItem(
+                    context,
                     label: 'Ghi chú',
                     icon: Icons.edit_note_rounded,
                     color: const Color(0xFFF59E0B),
@@ -148,7 +159,7 @@ class QuickAddMenu extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(100),
           boxShadow: [
             BoxShadow(
