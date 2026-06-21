@@ -1,15 +1,14 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/validators.dart';
 import '../../data/models/vehicle.dart';
 import '../../providers/vehicle_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../maintenance_setup_screen.dart';
 
 class AddEditVehicleScreen extends ConsumerStatefulWidget {
   final String? vehicleId;
@@ -90,74 +89,6 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
     super.dispose();
   }
 
-  Future<void> _pickImage(ImageSource source) async {
-    try {
-      final picker = ImagePicker();
-      final picked = await picker.pickImage(
-        source: source,
-        maxWidth: 800,
-        maxHeight: 800,
-        imageQuality: 85,
-      );
-      if (picked != null) {
-        setState(() {
-          _selectedImagePath = picked.path;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error picking image: $e');
-    }
-  }
-
-  void _showImageSourceSheet() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt_outlined,
-                  color: AppColors.primary),
-              title: Text('Chụp ảnh mới',
-                  style: GoogleFonts.outfit(fontWeight: FontWeight.w600)),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined,
-                  color: AppColors.primary),
-              title: Text('Chọn từ thư viện',
-                  style: GoogleFonts.outfit(fontWeight: FontWeight.w600)),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
-              },
-            ),
-            if (_selectedImagePath != null)
-              ListTile(
-                leading: const Icon(Icons.delete_outline_rounded,
-                    color: AppColors.dangerRed),
-                title: Text('Xoá ảnh',
-                    style: GoogleFonts.outfit(
-                        color: AppColors.dangerRed, fontWeight: FontWeight.w600)),
-                onTap: () {
-                  Navigator.pop(context);
-                  setState(() {
-                    _selectedImagePath = null;
-                  });
-                },
-              ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
@@ -193,7 +124,15 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
         backgroundColor: AppColors.primary,
       ),
     );
-    context.pop();
+    
+    if (_isEdit) {
+      context.pop();
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MaintenanceSetupScreen(isOnboarding: true)),
+      );
+    }
   }
 
   Color _hexToColor(String hex) {
@@ -237,65 +176,6 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image picker container
-              Center(
-                child: GestureDetector(
-                  onTap: _showImageSourceSheet,
-                  child: Container(
-                    width: 140,
-                    height: 140,
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: AppColors.divider,
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.02),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: _selectedImagePath != null
-                          ? (_selectedImagePath!.startsWith('http')
-                              ? Image.network(_selectedImagePath!,
-                                  fit: BoxFit.cover)
-                              : (_selectedImagePath!.startsWith('assets/') ||
-                                      _selectedImagePath!.startsWith('img/'))
-                                  ? Image.asset(_selectedImagePath!,
-                                      fit: BoxFit.cover)
-                                  : Image.file(File(_selectedImagePath!),
-                                      fit: BoxFit.cover))
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.photo_camera_outlined,
-                                  size: 32,
-                                  color: AppColors.textSecondary,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Thêm ảnh xe',
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
               // Vehicle Type
               _buildLabel('Kiểu dáng xe *'),
               DropdownButtonFormField<String>(

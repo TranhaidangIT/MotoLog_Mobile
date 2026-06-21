@@ -1,73 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../providers/maintenance_item_provider.dart';
+import '../providers/custom_reminder_provider.dart';
+import '../providers/vehicle_provider.dart';
+import 'add_reminder_screen.dart';
 
-class ReminderScreen extends StatefulWidget {
+class ReminderScreen extends ConsumerStatefulWidget {
   const ReminderScreen({super.key});
 
   @override
-  State<ReminderScreen> createState() => _ReminderScreenState();
+  ConsumerState<ReminderScreen> createState() => _ReminderScreenState();
 }
 
-class _ReminderScreenState extends State<ReminderScreen> {
+class _ReminderScreenState extends ConsumerState<ReminderScreen> {
   int _filterIndex = 0;
   final _filters = ['Tất cả', 'Đang bật', 'Đã tắt'];
 
-  static const _soonItems = [
-    {
-      'icon': Icons.opacity,
-      'label': 'Thay nhớt máy',
-      'sub': 'Còn 500 km · ODO 15.200 km',
-      'badge': 'Gần tới',
-      'level': 'urgent',
-    },
-    {
-      'icon': Icons.local_gas_station,
-      'label': 'Nhắc đổ xăng',
-      'sub': 'Khi còn dưới 1/4 bình',
-      'badge': 'Hôm nay',
-      'level': 'warning',
-    },
-  ];
-
-  static const _periodicItems = [
-    {
-      'icon': Icons.settings,
-      'label': 'Vệ sinh nồi (CVT)',
-      'sub': 'Còn 2.300 km · mỗi 10.000 km',
-      'badge': 'Bình thường',
-      'level': 'normal',
-    },
-    {
-      'icon': Icons.electrical_services,
-      'label': 'Thay bugi',
-      'sub': 'Còn 2.300 km · mỗi 10.000 km',
-      'badge': 'Bình thường',
-      'level': 'normal',
-    },
-    {
-      'icon': Icons.air,
-      'label': 'Thay lọc gió',
-      'sub': 'Còn 4.300 km · mỗi 12.000 km',
-      'badge': 'Bình thường',
-      'level': 'normal',
-    },
-    {
-      'icon': Icons.water_drop,
-      'label': 'Thay nước làm mát',
-      'sub': 'Còn 6.300 km · mỗi 15.000 km',
-      'badge': 'Bình thường',
-      'level': 'normal',
-    },
-  ];
-
   Color _iconBg(String level) {
     switch (level) {
-      case 'urgent':
+      case 'overdue':
         return AppColors.dangerRedBg;
+      case 'urgent':
       case 'warning':
+      case 'soon':
         return AppColors.warningOrangeBg;
       default:
         return AppColors.greenChip;
@@ -76,9 +35,11 @@ class _ReminderScreenState extends State<ReminderScreen> {
 
   Color _iconColor(String level) {
     switch (level) {
-      case 'urgent':
+      case 'overdue':
         return AppColors.dangerRed;
+      case 'urgent':
       case 'warning':
+      case 'soon':
         return AppColors.warningOrange;
       default:
         return AppColors.primary;
@@ -87,6 +48,32 @@ class _ReminderScreenState extends State<ReminderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final vehicleAsync = ref.watch(selectedVehicleProvider);
+    final currentOdo = vehicleAsync.valueOrNull?.odometer.toInt() ?? 0;
+    
+    final allMaintenance = ref.watch(maintenanceItemNotifierProvider);
+    final allCustom = ref.watch(customReminderNotifierProvider);
+
+    // Filter items based on _filterIndex
+    final periodicItems = allMaintenance.where((i) {
+      if (_filterIndex == 1) return i.isReminderOn;
+      if (_filterIndex == 2) return !i.isReminderOn;
+      return true;
+    }).toList();
+
+    // Upcoming = Maintenance (urgency != normal) + Custom (all active for now)
+    final upcomingMaint = periodicItems.where((i) => i.urgency(currentOdo) != 'normal').toList()
+      ..sort((a, b) => a.remainingKm(currentOdo).compareTo(b.remainingKm(currentOdo)));
+    
+    final activeCustom = allCustom.where((i) {
+      if (_filterIndex == 1) return i.isOn;
+      if (_filterIndex == 2) return !i.isOn;
+      return true;
+    }).toList();
+
+    // Lọc lại Periodic để không lặp lại ở Upcoming (nếu đang ở bộ lọc Tất cả hoặc Đang bật)
+    final normalPeriodic = periodicItems.where((i) => i.urgency(currentOdo) == 'normal').toList();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -132,57 +119,110 @@ class _ReminderScreenState extends State<ReminderScreen> {
             ),
 
             // SẮP TỚI
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                'SẮP TỚI',
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
-                  letterSpacing: 0.5,
+            if (upcomingMaint.isNotEmpty || activeCustom.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(
+                  'SẮP TỚI',
+                  style: GoogleFonts.beVietnamPro(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
-            ),
-            Container(color: AppColors.surface,
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _soonItems.length,
-                separatorBuilder: (context, index) => const Divider(height: 1, indent: 64),
-                itemBuilder: (context, index) => _buildReminderItem(_soonItems[index]),
+              Container(color: AppColors.surface,
+                child: ListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    ...upcomingMaint.map((item) => Column(
+                      children: [
+                        _buildReminderItem(
+                          icon: item.icon,
+                          label: item.name,
+                          sub: item.isOverdue(currentOdo)
+                              ? 'Đã quá hạn ${item.overdueKm(currentOdo)} km'
+                              : 'Còn ${item.remainingKm(currentOdo)} km · ODO $currentOdo km',
+                          badge: item.urgency(currentOdo) == 'overdue' ? 'Quá hạn' : 'Gần tới',
+                          level: item.urgency(currentOdo),
+                          isOn: item.isReminderOn,
+                          onToggle: (v) => ref.read(maintenanceItemNotifierProvider.notifier).toggleReminder(item.id, v),
+                        ),
+                        const Divider(height: 1, indent: 64),
+                      ],
+                    )),
+                    ...activeCustom.map((item) => Column(
+                      children: [
+                        _buildReminderItem(
+                          icon: Icons.notifications_active,
+                          label: item.title,
+                          sub: item.subtitle,
+                          badge: 'Tùy chỉnh',
+                          level: 'warning',
+                          isOn: item.isOn,
+                          onToggle: (v) {}, // TODO: update custom reminder status
+                        ),
+                        const Divider(height: 1, indent: 64),
+                      ],
+                    )),
+                  ],
+                ),
               ),
-            ),
+            ],
 
             // ĐỊNH KỲ
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                'ĐỊNH KỲ',
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
-                  letterSpacing: 0.5,
+            if (normalPeriodic.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(
+                  'ĐỊNH KỲ',
+                  style: GoogleFonts.beVietnamPro(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
-            ),
-            Container(color: AppColors.surface,
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _periodicItems.length,
-                separatorBuilder: (context, index) => const Divider(height: 1, indent: 64),
-                itemBuilder: (context, index) => _buildReminderItem(_periodicItems[index]),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                child: Text(
+                  'Các hạng mục còn an toàn, chưa cần xử lý — chỉ để bạn theo dõi chu kỳ',
+                  style: GoogleFonts.beVietnamPro(fontSize: 11, color: AppColors.textSecondary),
+                ),
               ),
-            ),
+              Container(color: AppColors.surface,
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: normalPeriodic.length,
+                  separatorBuilder: (context, index) => const Divider(height: 1, indent: 64),
+                  itemBuilder: (context, index) {
+                    final item = normalPeriodic[index];
+                    return _buildReminderItem(
+                      icon: item.icon,
+                      label: item.name,
+                      sub: item.isOverdue(currentOdo)
+                          ? 'Đã quá hạn ${item.overdueKm(currentOdo)} km'
+                          : 'Còn ${item.remainingKm(currentOdo)} km · mỗi ${item.intervalKm} km',
+                      badge: 'Bình thường',
+                      level: 'normal',
+                      isOn: item.isReminderOn,
+                      onToggle: (v) => ref.read(maintenanceItemNotifierProvider.notifier).toggleReminder(item.id, v),
+                    );
+                  },
+                ),
+              ),
+            ],
             
             const SizedBox(height: 16),
             // Nút thêm nhắc lịch
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AddReminderScreen())),
                 icon: const Icon(Icons.add, color: AppColors.primary, size: 18),
                 label: Text(
                   'Thêm nhắc lịch',
@@ -206,28 +246,30 @@ class _ReminderScreenState extends State<ReminderScreen> {
       bottomNavigationBar: MotoBottomNavBar(
         currentIndex: -1, 
         onTap: (i) {
-          if (i == 0) {
-            context.go('/home');
-          } else if (i == 1) {
-            context.go('/fuel-history');
-          } else if (i == 2) {
-            context.go('/expense');
-          } else if (i == 3) {
-            context.go('/profile');
-          }
+          if (i == 0) context.go('/home');
+          else if (i == 1) context.go('/fuel-history');
+          else if (i == 2) context.go('/expense');
+          else if (i == 3) context.go('/profile');
         },
         onAddTap: () => context.push('/fuel-log'),
       ),
     );
   }
 
-  Widget _buildReminderItem(Map<String, dynamic> item) {
-    final level = item['level'] as String;
+  Widget _buildReminderItem({
+    required IconData icon,
+    required String label,
+    required String sub,
+    required String badge,
+    required String level,
+    required bool isOn,
+    required ValueChanged<bool> onToggle,
+  }) {
     final bgColor = _iconBg(level);
     final fgColor = _iconColor(level);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
           Container(
@@ -237,11 +279,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
               color: bgColor,
               borderRadius: BorderRadius.circular(9),
             ),
-            child: Icon(
-              item['icon'] as IconData,
-              color: fgColor,
-              size: 20,
-            ),
+            child: Icon(icon, color: fgColor, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -249,7 +287,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item['label'] as String,
+                  label,
                   style: GoogleFonts.beVietnamPro(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
@@ -257,31 +295,43 @@ class _ReminderScreenState extends State<ReminderScreen> {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  item['sub'] as String,
-                  style: GoogleFonts.beVietnamPro(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.textSecondary,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        sub,
+                        style: GoogleFonts.beVietnamPro(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        badge,
+                        style: GoogleFonts.beVietnamPro(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: fgColor,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              item['badge'] as String,
-              style: GoogleFonts.beVietnamPro(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: fgColor,
-              ),
-            ),
+          Switch(
+            value: isOn,
+            onChanged: onToggle,
+            activeColor: AppColors.primary,
           ),
         ],
       ),

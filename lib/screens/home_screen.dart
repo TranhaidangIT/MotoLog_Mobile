@@ -218,8 +218,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final actions = [
       {'icon': Icons.local_gas_station, 'label': 'Đổ xăng',  'route': '/fuel-log'},
       {'icon': Icons.build_outlined,     'label': 'Bảo dưỡng', 'route': '/maintenance'},
+      {'icon': Icons.settings_input_component_outlined, 'label': 'Phụ tùng', 'route': '/parts'},
       {'icon': Icons.account_balance_wallet_outlined, 'label': 'Chi phí', 'route': '/expense'},
-      {'icon': Icons.bar_chart,          'label': 'Thống kê', 'route': '/expense'},
       {'icon': Icons.two_wheeler,        'label': 'Xe của tôi',      'route': '/garage'},
       {'icon': Icons.notifications_active_outlined, 'label': 'Nhắc lịch', 'route': '/reminder'},
     ];

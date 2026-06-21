@@ -45,6 +45,9 @@ class DatabaseHelper {
         inspection_date TEXT,
         insurance_date TEXT,
         is_registered INTEGER,
+        registration_image_url TEXT,
+        inspection_image_url TEXT,
+        insurance_image_url TEXT,
         user_id      TEXT,
         created_at   TEXT NOT NULL,
         updated_at   TEXT NOT NULL
@@ -62,6 +65,9 @@ class DatabaseHelper {
         price_per_liter REAL NOT NULL,
         total_cost      REAL NOT NULL,
         station_name    TEXT,
+        station_lat     REAL,
+        station_lon     REAL,
+        fuel_type       TEXT,
         is_full         INTEGER NOT NULL DEFAULT 1,
         note            TEXT,
         created_at      TEXT NOT NULL,
@@ -83,7 +89,35 @@ class DatabaseHelper {
         next_due_date TEXT,
         next_due_km   REAL,
         note          TEXT,
+        image_path    TEXT,
         created_at    TEXT NOT NULL,
+        FOREIGN KEY (vehicle_id) REFERENCES ${AppConstants.tableVehicles}(id) ON DELETE CASCADE
+      )
+    ''');
+
+    // Bảng cấu hình hạng mục bảo dưỡng định kỳ
+    await db.execute('''
+      CREATE TABLE ${AppConstants.tableMaintenanceItems} (
+        id            TEXT PRIMARY KEY,
+        vehicle_id    TEXT NOT NULL,
+        name          TEXT NOT NULL,
+        icon_code     TEXT NOT NULL,
+        interval_km   INTEGER NOT NULL,
+        last_done_odo INTEGER NOT NULL DEFAULT 0,
+        is_reminder_on INTEGER NOT NULL DEFAULT 1,
+        FOREIGN KEY (vehicle_id) REFERENCES ${AppConstants.tableVehicles}(id) ON DELETE CASCADE
+      )
+    ''');
+
+    // Bảng lời nhắc tuỳ chỉnh
+    await db.execute('''
+      CREATE TABLE ${AppConstants.tableCustomReminders} (
+        id            TEXT PRIMARY KEY,
+        vehicle_id    TEXT NOT NULL,
+        title         TEXT NOT NULL,
+        subtitle      TEXT NOT NULL,
+        type          TEXT NOT NULL,
+        is_on         INTEGER NOT NULL DEFAULT 1,
         FOREIGN KEY (vehicle_id) REFERENCES ${AppConstants.tableVehicles}(id) ON DELETE CASCADE
       )
     ''');
@@ -105,11 +139,57 @@ class DatabaseHelper {
       await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN insurance_date TEXT');
       await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN is_registered INTEGER');
     }
+    if (oldVersion < 3) {
+      // Dành cho Phụ tùng
+      await db.execute('ALTER TABLE ${AppConstants.tableMaintenanceEntries} ADD COLUMN before_image_url TEXT');
+      await db.execute('ALTER TABLE ${AppConstants.tableMaintenanceEntries} ADD COLUMN after_image_url TEXT');
+    }
+    if (oldVersion < 4) {
+      await db.execute('''
+        CREATE TABLE ${AppConstants.tableMaintenanceItems} (
+          id            TEXT PRIMARY KEY,
+          vehicle_id    TEXT NOT NULL,
+          name          TEXT NOT NULL,
+          icon_code     TEXT NOT NULL,
+          interval_km   INTEGER NOT NULL,
+          last_done_odo INTEGER NOT NULL DEFAULT 0,
+          is_reminder_on INTEGER NOT NULL DEFAULT 1,
+          FOREIGN KEY (vehicle_id) REFERENCES ${AppConstants.tableVehicles}(id) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE ${AppConstants.tableCustomReminders} (
+          id            TEXT PRIMARY KEY,
+          vehicle_id    TEXT NOT NULL,
+          title         TEXT NOT NULL,
+          subtitle      TEXT NOT NULL,
+          type          TEXT NOT NULL,
+          is_on         INTEGER NOT NULL DEFAULT 1,
+          FOREIGN KEY (vehicle_id) REFERENCES ${AppConstants.tableVehicles}(id) ON DELETE CASCADE
+        )
+      ''');
+    }
+    if (oldVersion < 5) {
+      await db.execute('ALTER TABLE ${AppConstants.tableMaintenanceEntries} ADD COLUMN image_path TEXT');
+    }
+    if (oldVersion < 6) {
+      await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN registration_image_url TEXT');
+      await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN inspection_image_url TEXT');
+      await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN insurance_image_url TEXT');
+    }
+    if (oldVersion < 7) {
+      await db.execute('ALTER TABLE ${AppConstants.tableFuelEntries} ADD COLUMN station_lat REAL');
+      await db.execute('ALTER TABLE ${AppConstants.tableFuelEntries} ADD COLUMN station_lon REAL');
+      await db.execute('ALTER TABLE ${AppConstants.tableFuelEntries} ADD COLUMN fuel_type TEXT');
+    }
   }
 
   /// Xóa toàn bộ data (dùng khi logout)
   Future<void> clearAll() async {
     final db = await database;
+    await db.delete(AppConstants.tableCustomReminders);
+    await db.delete(AppConstants.tableMaintenanceItems);
     await db.delete(AppConstants.tableMaintenanceEntries);
     await db.delete(AppConstants.tableFuelEntries);
     await db.delete(AppConstants.tableVehicles);

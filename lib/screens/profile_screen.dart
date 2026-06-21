@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/bottom_nav_bar.dart';
+import 'maintenance_setup_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -45,6 +46,9 @@ class ProfileScreen extends ConsumerWidget {
             
             _buildOptionRow(context, Icons.person_outline, 'Chỉnh sửa thông tin', () {}),
             _buildOptionRow(context, Icons.lock_outline, 'Đổi mật khẩu', () {}),
+            _buildOptionRow(context, Icons.tune, 'Thiết lập lại mốc bảo dưỡng', () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const MaintenanceSetupScreen(isOnboarding: false)));
+            }),
             _buildOptionRow(context, Icons.settings_outlined, 'Cài đặt ứng dụng', () {}),
             _buildOptionRow(context, Icons.help_outline, 'Trung tâm trợ giúp', () {}),
             

@@ -1,13 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/app_theme.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import '../theme/app_theme.dart';
 import '../providers/vehicle_provider.dart';
 import '../providers/maintenance_provider.dart';
+import '../providers/maintenance_item_provider.dart';
 import '../data/models/maintenance_entry.dart';
-import '../utils/maintenance_utils.dart';
 
 class AddMaintenanceScreen extends ConsumerStatefulWidget {
   const AddMaintenanceScreen({super.key});
@@ -16,13 +17,27 @@ class AddMaintenanceScreen extends ConsumerStatefulWidget {
 }
 
 class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
-  String? _selectedType;
+  String? _selectedItemId;
   DateTime _date = DateTime.now();
   final _odoCtrl = TextEditingController();
   final _costCtrl = TextEditingController();
   final _noteCtrl = TextEditingController();
 
-  final _types = MaintenanceUtils.allItems;
+  File? _imageFile;
+  final _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final pickedFile = await _picker.pickImage(source: source, imageQuality: 70);
+      if (pickedFile != null) {
+        setState(() {
+          _imageFile = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+    }
+  }
 
   InputDecoration _decoration(String hint) => InputDecoration(
     hintText: hint,
@@ -41,6 +56,8 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final maintenanceItems = ref.watch(maintenanceItemNotifierProvider);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Thêm bảo dưỡng'), leading: const BackButton()),
       body: ListView(
@@ -48,20 +65,20 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
         children: [
           _label('Hạng mục bảo dưỡng'),
           DropdownButtonFormField<String>(
-            value: _selectedType,
+            value: _selectedItemId,
             decoration: _decoration('Chọn hạng mục'),
             isExpanded: true,
-            items: _types.map((t) => DropdownMenuItem(
-              value: t, 
+            items: maintenanceItems.map((item) => DropdownMenuItem(
+              value: item.id, 
               child: Row(
                 children: [
-                  Image.asset(MaintenanceUtils.getIcon(t), width: 28, height: 28),
+                  Icon(item.icon, size: 24, color: AppColors.primary),
                   const SizedBox(width: 10),
-                  Expanded(child: Text(t, style: GoogleFonts.beVietnamPro(fontSize: 13), overflow: TextOverflow.ellipsis)),
+                  Expanded(child: Text(item.name, style: GoogleFonts.beVietnamPro(fontSize: 13), overflow: TextOverflow.ellipsis)),
                 ],
               ),
             )).toList(),
-            onChanged: (v) => setState(() => _selectedType = v),
+            onChanged: (v) => setState(() => _selectedItemId = v),
           ),
 
           _label('Ngày thực hiện'),
@@ -92,6 +109,63 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
             decoration: _decoration('Nhập số tiền'),
           ),
 
+          _label('Hình ảnh phụ tùng / Hóa đơn'),
+          if (_imageFile != null)
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.file(
+                    _imageFile!,
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned(
+                  top: 8, right: 8,
+                  child: GestureDetector(
+                    onTap: () => setState(() => _imageFile = null),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+                      child: const Icon(Icons.close, color: Colors.white, size: 20),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          else
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.camera),
+                    icon: const Icon(Icons.camera_alt, color: AppColors.primary),
+                    label: const Text('Chụp ảnh', style: TextStyle(color: AppColors.primary)),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      side: const BorderSide(color: AppColors.primary),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    icon: const Icon(Icons.photo_library, color: AppColors.primary),
+                    label: const Text('Thư viện', style: TextStyle(color: AppColors.primary)),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      side: const BorderSide(color: AppColors.primary),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
           _label('Ghi chú (không bắt buộc)'),
           TextField(
             controller: _noteCtrl,
@@ -105,27 +179,29 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
             child: ElevatedButton(
               onPressed: () async {
                 final vehicleId = ref.read(selectedVehicleIdProvider);
-                if (vehicleId == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng chọn xe trước')));
-                  return;
+                if (vehicleId == null) return;
+                
+                final odo = double.tryParse(_odoCtrl.text) ?? 0;
+                
+                if (_selectedItemId != null) {
+                  // Cập nhật lastDoneOdo
+                  await ref.read(maintenanceItemNotifierProvider.notifier).markDone(_selectedItemId!, odo.toInt());
+                  
+                  // Thêm lịch sử chi phí
+                  final selectedItem = maintenanceItems.firstWhere((e) => e.id == _selectedItemId);
+                  final entry = MaintenanceEntry(
+                    vehicleId: vehicleId,
+                    title: selectedItem.name,
+                    type: MaintenanceType.routine,
+                    date: _date,
+                    odometer: odo,
+                    cost: double.tryParse(_costCtrl.text) ?? 0,
+                    note: _noteCtrl.text,
+                    imagePath: _imageFile?.path, // Lưu image path
+                  );
+                  await ref.read(maintenanceNotifierProvider.notifier).add(entry);
                 }
 
-                if (_selectedType == null || _odoCtrl.text.isEmpty || _costCtrl.text.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng nhập Hạng mục, ODO và Chi phí')));
-                  return;
-                }
-
-                final entry = MaintenanceEntry(
-                  vehicleId: vehicleId,
-                  title: _selectedType!,
-                  type: MaintenanceType.routine,
-                  date: _date,
-                  odometer: double.tryParse(_odoCtrl.text) ?? 0,
-                  cost: double.tryParse(_costCtrl.text) ?? 0,
-                  note: _noteCtrl.text,
-                );
-
-                await ref.read(maintenanceNotifierProvider.notifier).add(entry);
                 if (mounted) context.pop();
               },
               style: ElevatedButton.styleFrom(

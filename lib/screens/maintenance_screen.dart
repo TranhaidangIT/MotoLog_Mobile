@@ -1,48 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../providers/maintenance_item_provider.dart';
+import '../providers/vehicle_provider.dart';
+import 'maintenance_item_detail_screen.dart';
 
-class MaintenanceScreen extends StatefulWidget {
+class MaintenanceScreen extends ConsumerStatefulWidget {
   const MaintenanceScreen({super.key});
 
   @override
-  State<MaintenanceScreen> createState() => _MaintenanceScreenState();
+  ConsumerState<MaintenanceScreen> createState() => _MaintenanceScreenState();
 }
 
-class _MaintenanceScreenState extends State<MaintenanceScreen> {
+class _MaintenanceScreenState extends ConsumerState<MaintenanceScreen> {
   int _filterIndex = 0;
   final _filters = ['Tất cả', 'Sắp tới', 'Đã hoàn thành'];
 
-  static const List<Map<String, dynamic>> _items = [
-    { 'icon': 'img/phu-tung/thay_nhot_may.png', 'label': 'Thay nhớt máy', 'interval': 'Định kỳ sau mỗi 1.500 – 2.000 km', 'remaining': 500, 'total': 2000 },
-    { 'icon': 'img/phu-tung/ve_sinh_noi_cvt.png', 'label': 'Vệ sinh nồi (CVT)', 'interval': 'Định kỳ sau mỗi 8.000 – 10.000 km', 'remaining': 2300, 'total': 10000 },
-    { 'icon': 'img/phu-tung/thay_bugi.png', 'label': 'Thay bugi', 'interval': 'Định kỳ sau mỗi 8.000 – 10.000 km', 'remaining': 2300, 'total': 10000 },
-    { 'icon': 'img/phu-tung/thay_loc_gio.png', 'label': 'Thay lọc gió', 'interval': 'Định kỳ sau mỗi 10.000 – 12.000 km', 'remaining': 4300, 'total': 12000 },
-    { 'icon': 'img/phu-tung/thay_nuoc_lam_mat.png', 'label': 'Thay nước làm mát', 'interval': 'Định kỳ sau mỗi 12.000 – 15.000 km', 'remaining': 6300, 'total': 15000 },
-    { 'icon': 'img/phu-tung/thay_ac_quy.png', 'label': 'Thay ắc quy', 'interval': 'Định kỳ sau mỗi 2 năm hoặc 20.000 km', 'remaining': 3500, 'total': 20000 },
-    { 'icon': 'img/phu-tung/thay_dau_hop_so.png', 'label': 'Thay dầu hộp số', 'interval': 'Định kỳ sau mỗi 5.000 – 6.000 km', 'remaining': 1200, 'total': 6000 },
-    { 'icon': 'img/phu-tung/thay_lop.png', 'label': 'Thay lốp', 'interval': 'Định kỳ sau mỗi 15.000 – 20.000 km', 'remaining': 8000, 'total': 20000 },
-    { 'icon': 'img/phu-tung/thay_ma_phanh.png', 'label': 'Thay má phanh', 'interval': 'Định kỳ sau mỗi 10.000 km', 'remaining': 4000, 'total': 10000 },
-    { 'icon': 'img/phu-tung/thay_xich_tai.png', 'label': 'Thay xích tải/curoa', 'interval': 'Định kỳ sau mỗi 15.000 km', 'remaining': 5000, 'total': 15000 },
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final vehicleAsync = ref.watch(selectedVehicleProvider);
+    final currentOdo = vehicleAsync.valueOrNull?.odometer.toInt() ?? 0;
+    final allItems = ref.watch(maintenanceItemNotifierProvider);
+
+    // Lọc items
+    List<dynamic> displayItems = allItems;
+    if (_filterIndex == 1) {
+      displayItems = allItems.where((i) => i.urgency(currentOdo) != 'normal').toList();
+    } else if (_filterIndex == 2) {
+      displayItems = allItems.where((i) => i.remainingKm(currentOdo) > (i.intervalKm * 0.8)).toList(); // Vừa hoàn thành
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Bảo dưỡng'),
         centerTitle: true,
         leading: const BackButton(),
-        actions: const [SizedBox(width: 48)], // Empty space to center title
+        actions: const [SizedBox(width: 48)],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             // Filter chips
-            Container(color: AppColors.surface,
+            Container(
+              color: AppColors.surface,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
               child: SingleChildScrollView(
@@ -78,80 +82,92 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
-              itemCount: _items.length,
+              itemCount: displayItems.length,
               itemBuilder: (context, index) {
-                final item = _items[index];
-                double remaining = (item['remaining'] as int).toDouble();
-                double total = (item['total'] as int).toDouble();
-                double progressValue = 1 - (remaining / total);
-                if (progressValue < 0) progressValue = 0;
-                if (progressValue > 1) progressValue = 1;
+                final item = displayItems[index];
+                double progressValue = item.progress(currentOdo);
+                int remaining = item.remainingKm(currentOdo);
 
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 8,
-                      )
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        item['icon'] as String,
-                        width: 48, height: 48,
-                        fit: BoxFit.contain,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item['label'] as String,
-                              style: GoogleFonts.beVietnamPro(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              item['interval'] as String,
-                              style: GoogleFonts.beVietnamPro(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: LinearProgressIndicator(
-                                value: progressValue,
-                                backgroundColor: AppColors.greenChip,
-                                color: AppColors.primary,
-                                minHeight: 6,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Còn ${(item['remaining'] as int)} km',
-                              style: GoogleFonts.beVietnamPro(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => MaintenanceItemDetailScreen(itemId: item.id)));
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 8,
+                        )
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 48, height: 48,
+                          decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
+                          child: Icon(item.icon, color: AppColors.primary, size: 24),
                         ),
-                      )
-                    ],
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.name,
+                                style: GoogleFonts.beVietnamPro(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Định kỳ sau mỗi ${item.intervalKm} km',
+                                style: GoogleFonts.beVietnamPro(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: LinearProgressIndicator(
+                                  value: progressValue,
+                                  backgroundColor: AppColors.greenChip,
+                                  color: AppColors.primary,
+                                  minHeight: 6,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              if (item.isOverdue(currentOdo))
+                                Text(
+                                  'Đã quá hạn ${item.overdueKm(currentOdo)} km',
+                                  style: GoogleFonts.beVietnamPro(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFFD32F2F),
+                                  ),
+                                )
+                              else
+                                Text(
+                                  'Còn $remaining km',
+                                  style: GoogleFonts.beVietnamPro(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 );
               },
@@ -175,15 +191,10 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
       bottomNavigationBar: MotoBottomNavBar(
         currentIndex: -1, 
         onTap: (i) {
-          if (i == 0) {
-            context.go('/home');
-          } else if (i == 1) {
-            context.go('/fuel-history');
-          } else if (i == 2) {
-            context.go('/expense');
-          } else if (i == 3) {
-            context.go('/profile');
-          }
+          if (i == 0) context.go('/home');
+          else if (i == 1) context.go('/fuel-history');
+          else if (i == 2) context.go('/expense');
+          else if (i == 3) context.go('/profile');
         },
         onAddTap: () => context.push('/fuel-log'),
       ),

@@ -7,12 +7,14 @@ class AppConstants {
 
   // Database
   static const String dbName = 'motolog.db';
-  static const int dbVersion = 2;
+  static const int dbVersion = 7;
 
   // Tables
   static const String tableVehicles = 'vehicles';
   static const String tableFuelEntries = 'fuel_entries';
   static const String tableMaintenanceEntries = 'maintenance_entries';
+  static const String tableMaintenanceItems = 'maintenance_items';
+  static const String tableCustomReminders = 'custom_reminders';
 
   // Shared Preferences Keys
   static const String keyThemeMode = 'theme_mode';
