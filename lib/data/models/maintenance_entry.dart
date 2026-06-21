@@ -56,6 +56,8 @@ class MaintenanceEntry {
   final double? nextDueKm;
   final String? note;
   final String? imagePath;
+  final String? beforeImageUrl;
+  final String? afterImageUrl;
   final DateTime createdAt;
 
   MaintenanceEntry({
@@ -71,6 +73,8 @@ class MaintenanceEntry {
     this.nextDueKm,
     this.note,
     this.imagePath,
+    this.beforeImageUrl,
+    this.afterImageUrl,
     DateTime? createdAt,
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
@@ -94,6 +98,8 @@ class MaintenanceEntry {
           : null,
       note: map['note'] as String?,
       imagePath: map['image_path'] as String?,
+      beforeImageUrl: map['before_image_url'] as String?,
+      afterImageUrl: map['after_image_url'] as String?,
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
@@ -113,6 +119,8 @@ class MaintenanceEntry {
       'next_due_km': nextDueKm,
       'note': note,
       'image_path': imagePath,
+      'before_image_url': beforeImageUrl,
+      'after_image_url': afterImageUrl,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -132,6 +140,8 @@ class MaintenanceEntry {
       'next_due_km': nextDueKm,
       'note': note,
       'image_path': imagePath,
+      'before_image_url': beforeImageUrl,
+      'after_image_url': afterImageUrl,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -155,6 +165,8 @@ class MaintenanceEntry {
           : null,
       note: map['note'] as String?,
       imagePath: map['image_path'] as String?,
+      beforeImageUrl: map['before_image_url'] as String?,
+      afterImageUrl: map['after_image_url'] as String?,
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
@@ -171,6 +183,8 @@ class MaintenanceEntry {
     double? nextDueKm,
     String? note,
     String? imagePath,
+    String? beforeImageUrl,
+    String? afterImageUrl,
   }) {
     return MaintenanceEntry(
       id: id,
@@ -185,6 +199,8 @@ class MaintenanceEntry {
       nextDueKm: nextDueKm ?? this.nextDueKm,
       note: note ?? this.note,
       imagePath: imagePath ?? this.imagePath,
+      beforeImageUrl: beforeImageUrl ?? this.beforeImageUrl,
+      afterImageUrl: afterImageUrl ?? this.afterImageUrl,
       createdAt: createdAt,
     );
   }

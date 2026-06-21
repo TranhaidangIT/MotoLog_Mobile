@@ -2,16 +2,20 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
-import '../models/part_record.dart';
+import '../data/models/maintenance_entry.dart';
+import '../providers/maintenance_provider.dart';
+import '../providers/vehicle_provider.dart';
 
-class AddPartScreen extends StatefulWidget {
+class AddPartScreen extends ConsumerStatefulWidget {
   const AddPartScreen({super.key});
   @override
-  State<AddPartScreen> createState() => _AddPartScreenState();
+  ConsumerState<AddPartScreen> createState() => _AddPartScreenState();
 }
 
-class _AddPartScreenState extends State<AddPartScreen> {
+class _AddPartScreenState extends ConsumerState<AddPartScreen> {
   final _nameCtrl = TextEditingController();
   final _costCtrl = TextEditingController();
   final _odoCtrl = TextEditingController();
@@ -20,6 +24,74 @@ class _AddPartScreenState extends State<AddPartScreen> {
   File? _beforePhoto;
   File? _afterPhoto;
   final _picker = ImagePicker();
+  bool _isLoading = false;
+
+  Future<void> _save() async {
+    final name = _nameCtrl.text.trim();
+    final costText = _costCtrl.text.replaceAll(RegExp(r'[^0-9]'), '');
+    final odoText = _odoCtrl.text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (name.isEmpty || costText.isEmpty || odoText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui lòng nhập tên, số km và chi phí')),
+      );
+      return;
+    }
+
+    final cost = double.tryParse(costText) ?? 0;
+    final odo = double.tryParse(odoText) ?? 0;
+
+    final vehicleId = ref.read(selectedVehicleIdProvider);
+    if (vehicleId == null) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      String? beforeImg;
+      String? afterImg;
+
+      if (_beforePhoto != null) {
+        final appDir = await getApplicationDocumentsDirectory();
+        final fileName = 'part_${DateTime.now().millisecondsSinceEpoch}_before.jpg';
+        final saved = await _beforePhoto!.copy('${appDir.path}/$fileName');
+        beforeImg = saved.path;
+      }
+      if (_afterPhoto != null) {
+        final appDir = await getApplicationDocumentsDirectory();
+        final fileName = 'part_${DateTime.now().millisecondsSinceEpoch}_after.jpg';
+        final saved = await _afterPhoto!.copy('${appDir.path}/$fileName');
+        afterImg = saved.path;
+      }
+
+      final entry = MaintenanceEntry(
+        vehicleId: vehicleId,
+        type: MaintenanceType.parts,
+        title: name,
+        date: _date,
+        odometer: odo,
+        cost: cost,
+        beforeImageUrl: beforeImg,
+        afterImageUrl: afterImg,
+        note: _noteCtrl.text.trim().isNotEmpty ? _noteCtrl.text.trim() : null,
+      );
+
+      await ref.read(maintenanceNotifierProvider.notifier).add(entry);
+
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi khi lưu: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   Future<void> _pickPhoto({required bool isBefore}) async {
     final source = await showModalBottomSheet<ImageSource>(
@@ -152,16 +224,15 @@ class _AddPartScreenState extends State<AddPartScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                // TODO: lưu PartRecord vào storage/database
-                Navigator.pop(context);
-              },
+              onPressed: _isLoading ? null : _save,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: Text('Lưu lại', style: GoogleFonts.beVietnamPro(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white)),
+              child: _isLoading 
+                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : Text('Lưu lại', style: GoogleFonts.beVietnamPro(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white)),
             ),
           ),
         ],
