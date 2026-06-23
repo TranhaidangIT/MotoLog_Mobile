@@ -1,3 +1,4 @@
+import 'dart:io' as java_io;
 import 'package:sqflite/sqflite.dart';
 import '../../models/maintenance_entry.dart';
 import '../database_helper.dart';
@@ -95,6 +96,16 @@ class MaintenanceDao {
     return MaintenanceEntry.fromMap(maps.first);
   }
 
+  /// Lấy tất cả hoá đơn bảo dưỡng chưa đồng bộ (is_synced = 0)
+  Future<List<MaintenanceEntry>> getUnsynced() async {
+    final db = await _db;
+    final maps = await db.query(
+      AppConstants.tableMaintenanceEntries,
+      where: 'is_synced = 0',
+    );
+    return maps.map(MaintenanceEntry.fromMap).toList();
+  }
+
   // ===== STATISTICS =====
 
   /// Tổng chi phí bảo dưỡng
@@ -118,7 +129,10 @@ class MaintenanceDao {
       'SELECT SUM(cost) FROM ${AppConstants.tableMaintenanceEntries} WHERE $where',
       args,
     );
-    return (Sqflite.firstIntValue(result) ?? 0).toDouble();
+    if (result.isNotEmpty && result.first.values.first != null) {
+      return (result.first.values.first as num).toDouble();
+    }
+    return 0.0;
   }
 
   /// Chi phí bảo dưỡng theo tháng
@@ -154,11 +168,46 @@ class MaintenanceDao {
 
   // ===== DELETE =====
   Future<void> delete(String id) async {
+    final entry = await getById(id);
+    if (entry != null) {
+      _deleteFile(entry.imagePath);
+      _deleteFile(entry.beforeImageUrl);
+      _deleteFile(entry.afterImageUrl);
+    }
     final db = await _db;
     await db.delete(
       AppConstants.tableMaintenanceEntries,
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  /// Xoá toàn bộ lịch sử bảo dưỡng của một xe
+  Future<void> deleteByVehicle(String vehicleId) async {
+    final entries = await getByVehicle(vehicleId);
+    for (var entry in entries) {
+      _deleteFile(entry.imagePath);
+      _deleteFile(entry.beforeImageUrl);
+      _deleteFile(entry.afterImageUrl);
+    }
+    final db = await _db;
+    await db.delete(
+      AppConstants.tableMaintenanceEntries,
+      where: 'vehicle_id = ?',
+      whereArgs: [vehicleId],
+    );
+  }
+
+  void _deleteFile(String? path) {
+    if (path != null && path.isNotEmpty) {
+      try {
+        final file = java_io.File(path);
+        if (file.existsSync()) {
+          file.deleteSync();
+        }
+      } catch (e) {
+        // Ignore
+      }
+    }
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/app_theme.dart';
 import '../providers/vehicle_provider.dart';
 
@@ -53,13 +54,8 @@ class GarageScreen extends ConsumerWidget {
               final v = vehicles[index];
               final isDefault = v.id == selectedVehicleId;
               
-              // Thủ thuật hình ảnh mặc định theo loại xe (lưu ở engineCapacity)
-              String defaultImage = 'img/backroud/3.1.png'; // Ảnh xe số mặc định
-              if (v.engineCapacity == 'Xe tay ga') {
-                defaultImage = 'img/backroud/2.1.png'; // Ảnh xe ga mặc định
-              } else if (v.engineCapacity == 'Xe côn tay / PKL') {
-                defaultImage = 'img/backroud/4.1.png'; // Thêm nếu có
-              }
+              // Không dùng ảnh asset fallback nữa, sử dụng Icon
+              final Widget defaultImage = const Icon(Icons.two_wheeler, size: 40, color: AppColors.primary);
 
               return GestureDetector(
                 onTap: () {
@@ -88,11 +84,19 @@ class GarageScreen extends ConsumerWidget {
                           width: 80,
                           height: 80,
                           color: Colors.white,
-                          child: v.imageUrl != null && v.imageUrl!.isNotEmpty
-                              ? (v.imageUrl!.startsWith('http') 
-                                  ? Image.network(v.imageUrl!, fit: BoxFit.cover)
-                                  : Image.asset(v.imageUrl!, fit: BoxFit.cover)) // Dùng tạm asset nếu không phải URL thật, hoặc xử lý file logic sau
-                              : Image.asset(defaultImage, fit: BoxFit.contain),
+                          child: (v.cachedImageUrl != null && v.cachedImageUrl!.isNotEmpty)
+                              ? (v.cachedImageUrl!.startsWith('http') 
+                                  ? CachedNetworkImage(
+                                      imageUrl: v.cachedImageUrl!,
+                                      fit: BoxFit.cover,
+                                      errorWidget: (_, __, ___) => defaultImage,
+                                    )
+                                  : Image.asset(
+                                      v.cachedImageUrl!,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => defaultImage,
+                                    )) 
+                              : defaultImage,
                         ),
                       ),
                       const SizedBox(width: 16),

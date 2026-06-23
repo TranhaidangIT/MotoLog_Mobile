@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../providers/vehicle_provider.dart';
 import '../providers/maintenance_provider.dart';
 import '../providers/maintenance_item_provider.dart';
+import '../providers/fuel_provider.dart';
 import '../data/models/maintenance_entry.dart';
 
 class AddMaintenanceScreen extends ConsumerStatefulWidget {
@@ -183,6 +184,32 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
                 
                 final odo = double.tryParse(_odoCtrl.text) ?? 0;
                 
+                // --- BẮt ĐẦU KIỂM TRA ODO ---
+                final fuelEntries = ref.read(fuelListProvider).valueOrNull ?? [];
+                final maintEntries = ref.read(maintenanceListProvider).valueOrNull ?? [];
+                
+                double maxOdo = 0;
+                if (fuelEntries.isNotEmpty) maxOdo = fuelEntries.first.odometer;
+                if (maintEntries.isNotEmpty && maintEntries.first.odometer > maxOdo) {
+                  maxOdo = maintEntries.first.odometer;
+                }
+                
+                final vehicle = ref.read(selectedVehicleProvider).valueOrNull;
+                if (vehicle != null && vehicle.odometer > maxOdo) {
+                  maxOdo = vehicle.odometer;
+                }
+
+                if (odo > 0 && odo < maxOdo) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Số ODO phải lớn hơn hoặc bằng mốc hiện tại (${maxOdo.toInt()} km)'),
+                      backgroundColor: Colors.red,
+                    ));
+                  }
+                  return;
+                }
+                // --- KẾT THÚC KIỂM TRA ODO ---
+
                 if (_selectedItemId != null) {
                   // Cập nhật lastDoneOdo
                   await ref.read(maintenanceItemNotifierProvider.notifier).markDone(_selectedItemId!, odo.toInt());

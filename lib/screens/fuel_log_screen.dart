@@ -29,6 +29,7 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
 
   // Controllers
   final _stationCtrl = TextEditingController();
+  final _addressCtrl = TextEditingController();
   final _litersCtrl = TextEditingController();
   final _amountCtrl = TextEditingController();
   final _odoCtrl = TextEditingController();
@@ -92,6 +93,7 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
   @override
   void dispose() {
     _stationCtrl.dispose();
+    _addressCtrl.dispose();
     _litersCtrl.dispose();
     _amountCtrl.dispose();
     _odoCtrl.dispose();
@@ -162,6 +164,7 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
           _isLocating = false;
           _selectedStation = stations.first;
           _stationCtrl.text = stations.first.name;
+          if (stations.first.address != null) _addressCtrl.text = stations.first.address!;
         });
       } else {
         setState(() { _isLocating = false; });
@@ -200,6 +203,7 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
                   setState(() {
                     _selectedStation = s;
                     _stationCtrl.text = s.name;
+                    if (s.address != null) _addressCtrl.text = s.address!;
                   });
                   Navigator.pop(context);
                 },
@@ -252,6 +256,7 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
       pricePerLiter: _currentPrice.toDouble(),
       totalCost: amount,
       stationName: _stationCtrl.text.isNotEmpty ? _stationCtrl.text : null,
+      stationAddress: _addressCtrl.text.isNotEmpty ? _addressCtrl.text : null,
       stationLat: _selectedStation?.lat,
       stationLon: _selectedStation?.lon,
       fuelType: _selectedFuelType,
@@ -293,7 +298,7 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                NotificationService.scheduleRefuelReminder(distanceLeft, estimateDays: 5); // Tạm fix 5 ngày
+                NotificationService.scheduleRefuelReminder(distanceLeft, estimateDays: 5);
                 Navigator.pop(context);
                 _finish();
               },
@@ -307,10 +312,6 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
   }
 
   void _finish() {
-    // User requested invalidate but Riverpod providers usually self-invalidate/update when state changes.
-    // However, if we need explicit invalidation for stats:
-    // ref.invalidate(...)
-    
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã lưu nhật ký đổ xăng')));
     if (mounted) context.pop();
   }
@@ -465,6 +466,8 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
                   ],
                   const SizedBox(height: 12),
                   _buildTextField(_stationCtrl, 'Tên cây xăng (nhập tay hoặc auto)'),
+                  const SizedBox(height: 8),
+                  _buildTextField(_addressCtrl, 'Địa chỉ cây xăng (tuỳ chọn)'),
                 ],
               ),
             ),

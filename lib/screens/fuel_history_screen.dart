@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+  import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -31,7 +31,8 @@ class _FuelHistoryScreenState extends ConsumerState<FuelHistoryScreen> {
       ),
       body: Column(children: [
         // Filter chips
-        Container(color: AppColors.surface,
+        Container(
+          color: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -62,17 +63,74 @@ class _FuelHistoryScreenState extends ConsumerState<FuelHistoryScreen> {
         Expanded(
           child: fuelListAsync.when(
             data: (records) {
-              if (records.isEmpty) {
-                return const Center(child: Text('Chưa có lịch sử đổ xăng'));
+              // Áp dụng bộ lọc
+              final now = DateTime.now();
+              Iterable<FuelEntry> filtered = records;
+              if (_filterIndex == 1) {
+                // Tháng này
+                filtered = records.where((r) => r.date.year == now.year && r.date.month == now.month);
+              } else if (_filterIndex == 2) {
+                // Tháng trước
+                int prevMonth = now.month - 1;
+                int prevYear = now.year;
+                if (prevMonth == 0) {
+                  prevMonth = 12;
+                  prevYear--;
+                }
+                filtered = records.where((r) => r.date.year == prevYear && r.date.month == prevMonth);
+              }
+              // Tùy chọn (index 3) hiện tại để tạm giống 'Tất cả'
+
+              final displayList = filtered.toList();
+
+              if (displayList.isEmpty) {
+                return const Center(child: Text('Không có dữ liệu'));
               }
               
-              return ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                itemCount: records.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
-                itemBuilder: (_, i) => _FuelRecordTile(record: records[i]),
-              );
+              // Calculate stats
+              double totalAmount = 0;
+              double totalLiters = 0;
+              for (var r in displayList) {
+                totalAmount += r.totalCost;
+                totalLiters += r.liters;
+              }
 
+              // Giả định quãng đường là từ odo max - odo min
+              double distance = 0;
+              if (displayList.length > 1) {
+                displayList.sort((a, b) => b.odometer.compareTo(a.odometer));
+                distance = displayList.first.odometer - displayList.last.odometer;
+              }
+
+              double avgConsumption = totalLiters > 0 ? (distance / totalLiters) : 0.0;
+
+              return Column(
+                children: [
+                  // Stats summary
+                  Container(
+                    color: Colors.white,
+                    margin: const EdgeInsets.only(top: 1),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                    child: Row(children: [
+                      _StatCell(label: 'Tổng tiền', value: '${NumberFormat('#,###').format(totalAmount)} đ'),
+                      Container(width: 1, height: 50, color: AppColors.divider),
+                      _StatCell(label: 'Tổng lít', value: '${totalLiters.toStringAsFixed(2)} lít'),
+                      Container(width: 1, height: 50, color: AppColors.divider),
+                      _StatCell(label: 'Tiêu hao TB', value: '${avgConsumption.toStringAsFixed(1)} km/lít'),
+                    ]),
+                  ),
+
+                  // List
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemCount: displayList.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 1),
+                      itemBuilder: (_, i) => _FuelRecordTile(record: displayList[i]),
+                    ),
+                  ),
+                ],
+              );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, st) => Center(child: Text('Lỗi: $e')),
@@ -85,8 +143,6 @@ class _FuelHistoryScreenState extends ConsumerState<FuelHistoryScreen> {
           if (i == 0) {
             context.go('/home');
           } else if (i == 2) {
-            context.go('/expense');
-          } else if (i == 3) {
             context.go('/profile');
           }
         },
@@ -96,6 +152,22 @@ class _FuelHistoryScreenState extends ConsumerState<FuelHistoryScreen> {
   }
 }
 
+class _StatCell extends StatelessWidget {
+  final String label;
+  final String value;
+  const _StatCell({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(children: [
+        Text(label, style: GoogleFonts.beVietnamPro(fontSize: 10, color: AppColors.textSecondary), textAlign: TextAlign.center),
+        const SizedBox(height: 4),
+        Text(value, style: GoogleFonts.beVietnamPro(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textPrimary), textAlign: TextAlign.center),
+      ]),
+    );
+  }
+}
 
 class _FuelRecordTile extends StatelessWidget {
   final FuelEntry record;
@@ -106,7 +178,8 @@ class _FuelRecordTile extends StatelessWidget {
     final dateFormat = DateFormat('dd/MM/yyyy');
     final currencyFormat = NumberFormat('#,###');
 
-    return Container(color: AppColors.surface,
+    return Container(
+      color: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(children: [
         // Icon
@@ -124,6 +197,15 @@ class _FuelRecordTile extends StatelessWidget {
             Text(dateFormat.format(record.date), style: GoogleFonts.beVietnamPro(fontSize: 11, color: AppColors.textSecondary)),
             const SizedBox(height: 2),
             Text(record.stationName ?? 'Cây xăng', style: GoogleFonts.beVietnamPro(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+            if (record.stationAddress != null && record.stationAddress!.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              Text(
+                record.stationAddress!,
+                style: GoogleFonts.beVietnamPro(fontSize: 11, color: AppColors.textSecondary),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
             const SizedBox(height: 2),
             Text('${record.liters.toStringAsFixed(2)} lít · ODO: ${record.odometer.toInt()}', style: GoogleFonts.beVietnamPro(fontSize: 11, color: AppColors.textSecondary)),
           ]),
@@ -142,8 +224,6 @@ class _FuelRecordTile extends StatelessWidget {
             child: Text('58.0 km/lít', style: GoogleFonts.beVietnamPro(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.primary)),
           ),
         ]),
-        const SizedBox(width: 4),
-        const Icon(Icons.chevron_right, color: AppColors.textSecondary, size: 20),
       ]),
     );
   }

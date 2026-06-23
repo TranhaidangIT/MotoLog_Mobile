@@ -1,3 +1,4 @@
+import 'dart:io' as java_io;
 import 'package:sqflite/sqflite.dart';
 import '../../models/vehicle.dart';
 import '../database_helper.dart';
@@ -47,6 +48,16 @@ class VehicleDao {
     return Vehicle.fromMap(maps.first);
   }
 
+  /// Lấy tất cả xe chưa được đồng bộ (is_synced = 0)
+  Future<List<Vehicle>> getUnsynced() async {
+    final db = await _db;
+    final maps = await db.query(
+      AppConstants.tableVehicles,
+      where: 'is_synced = 0',
+    );
+    return maps.map(Vehicle.fromMap).toList();
+  }
+
   // ===== UPDATE =====
   Future<void> update(Vehicle vehicle) async {
     final db = await _db;
@@ -74,12 +85,32 @@ class VehicleDao {
 
   // ===== DELETE =====
   Future<void> delete(String id) async {
+    final vehicle = await getById(id);
+    if (vehicle != null) {
+      _deleteFile(vehicle.imageUrl);
+      _deleteFile(vehicle.registrationImageUrl);
+      _deleteFile(vehicle.inspectionImageUrl);
+      _deleteFile(vehicle.insuranceImageUrl);
+    }
     final db = await _db;
     await db.delete(
       AppConstants.tableVehicles,
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  void _deleteFile(String? path) {
+    if (path != null && path.isNotEmpty) {
+      try {
+        final file = java_io.File(path);
+        if (file.existsSync()) {
+          file.deleteSync();
+        }
+      } catch (e) {
+        // Ignore
+      }
+    }
   }
 
   // ===== COUNT =====

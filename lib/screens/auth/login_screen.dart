@@ -371,44 +371,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
-
-                      // Facebook Social Button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: OutlinedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  // Dummy Facebook login
-                                },
-                          style: OutlinedButton.styleFrom(
-                            side:
-                                const BorderSide(color: AppColors.borderLight),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            backgroundColor: AppColors.background,
-                            foregroundColor: AppColors.textPrimaryLight,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.facebook,
-                                  color: Colors.blue, size: 22),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Đăng nhập với Facebook',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),

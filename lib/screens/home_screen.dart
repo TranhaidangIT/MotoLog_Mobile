@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../providers/vehicle_provider.dart';
 import '../providers/fuel_provider.dart';
 import '../providers/maintenance_provider.dart';
 import '../providers/auth_provider.dart';
+import '../data/services/firestore_service.dart';
 import '../data/models/vehicle.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -20,6 +23,14 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _navIndex = 0;
   int _carouselIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(firestoreServiceProvider)?.retrySyncOfflineData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +71,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         currentIndex: _navIndex,
         onTap: (i) {
           if (i == 1) {
-            context.push('/fuel-history');
+            context.go('/fuel-history');
           } else if (i == 2) {
-            context.push('/expense');
-          } else if (i == 3) {
-            context.push('/my-vehicle');
+            context.go('/profile');
           } else {
             setState(() => _navIndex = i);
           }
@@ -138,7 +147,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildBikeCarousel(List<Vehicle> bikes, String? selectedId) {
     return Column(children: [
       SizedBox(
-        height: 200, // Tăng lên để có không gian cho xe lòi ra phía trên
+        height: 200,
         child: PageView.builder(
           onPageChanged: (i) {
             setState(() => _carouselIndex = i);
@@ -150,7 +159,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
-                margin: const EdgeInsets.only(top: 30, bottom: 8), // Chừa 30px trên để xe nổi lên
+                margin: const EdgeInsets.only(top: 30, bottom: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   gradient: const LinearGradient(
@@ -162,18 +171,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 child: Stack(clipBehavior: Clip.none, children: [
                   Positioned(
-                    right: 0, top: -40, // Đẩy xe LÊN TRÊN khỏi card (antigravity)
+                    right: -17, top: -20,
                     child: SizedBox(
-                      width: 170, // Đặt cỡ vừa vặn
-                      child: Transform.flip(
-                        flipX: true, // Lật ngang ảnh
-                        child: Image.asset(
-                          bike.engineCapacity == 'Xe tay ga' 
-                              ? 'img/xe-2-banh/tay-ga/motolog_scooter_1.png' 
-                              : 'img/xe-2-banh/tay-ga/motolog_scooter_2.png',
-                          fit: BoxFit.contain,
-                        ),
-                      ),
+                      width: 240,
+                      child: (bike.cachedImageUrl != null && bike.cachedImageUrl!.isNotEmpty)
+                          ? (bike.cachedImageUrl!.startsWith('http')
+                              ? CachedNetworkImage(
+                                  imageUrl: bike.cachedImageUrl!,
+                                  fit: BoxFit.contain,
+                                  placeholder: (context, url) => const SizedBox(
+                                    width: 40, height: 40,
+                                    child: Center(child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
+                                  ),
+                                  errorWidget: (context, url, error) => const Icon(Icons.two_wheeler, size: 60, color: Colors.white70),
+                                )
+                              : Image.asset(
+                                  bike.cachedImageUrl!,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (_, __, ___) => const Icon(Icons.two_wheeler, size: 60, color: Colors.white70),
+                                )
+                            )
+                          : const Icon(Icons.two_wheeler, size: 60, color: Colors.white70),
                     ),
                   ),
                   Padding(
@@ -236,7 +254,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: actions.map((a) => GestureDetector(
           onTap: () {
             if (a['route'] != null) {
-              context.push(a['route'] as String);
+              if (a['route'] == '/expense') {
+                context.go('/expense'); // Chuyển Tab
+              } else {
+                context.push(a['route'] as String);
+              }
             }
           },
           child: Container(
@@ -282,11 +304,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('Tổng quan tháng này', style: GoogleFonts.beVietnamPro(fontSize: 15, fontWeight: FontWeight.w700)),
           const SizedBox(height: 12),
-          _SummaryRow(label: 'Chi phí xăng', amount: '${fuelCost.toInt()} đ', color: AppColors.fuelOrange),
+          _SummaryRow(label: 'Chi phí xăng', amount: '${NumberFormat('#,###', 'vi_VN').format(fuelCost)} đ', color: AppColors.fuelOrange),
           const SizedBox(height: 8),
-          _SummaryRow(label: 'Chi phí bảo dưỡng', amount: '${maintCost.toInt()} đ', color: AppColors.maintenanceRed),
+          _SummaryRow(label: 'Chi phí bảo dưỡng', amount: '${NumberFormat('#,###', 'vi_VN').format(maintCost)} đ', color: AppColors.maintenanceRed),
           const Divider(height: 20),
-          _SummaryRow(label: 'Tổng chi phí', amount: '${total.toInt()} đ', color: AppColors.textPrimary, bold: true),
+          _SummaryRow(label: 'Tổng chi phí', amount: '${NumberFormat('#,###', 'vi_VN').format(total)} đ', color: AppColors.textPrimary, bold: true),
         ]),
       ),
     );

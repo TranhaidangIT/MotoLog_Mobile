@@ -6,7 +6,9 @@ import 'package:intl/intl.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../providers/vehicle_provider.dart';
+import '../data/services/backup_delete_service.dart';
 import 'document_edit_screen.dart';
+import 'vehicle/add_edit_vehicle_screen.dart';
 
 class MyVehicleScreen extends ConsumerWidget {
   final String? vehicleId;
@@ -85,8 +87,32 @@ class MyVehicleScreen extends ConsumerWidget {
             onPressed: () => context.push('/add-vehicle'),
           ),
           IconButton(
-            onPressed: () {}, 
+            onPressed: () {
+              context.push('/add-vehicle-manual', extra: vehicle);
+            }, 
             icon: const Icon(Icons.edit_outlined, size: 20)
+          ),
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Xác nhận xoá xe?'),
+                  content: const Text('Hành động này sẽ xoá toàn bộ lịch sử chi phí, xăng, và bảo dưỡng. Hệ thống sẽ tự động gửi một Email sao lưu vào tài khoản Gmail của bạn.'),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Huỷ')),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        BackupDeleteService.deleteVehicleWithBackup(context, vehicle.id, ref);
+                      }, 
+                      child: const Text('Xoá', style: TextStyle(color: Colors.redAccent)),
+                    ),
+                  ],
+                ),
+              );
+            }, 
+            icon: const Icon(Icons.delete_outline, size: 20, color: Colors.redAccent)
           ),
         ],
       ),
@@ -133,7 +159,7 @@ class MyVehicleScreen extends ConsumerWidget {
             children: [
               _InfoCell(icon: Icons.calendar_today, value: '${vehicle.year}', label: 'Năm sản xuất'),
               const SizedBox(height: 6),
-              _InfoCell(icon: Icons.palette_outlined, value: vehicle.color == '#FF6B00' ? 'Đen' : vehicle.color, label: 'Màu xe'),
+              _InfoCell(icon: Icons.palette_outlined, value: _colorName(vehicle.color), label: 'Màu xe'),
               const SizedBox(height: 6),
               _InfoCell(icon: Icons.settings_outlined, value: vehicle.engineCapacity ?? '-- cc', label: 'Dung tích'),
               const SizedBox(height: 6),
@@ -183,14 +209,28 @@ class MyVehicleScreen extends ConsumerWidget {
       bottomNavigationBar: MotoBottomNavBar(
         currentIndex: 3,
         onTap: (i) {
-          if (i == 0) { context.go('/home'); }
-          else if (i == 1) { context.go('/fuel-history'); }
-          else if (i == 2) { context.go('/expense'); }
+          if (i == 0) context.go('/home');
+          if (i == 1) context.go('/fuel-history');
+          if (i == 2) context.go('/profile');
         },
         onAddTap: () => context.push('/fuel-log'),
       ),
     );
   }
+}
+
+String _colorName(String hex) {
+  const map = {
+    '#000000': 'Đen', '#1a1a1a': 'Đen', '#FF6B00': 'Đen',
+    '#ffffff': 'Trắng', '#FFFFFF': 'Trắng',
+    '#FF0000': 'Đỏ', '#cc0000': 'Đỏ đô',
+    '#0000FF': 'Xanh dương', '#003399': 'Xanh navy',
+    '#008000': 'Xanh lá', '#00aa00': 'Xanh lá',
+    '#FFD700': 'Vàng', '#FFA500': 'Cam',
+    '#808080': 'Xám', '#C0C0C0': 'Bạc',
+    '#964B00': 'Nâu',
+  };
+  return map[hex] ?? hex;
 }
 
 class _SectionTitle extends StatelessWidget {
@@ -206,6 +246,7 @@ class _SectionTitle extends StatelessWidget {
     );
   }
 }
+
 
 class _InfoCell extends StatelessWidget {
   final IconData icon;

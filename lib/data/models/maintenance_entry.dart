@@ -59,6 +59,7 @@ class MaintenanceEntry {
   final String? beforeImageUrl;
   final String? afterImageUrl;
   final DateTime createdAt;
+  final int isSynced;
 
   MaintenanceEntry({
     String? id,
@@ -76,6 +77,7 @@ class MaintenanceEntry {
     this.beforeImageUrl,
     this.afterImageUrl,
     DateTime? createdAt,
+    this.isSynced = 1,
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
 
@@ -100,6 +102,7 @@ class MaintenanceEntry {
       imagePath: map['image_path'] as String?,
       beforeImageUrl: map['before_image_url'] as String?,
       afterImageUrl: map['after_image_url'] as String?,
+      isSynced: map['is_synced'] as int? ?? 1,
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
@@ -121,6 +124,7 @@ class MaintenanceEntry {
       'image_path': imagePath,
       'before_image_url': beforeImageUrl,
       'after_image_url': afterImageUrl,
+      'is_synced': isSynced,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -185,6 +189,7 @@ class MaintenanceEntry {
     String? imagePath,
     String? beforeImageUrl,
     String? afterImageUrl,
+    int? isSynced,
   }) {
     return MaintenanceEntry(
       id: id,
@@ -201,6 +206,7 @@ class MaintenanceEntry {
       imagePath: imagePath ?? this.imagePath,
       beforeImageUrl: beforeImageUrl ?? this.beforeImageUrl,
       afterImageUrl: afterImageUrl ?? this.afterImageUrl,
+      isSynced: isSynced ?? this.isSynced,
       createdAt: createdAt,
     );
   }

@@ -17,7 +17,7 @@ class MaintenanceScreen extends ConsumerStatefulWidget {
 
 class _MaintenanceScreenState extends ConsumerState<MaintenanceScreen> {
   int _filterIndex = 0;
-  final _filters = ['Tất cả', 'Sắp tới', 'Đã hoàn thành'];
+  final _filters = ['Tất cả', 'Sắp tới'];
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +28,8 @@ class _MaintenanceScreenState extends ConsumerState<MaintenanceScreen> {
     // Lọc items
     List<dynamic> displayItems = allItems;
     if (_filterIndex == 1) {
-      displayItems = allItems.where((i) => i.urgency(currentOdo) != 'normal').toList();
-    } else if (_filterIndex == 2) {
-      displayItems = allItems.where((i) => i.remainingKm(currentOdo) > (i.intervalKm * 0.8)).toList(); // Vừa hoàn thành
+      displayItems = allItems.where((i) => i.urgency(currentOdo) != 'normal').toList()
+        ..sort((a, b) => a.remainingKm(currentOdo).compareTo(b.remainingKm(currentOdo)));
     }
 
     return Scaffold(
@@ -78,7 +77,17 @@ class _MaintenanceScreenState extends ConsumerState<MaintenanceScreen> {
             ),
             
             // Item list
-            ListView.builder(
+            displayItems.isEmpty 
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 50),
+                  child: Center(
+                    child: Text(
+                      _filterIndex == 1 ? 'Không có hạng mục nào sắp tới hạn 🎉' : 'Chưa có hạng mục bảo dưỡng',
+                      style: GoogleFonts.beVietnamPro(fontSize: 14, color: AppColors.textSecondary),
+                    ),
+                  ),
+                )
+              : ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
@@ -192,9 +201,8 @@ class _MaintenanceScreenState extends ConsumerState<MaintenanceScreen> {
         currentIndex: -1, 
         onTap: (i) {
           if (i == 0) context.go('/home');
-          else if (i == 1) context.go('/fuel-history');
-          else if (i == 2) context.go('/expense');
-          else if (i == 3) context.go('/profile');
+          if (i == 1) context.go('/fuel-history');
+          if (i == 2) context.go('/profile');
         },
         onAddTap: () => context.push('/fuel-log'),
       ),

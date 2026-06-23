@@ -1,13 +1,18 @@
+import 'dart:io' as java_io;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants/app_constants.dart';
 import '../data/local/dao/vehicle_dao.dart';
 import '../data/models/vehicle.dart';
 import '../data/services/firestore_service.dart';
+import '../data/services/storage_service.dart';
+import '../data/services/vehicle_image_service.dart';
+import 'auth_provider.dart';
 
-// ===== SELECTED VEHICLE =====
+// ── Xe đang được chọn ──────────────────────────────────────────────────────
 
-/// ID của xe đang được chọn
+/// Lưu giữ ID của xe đang được chọn, lấy từ cache
 final selectedVehicleIdProvider =
     StateNotifierProvider<SelectedVehicleIdNotifier, String?>(
   (ref) => SelectedVehicleIdNotifier(),
@@ -34,23 +39,23 @@ class SelectedVehicleIdNotifier extends StateNotifier<String?> {
   }
 }
 
-// ===== ALL VEHICLES =====
+// ── Danh sách xe ───────────────────────────────────────────────────────────
 
-/// Provider lấy danh sách tất cả xe từ DB
+/// Lấy toàn bộ danh sách xe thuộc về user đang đăng nhập.
 final vehicleListProvider = FutureProvider<List<Vehicle>>((ref) async {
   final user = ref.watch(authStateStreamProvider).valueOrNull;
   if (user == null) return [];
   return VehicleDao.instance.getAll(userId: user.uid);
 });
 
-/// Provider lấy xe đang được chọn
+/// Dữ liệu của xe đang được chọn (dùng để hiển thị lên Header / Title)
 final selectedVehicleProvider = FutureProvider<Vehicle?>((ref) async {
   final id = ref.watch(selectedVehicleIdProvider);
   if (id == null) return null;
   return VehicleDao.instance.getById(id);
 });
 
-// ===== VEHICLE NOTIFIER (CRUD) =====
+// ── CRUD Xe ────────────────────────────────────────────────────────────────
 
 final vehicleNotifierProvider =
     AsyncNotifierProvider<VehicleNotifier, List<Vehicle>>(
@@ -65,23 +70,61 @@ class VehicleNotifier extends AsyncNotifier<List<Vehicle>> {
     return VehicleDao.instance.getAll(userId: user.uid);
   }
 
-  /// Thêm xe mới
   Future<void> add(Vehicle vehicle) async {
     final user = ref.read(authStateStreamProvider).valueOrNull;
-    final vehicleWithUser = vehicle.copyWith(userId: user?.uid);
-    await VehicleDao.instance.insert(vehicleWithUser);
+    
+    // Tra cứu link ảnh từ Firebase Catalog
+    final imageUrl = await VehicleImageService.instance.resolveImageUrl(
+      brand: vehicle.brand,
+      model: vehicle.model,
+      type: (vehicle.engineCapacity?.toLowerCase().contains('ga') ?? false) ? 'tay_ga' : 'xe_so',
+      year: vehicle.year,
+    );
+    
+    final storage = ref.read(storageServiceProvider);
 
-    // Sync to Firestore
-    final firestoreService = ref.read(firestoreServiceProvider);
-    if (firestoreService != null) {
-      try {
-        await firestoreService.saveVehicle(vehicleWithUser);
-      } catch (e) {
-        print('Firestore sync add vehicle error: $e');
-      }
+    String? regUrl = vehicle.registrationImageUrl;
+    if (regUrl != null && !regUrl.startsWith('http')) {
+      final url = await storage?.uploadVehicleImage(vehicle.id, 'registration', java_io.File(regUrl));
+      if (url != null) regUrl = url;
     }
 
-    // Tự động chọn xe đầu tiên
+    String? inspUrl = vehicle.inspectionImageUrl;
+    if (inspUrl != null && !inspUrl.startsWith('http')) {
+      final url = await storage?.uploadVehicleImage(vehicle.id, 'inspection', java_io.File(inspUrl));
+      if (url != null) inspUrl = url;
+    }
+
+    String? insuUrl = vehicle.insuranceImageUrl;
+    if (insuUrl != null && !insuUrl.startsWith('http')) {
+      final url = await storage?.uploadVehicleImage(vehicle.id, 'insurance', java_io.File(insuUrl));
+      if (url != null) insuUrl = url;
+    }
+
+    String? avatarUrl = vehicle.imageUrl;
+    if (avatarUrl != null && !avatarUrl.startsWith('http') && !avatarUrl.startsWith('assets/')) {
+      final url = await storage?.uploadVehicleImage(vehicle.id, 'avatar', java_io.File(avatarUrl));
+      if (url != null) avatarUrl = url;
+    }
+
+    final vehicleWithUser = vehicle.copyWith(
+      userId: user?.uid, 
+      cachedImageUrl: imageUrl,
+      registrationImageUrl: regUrl,
+      inspectionImageUrl: inspUrl,
+      insuranceImageUrl: insuUrl,
+      imageUrl: avatarUrl,
+    );
+    await VehicleDao.instance.insert(vehicleWithUser);
+
+    _syncToFirestore(
+      () => ref.read(firestoreServiceProvider)?.saveVehicle(vehicleWithUser),
+      onFail: () async {
+        await VehicleDao.instance.update(vehicleWithUser.copyWith(isSynced: 0));
+      },
+    );
+
+    // Tự động chọn xe này nếu là chiếc xe đầu tiên của user
     final vehicles = await VehicleDao.instance.getAll(userId: user?.uid);
     if (vehicles.length == 1) {
       ref.read(selectedVehicleIdProvider.notifier).select(vehicleWithUser.id);
@@ -89,40 +132,69 @@ class VehicleNotifier extends AsyncNotifier<List<Vehicle>> {
     ref.invalidateSelf();
   }
 
-  /// Cập nhật xe
   Future<void> updateEntry(Vehicle vehicle) async {
     final user = ref.read(authStateStreamProvider).valueOrNull;
-    final vehicleWithUser = vehicle.copyWith(userId: user?.uid);
+    
+    // Tra cứu lại ảnh phòng khi người dùng đổi dòng xe
+    final imageUrl = await VehicleImageService.instance.resolveImageUrl(
+      brand: vehicle.brand,
+      model: vehicle.model,
+      type: (vehicle.engineCapacity?.toLowerCase().contains('ga') ?? false) ? 'tay_ga' : 'xe_so',
+      year: vehicle.year,
+    );
+    
+    final storage = ref.read(storageServiceProvider);
+
+    String? regUrl = vehicle.registrationImageUrl;
+    if (regUrl != null && !regUrl.startsWith('http')) {
+      final url = await storage?.uploadVehicleImage(vehicle.id, 'registration', java_io.File(regUrl));
+      if (url != null) regUrl = url;
+    }
+
+    String? inspUrl = vehicle.inspectionImageUrl;
+    if (inspUrl != null && !inspUrl.startsWith('http')) {
+      final url = await storage?.uploadVehicleImage(vehicle.id, 'inspection', java_io.File(inspUrl));
+      if (url != null) inspUrl = url;
+    }
+
+    String? insuUrl = vehicle.insuranceImageUrl;
+    if (insuUrl != null && !insuUrl.startsWith('http')) {
+      final url = await storage?.uploadVehicleImage(vehicle.id, 'insurance', java_io.File(insuUrl));
+      if (url != null) insuUrl = url;
+    }
+
+    String? avatarUrl = vehicle.imageUrl;
+    if (avatarUrl != null && !avatarUrl.startsWith('http') && !avatarUrl.startsWith('assets/')) {
+      final url = await storage?.uploadVehicleImage(vehicle.id, 'avatar', java_io.File(avatarUrl));
+      if (url != null) avatarUrl = url;
+    }
+
+    final vehicleWithUser = vehicle.copyWith(
+      userId: user?.uid, 
+      cachedImageUrl: imageUrl,
+      registrationImageUrl: regUrl,
+      inspectionImageUrl: inspUrl,
+      insuranceImageUrl: insuUrl,
+      imageUrl: avatarUrl,
+    );
     await VehicleDao.instance.update(vehicleWithUser);
 
-    // Sync to Firestore
-    final firestoreService = ref.read(firestoreServiceProvider);
-    if (firestoreService != null) {
-      try {
-        await firestoreService.saveVehicle(vehicleWithUser);
-      } catch (e) {
-        print('Firestore sync update vehicle error: $e');
-      }
-    }
+    _syncToFirestore(
+      () => ref.read(firestoreServiceProvider)?.saveVehicle(vehicleWithUser),
+      onFail: () async {
+        await VehicleDao.instance.update(vehicleWithUser.copyWith(isSynced: 0));
+      },
+    );
 
     ref.invalidateSelf();
   }
 
-  /// Xóa xe
   Future<void> delete(String id) async {
     await VehicleDao.instance.delete(id);
 
-    // Sync to Firestore
-    final firestoreService = ref.read(firestoreServiceProvider);
-    if (firestoreService != null) {
-      try {
-        await firestoreService.deleteVehicle(id);
-      } catch (e) {
-        print('Firestore sync delete vehicle error: $e');
-      }
-    }
+    _syncToFirestore(() => ref.read(firestoreServiceProvider)?.deleteVehicle(id));
 
-    // Nếu đang chọn xe bị xóa → reset selection
+    // Nếu xe bị xóa chính là xe đang được chọn thì bỏ chọn
     final selectedId = ref.read(selectedVehicleIdProvider);
     if (selectedId == id) {
       ref.read(selectedVehicleIdProvider.notifier).select(null);
@@ -130,25 +202,42 @@ class VehicleNotifier extends AsyncNotifier<List<Vehicle>> {
     ref.invalidateSelf();
   }
 
-  /// Cập nhật odometer
+  /// Hàm tiện ích dùng để cập nhật số km nhanh chóng khi đổ xăng / bảo dưỡng
   Future<void> updateOdometer(String vehicleId, double odometer) async {
     await VehicleDao.instance.updateOdometer(vehicleId, odometer);
 
-    // Sync to Firestore (get updated vehicle and sync it)
-    final firestoreService = ref.read(firestoreServiceProvider);
-    if (firestoreService != null) {
-      try {
+    _syncToFirestore(
+      () async {
         final vehicle = await VehicleDao.instance.getById(vehicleId);
         if (vehicle != null) {
-          await firestoreService.saveVehicle(vehicle);
+          await ref.read(firestoreServiceProvider)?.saveVehicle(vehicle);
         }
-      } catch (e) {
-        print('Firestore sync update odometer error: $e');
-      }
-    }
+      },
+      onFail: () async {
+        final vehicle = await VehicleDao.instance.getById(vehicleId);
+        if (vehicle != null) {
+          await VehicleDao.instance.update(vehicle.copyWith(isSynced: 0));
+        }
+      },
+    );
 
     ref.invalidateSelf();
   }
 
   Future<List<Vehicle>> get vehicles async => state.value ?? [];
+
+  /// Gọi Firestore sync trong try-catch để lỗi mạng không ảnh hưởng UI.
+  Future<void> _syncToFirestore(
+    Future<void>? Function() action, {
+    Future<void> Function()? onFail,
+  }) async {
+    try {
+      await action();
+    } catch (e) {
+      debugPrint('[VehicleNotifier] Firestore sync error: $e');
+      if (onFail != null) {
+        await onFail();
+      }
+    }
+  }
 }

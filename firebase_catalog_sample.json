@@ -1,0 +1,38 @@
+{
+  "vehicle_catalog": [
+    {
+      "brand": "Honda",
+      "model": "Air Blade 125",
+      "type": "tay_ga",
+      "yearFrom": 2020,
+      "yearTo": 2024,
+      "imageUrl": "https://firebasestorage.googleapis.com/.../air_blade_2020.png"
+    },
+    {
+      "brand": "Honda",
+      "model": "Wave Alpha",
+      "type": "xe_so",
+      "yearFrom": 2019,
+      "yearTo": 2024,
+      "imageUrl": "https://firebasestorage.googleapis.com/.../wave_alpha_2019.png"
+    },
+    {
+      "brand": "Yamaha",
+      "model": "Exciter 155",
+      "type": "xe_so",
+      "yearFrom": 2021,
+      "yearTo": 2024,
+      "imageUrl": "https://firebasestorage.googleapis.com/.../exciter_155.png"
+    }
+  ],
+  "vehicle_fallback": [
+    {
+      "type": "xe_so",
+      "imageUrl": "https://firebasestorage.googleapis.com/.../generic_xe_so.png"
+    },
+    {
+      "type": "tay_ga",
+      "imageUrl": "https://firebasestorage.googleapis.com/.../generic_tay_ga.png"
+    }
+  ]
+}

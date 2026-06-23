@@ -50,7 +50,7 @@ class AuthNotifier extends AsyncNotifier<void> {
           ref.invalidate(selectedVehicleIdProvider);
           ref.invalidate(vehicleNotifierProvider);
         } catch (e) {
-          print('Lỗi đồng bộ dữ liệu lúc đăng nhập: $e');
+          debugPrint('Lỗi đồng bộ dữ liệu lúc đăng nhập: $e');
         }
       }
     });
@@ -107,7 +107,7 @@ class AuthNotifier extends AsyncNotifier<void> {
           ref.invalidate(selectedVehicleIdProvider);
           ref.invalidate(vehicleNotifierProvider);
         } catch (e) {
-          print('Lỗi đồng bộ dữ liệu lúc đăng nhập: $e');
+          debugPrint('Lỗi đồng bộ dữ liệu lúc đăng nhập: $e');
         }
       }
     });
