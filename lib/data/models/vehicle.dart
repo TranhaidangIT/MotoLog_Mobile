@@ -20,8 +20,10 @@ class Vehicle {
   final String? inspectionImageUrl;
   final String? insuranceImageUrl;
   final String? userId;
+  final String? cachedImageUrl;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final int isSynced;
 
   Vehicle({
     String? id,
@@ -42,8 +44,10 @@ class Vehicle {
     this.inspectionImageUrl,
     this.insuranceImageUrl,
     this.userId,
+    this.cachedImageUrl,
     DateTime? createdAt,
     DateTime? updatedAt,
+    this.isSynced = 1,
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
@@ -69,6 +73,8 @@ class Vehicle {
       inspectionImageUrl: map['inspection_image_url'] as String?,
       insuranceImageUrl: map['insurance_image_url'] as String?,
       userId: map['user_id'] as String?,
+      cachedImageUrl: map['cached_image_url'] as String?,
+      isSynced: map['is_synced'] as int? ?? 1,
       createdAt: DateTime.parse(map['created_at'] as String),
       updatedAt: DateTime.parse(map['updated_at'] as String),
     );
@@ -95,6 +101,8 @@ class Vehicle {
       'inspection_image_url': inspectionImageUrl,
       'insurance_image_url': insuranceImageUrl,
       'user_id': userId,
+      'cached_image_url': cachedImageUrl,
+      'is_synced': isSynced,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -121,6 +129,7 @@ class Vehicle {
       'inspection_image_url': inspectionImageUrl,
       'insurance_image_url': insuranceImageUrl,
       'user_id': userId,
+      'cached_image_url': cachedImageUrl,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
@@ -150,6 +159,8 @@ class Vehicle {
     String? inspectionImageUrl,
     String? insuranceImageUrl,
     String? userId,
+    String? cachedImageUrl,
+    int? isSynced,
   }) {
     return Vehicle(
       id: id,
@@ -170,6 +181,8 @@ class Vehicle {
       inspectionImageUrl: inspectionImageUrl ?? this.inspectionImageUrl,
       insuranceImageUrl: insuranceImageUrl ?? this.insuranceImageUrl,
       userId: userId ?? this.userId,
+      cachedImageUrl: cachedImageUrl ?? this.cachedImageUrl,
+      isSynced: isSynced ?? this.isSynced,
       createdAt: createdAt,
       updatedAt: DateTime.now(),
     );

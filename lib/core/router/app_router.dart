@@ -4,79 +4,77 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/shared_preferences_provider.dart';
+import '../constants/app_constants.dart';
 // Screens mới
-import '../../screens/splash_screen.dart';
 import '../../screens/login_screen.dart';
+import '../../screens/onboarding_screen.dart';
 import '../../screens/home_screen.dart';
 import '../../screens/fuel_log_screen.dart';
 import '../../screens/fuel_history_screen.dart';
-import '../../screens/statistics_screen.dart';
 import '../../screens/maintenance_screen.dart';
 import '../../screens/reminder_screen.dart';
 import '../../screens/expense_screen.dart';
+import '../../screens/statistics/statistics_screen.dart';
 import '../../screens/my_vehicle_screen.dart';
 import '../../screens/add_maintenance_screen.dart';
 import '../../screens/register_screen.dart';
 import '../../screens/profile_screen.dart';
 import '../../screens/vehicle/add_edit_vehicle_screen.dart';
+import '../../screens/vehicle/add_vehicle_method_screen.dart';
+import '../../screens/vehicle/quick_setup_vehicle_screen.dart';
 import '../../screens/garage_screen.dart';
 import '../../screens/parts_screen.dart';
 import '../../screens/add_part_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
-  static const String splash = '/';
+  static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String home = '/home';
   static const String addFuel = '/fuel-log';
   static const String fuelHistory = '/fuel-history';
-  static const String statistics = '/statistics';
   static const String maintenance = '/maintenance';
   static const String reminder = '/reminder';
   static const String expense = '/expense';
+  static const String statistics = '/statistics';
   static const String myVehicle = '/my-vehicle';
   static const String garage = '/garage';
   static const String register = '/register';
   static const String addMaintenance = '/add-maintenance';
   static const String addVehicle = '/add-vehicle';
+  static const String addVehicleManual = '/add-vehicle-manual';
+  static const String quickSetupVehicle = '/quick-setup-vehicle';
   static const String parts = '/parts';
   static const String addPart = '/add-part';
-
-  // Backwards compatibility cho UI cũ không báo lỗi
-  static const String dashboard = '/home/dashboard';
-  
   static const String profile = '/profile';
-  static const String fuelList = '/home/fuel-list';
 }
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
   final prefs = ref.watch(sharedPreferencesProvider);
   
-  // Tạm thời bỏ qua logic Onboarding để đơn giản hóa giao diện mới.
-  // final onboardingDone = prefs.getBool(AppConstants.keyOnboardingDone) ?? false;
+  final onboardingDone = prefs.getBool(AppConstants.keyOnboardingDone) ?? false;
 
   return GoRouter(
-    initialLocation: AppRoutes.splash,
+    initialLocation: AppRoutes.home,
     debugLogDiagnostics: true,
     refreshListenable: _AuthChangeNotifier(ref),
     redirect: (context, state) {
       final user = authState.valueOrNull;
       final isLoggedIn = user != null;
-      final isSplash = state.matchedLocation == AppRoutes.splash;
       final isLoginRoute = state.matchedLocation.startsWith(AppRoutes.login);
       final isRegisterRoute = state.matchedLocation.startsWith(AppRoutes.register);
 
-      // Cho phép ở SplashScreen
-      if (isSplash) return null;
-
-      // Chưa đăng nhập -> đá về Login (trừ login và register)
-      if (!isLoggedIn && !isLoginRoute && !isRegisterRoute) {
+      // Chưa đăng nhập -> đá về Login (trừ login, register, và onboarding)
+      if (!isLoggedIn && !isLoginRoute && !isRegisterRoute && state.matchedLocation != AppRoutes.onboarding) {
+        if (!onboardingDone) {
+          return AppRoutes.onboarding;
+        }
         return AppRoutes.login;
       }
 
-      // Đã đăng nhập nhưng cố vào Login -> đẩy vào Home
-      if (isLoggedIn && isLoginRoute) {
+      // Đã đăng nhập nhưng cố vào Login/Onboarding -> đẩy vào Home
+      if (isLoggedIn && (isLoginRoute || state.matchedLocation == AppRoutes.onboarding)) {
         return AppRoutes.home;
       }
 
@@ -84,9 +82,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     },
     routes: [
       GoRoute(
-        path: AppRoutes.splash,
-        name: 'splash',
-        builder: (context, state) => const SplashScreen(),
+        path: AppRoutes.onboarding,
+        name: 'onboarding',
+        builder: (context, state) => const OnboardingScreen(),
       ),
       GoRoute(
         path: AppRoutes.login,
@@ -109,11 +107,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const FuelHistoryScreen(),
       ),
       GoRoute(
-        path: AppRoutes.statistics,
-        name: 'statistics',
-        builder: (context, state) => const StatisticsScreen(),
-      ),
-      GoRoute(
         path: AppRoutes.maintenance,
         name: 'maintenance',
         builder: (context, state) => const MaintenanceScreen(),
@@ -127,6 +120,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.expense,
         name: 'expense',
         builder: (context, state) => const ExpenseScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.statistics,
+        name: 'statistics',
+        builder: (context, state) => const StatisticsScreen(),
       ),
       GoRoute(
         path: AppRoutes.myVehicle,
@@ -153,8 +151,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.addVehicle,
-        name: 'addVehicle',
+        name: 'addVehicleMethod',
+        builder: (context, state) => const AddVehicleMethodScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.addVehicleManual,
+        name: 'addVehicleManual',
         builder: (context, state) => const AddEditVehicleScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.quickSetupVehicle,
+        name: 'quickSetupVehicle',
+        builder: (context, state) => const QuickSetupVehicleScreen(),
       ),
       GoRoute(
         path: AppRoutes.garage,

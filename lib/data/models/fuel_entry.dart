@@ -10,12 +10,14 @@ class FuelEntry {
   final double pricePerLiter;
   final double totalCost;
   final String? stationName;
+  final String? stationAddress;
   final double? stationLat;
   final double? stationLon;
   final String? fuelType;
   final bool isFull; // Đổ đầy bình không
   final String? note;
   final DateTime createdAt;
+  final int isSynced;
 
   FuelEntry({
     String? id,
@@ -26,12 +28,14 @@ class FuelEntry {
     required this.pricePerLiter,
     double? totalCost,
     this.stationName,
+    this.stationAddress,
     this.stationLat,
     this.stationLon,
     this.fuelType,
     this.isFull = true,
     this.note,
     DateTime? createdAt,
+    this.isSynced = 1,
   })  : id = id ?? const Uuid().v4(),
         totalCost = totalCost ?? (liters * pricePerLiter),
         createdAt = createdAt ?? DateTime.now();
@@ -47,11 +51,13 @@ class FuelEntry {
       pricePerLiter: (map['price_per_liter'] as num).toDouble(),
       totalCost: (map['total_cost'] as num).toDouble(),
       stationName: map['station_name'] as String?,
+      stationAddress: map['station_address'] as String?,
       stationLat: map['station_lat'] != null ? (map['station_lat'] as num).toDouble() : null,
       stationLon: map['station_lon'] != null ? (map['station_lon'] as num).toDouble() : null,
       fuelType: map['fuel_type'] as String?,
       isFull: (map['is_full'] as int? ?? 1) == 1,
       note: map['note'] as String?,
+      isSynced: map['is_synced'] as int? ?? 1,
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
@@ -67,11 +73,13 @@ class FuelEntry {
       'price_per_liter': pricePerLiter,
       'total_cost': totalCost,
       'station_name': stationName,
+      'station_address': stationAddress,
       'station_lat': stationLat,
       'station_lon': stationLon,
       'fuel_type': fuelType,
       'is_full': isFull ? 1 : 0,
       'note': note,
+      'is_synced': isSynced,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -87,6 +95,7 @@ class FuelEntry {
       'price_per_liter': pricePerLiter,
       'total_cost': totalCost,
       'station_name': stationName,
+      'station_address': stationAddress,
       'station_lat': stationLat,
       'station_lon': stationLon,
       'fuel_type': fuelType,
@@ -107,6 +116,7 @@ class FuelEntry {
       pricePerLiter: (map['price_per_liter'] as num).toDouble(),
       totalCost: (map['total_cost'] as num).toDouble(),
       stationName: map['station_name'] as String?,
+      stationAddress: map['station_address'] as String?,
       stationLat: map['station_lat'] != null ? (map['station_lat'] as num).toDouble() : null,
       stationLon: map['station_lon'] != null ? (map['station_lon'] as num).toDouble() : null,
       fuelType: map['fuel_type'] as String?,
@@ -124,11 +134,13 @@ class FuelEntry {
     double? pricePerLiter,
     double? totalCost,
     String? stationName,
+    String? stationAddress,
     double? stationLat,
     double? stationLon,
     String? fuelType,
     bool? isFull,
     String? note,
+    int? isSynced,
   }) {
     return FuelEntry(
       id: id,
@@ -139,11 +151,13 @@ class FuelEntry {
       pricePerLiter: pricePerLiter ?? this.pricePerLiter,
       totalCost: totalCost,
       stationName: stationName ?? this.stationName,
+      stationAddress: stationAddress ?? this.stationAddress,
       stationLat: stationLat ?? this.stationLat,
       stationLon: stationLon ?? this.stationLon,
       fuelType: fuelType ?? this.fuelType,
       isFull: isFull ?? this.isFull,
       note: note ?? this.note,
+      isSynced: isSynced ?? this.isSynced,
       createdAt: createdAt,
     );
   }

@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../providers/vehicle_provider.dart';
 import '../providers/fuel_provider.dart';
 import '../providers/maintenance_provider.dart';
+import 'category_detail_screen.dart';
 
 class ExpenseScreen extends ConsumerStatefulWidget {
   const ExpenseScreen({super.key});
@@ -145,25 +146,40 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(children: [
-              _CostCard(
-                icon: Icons.local_gas_station, iconBg: const Color(0xFFE8F5E9), iconColor: AppColors.primary,
-                title: 'Xăng', 
-                sub: '${currentFuels.length} lần đổ · ${totalLiters.toStringAsFixed(1)} lít', 
-                amount: '${fmt.format(totalFuel)} đ', 
-                percent: '${(pFuel * 100).toStringAsFixed(1)}%',
+              GestureDetector(
+                onTap: () => Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => const CategoryDetailScreen(category: ExpenseCategory.fuel),
+                )),
+                child: _CostCard(
+                  icon: Icons.local_gas_station, iconBg: const Color(0xFFE8F5E9), iconColor: AppColors.primary,
+                  title: 'Xăng', 
+                  sub: '${currentFuels.length} lần đổ · ${totalLiters.toStringAsFixed(1)} lít', 
+                  amount: '${fmt.format(totalFuel)} đ', 
+                  percent: '${(pFuel * 100).toStringAsFixed(1)}%',
+                ),
               ),
               const SizedBox(height: 6),
-              _CostCard(
-                icon: Icons.build, iconBg: const Color(0xFFFFF3E0), iconColor: const Color(0xFFE65100),
-                title: 'Bảo dưỡng', 
-                sub: '${currentMaints.length} lần bảo dưỡng', 
-                amount: '${fmt.format(totalMaint)} đ', 
-                percent: '${(pMaint * 100).toStringAsFixed(1)}%',
+              GestureDetector(
+                onTap: () => Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => const CategoryDetailScreen(category: ExpenseCategory.maintenance),
+                )),
+                child: _CostCard(
+                  icon: Icons.build, iconBg: const Color(0xFFFFF3E0), iconColor: const Color(0xFFE65100),
+                  title: 'Bảo dưỡng', 
+                  sub: '${currentMaints.length} lần bảo dưỡng', 
+                  amount: '${fmt.format(totalMaint)} đ', 
+                  percent: '${(pMaint * 100).toStringAsFixed(1)}%',
+                ),
               ),
               const SizedBox(height: 6),
-              const _CostCard(
-                icon: Icons.more_horiz, iconBg: Color(0xFFE3F2FD), iconColor: Color(0xFF1565C0),
-                title: 'Khác', sub: 'Chưa có chi phí', amount: '0 đ', percent: '0%', dim: true,
+              GestureDetector(
+                onTap: () => Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => const CategoryDetailScreen(category: ExpenseCategory.other),
+                )),
+                child: const _CostCard(
+                  icon: Icons.more_horiz, iconBg: Color(0xFFE3F2FD), iconColor: Color(0xFF1565C0),
+                  title: 'Khác', sub: 'Chưa có chi phí', amount: '0 đ', percent: '0%', dim: true,
+                ),
               ),
             ]),
           ),

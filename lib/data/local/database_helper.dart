@@ -50,7 +50,9 @@ class DatabaseHelper {
         insurance_image_url TEXT,
         user_id      TEXT,
         created_at   TEXT NOT NULL,
-        updated_at   TEXT NOT NULL
+        updated_at   TEXT NOT NULL,
+        cached_image_url TEXT,
+        is_synced    INTEGER DEFAULT 1
       )
     ''');
 
@@ -65,12 +67,14 @@ class DatabaseHelper {
         price_per_liter REAL NOT NULL,
         total_cost      REAL NOT NULL,
         station_name    TEXT,
+        station_address TEXT,
         station_lat     REAL,
         station_lon     REAL,
         fuel_type       TEXT,
         is_full         INTEGER NOT NULL DEFAULT 1,
         note            TEXT,
         created_at      TEXT NOT NULL,
+        is_synced       INTEGER DEFAULT 1,
         FOREIGN KEY (vehicle_id) REFERENCES ${AppConstants.tableVehicles}(id) ON DELETE CASCADE
       )
     ''');
@@ -91,6 +95,7 @@ class DatabaseHelper {
         note          TEXT,
         image_path    TEXT,
         created_at    TEXT NOT NULL,
+        is_synced     INTEGER DEFAULT 1,
         FOREIGN KEY (vehicle_id) REFERENCES ${AppConstants.tableVehicles}(id) ON DELETE CASCADE
       )
     ''');
@@ -133,6 +138,17 @@ class DatabaseHelper {
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Xử lý migration khi nâng cấp version DB
+    if (oldVersion < 9) {
+      // Yêu cầu xoá sạch dữ liệu và khởi tạo lại ở v9
+      await db.execute('DROP TABLE IF EXISTS ${AppConstants.tableCustomReminders}');
+      await db.execute('DROP TABLE IF EXISTS ${AppConstants.tableMaintenanceItems}');
+      await db.execute('DROP TABLE IF EXISTS ${AppConstants.tableMaintenanceEntries}');
+      await db.execute('DROP TABLE IF EXISTS ${AppConstants.tableFuelEntries}');
+      await db.execute('DROP TABLE IF EXISTS ${AppConstants.tableVehicles}');
+      await _createTables(db, newVersion);
+      return;
+    }
+
     if (oldVersion < 2) {
       await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN engine_capacity TEXT');
       await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN inspection_date TEXT');
@@ -182,6 +198,17 @@ class DatabaseHelper {
       await db.execute('ALTER TABLE ${AppConstants.tableFuelEntries} ADD COLUMN station_lat REAL');
       await db.execute('ALTER TABLE ${AppConstants.tableFuelEntries} ADD COLUMN station_lon REAL');
       await db.execute('ALTER TABLE ${AppConstants.tableFuelEntries} ADD COLUMN fuel_type TEXT');
+    }
+    if (oldVersion < 8) {
+      await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN cached_image_url TEXT');
+    }
+    if (oldVersion < 10) {
+      await db.execute('ALTER TABLE ${AppConstants.tableVehicles} ADD COLUMN is_synced INTEGER DEFAULT 1');
+      await db.execute('ALTER TABLE ${AppConstants.tableFuelEntries} ADD COLUMN is_synced INTEGER DEFAULT 1');
+      await db.execute('ALTER TABLE ${AppConstants.tableMaintenanceEntries} ADD COLUMN is_synced INTEGER DEFAULT 1');
+    }
+    if (oldVersion < 11) {
+      await db.execute('ALTER TABLE ${AppConstants.tableFuelEntries} ADD COLUMN station_address TEXT');
     }
   }
 

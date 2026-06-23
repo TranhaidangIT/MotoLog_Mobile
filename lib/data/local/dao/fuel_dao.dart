@@ -71,6 +71,16 @@ class FuelDao {
     return FuelEntry.fromMap(maps.first);
   }
 
+  /// Lấy tất cả hoá đơn xăng chưa đồng bộ (is_synced = 0)
+  Future<List<FuelEntry>> getUnsynced() async {
+    final db = await _db;
+    final maps = await db.query(
+      AppConstants.tableFuelEntries,
+      where: 'is_synced = 0',
+    );
+    return maps.map(FuelEntry.fromMap).toList();
+  }
+
   // ===== STATISTICS =====
 
   /// Tổng tiền xăng trong khoảng thời gian
@@ -94,7 +104,10 @@ class FuelDao {
       'SELECT SUM(total_cost) FROM ${AppConstants.tableFuelEntries} WHERE $where',
       args,
     );
-    return (Sqflite.firstIntValue(result) ?? 0).toDouble();
+    if (result.isNotEmpty && result.first.values.first != null) {
+      return (result.first.values.first as num).toDouble();
+    }
+    return 0.0;
   }
 
   /// Tổng lít xăng trong khoảng thời gian
@@ -118,7 +131,10 @@ class FuelDao {
       'SELECT SUM(liters) FROM ${AppConstants.tableFuelEntries} WHERE $where',
       args,
     );
-    return (Sqflite.firstIntValue(result) ?? 0).toDouble();
+    if (result.isNotEmpty && result.first.values.first != null) {
+      return (result.first.values.first as num).toDouble();
+    }
+    return 0.0;
   }
 
   /// Chi phí xăng theo tháng (cho biểu đồ)
@@ -159,6 +175,16 @@ class FuelDao {
       AppConstants.tableFuelEntries,
       where: 'id = ?',
       whereArgs: [id],
+    );
+  }
+
+  /// Xoá toàn bộ lịch sử xăng của một xe
+  Future<void> deleteByVehicle(String vehicleId) async {
+    final db = await _db;
+    await db.delete(
+      AppConstants.tableFuelEntries,
+      where: 'vehicle_id = ?',
+      whereArgs: [vehicleId],
     );
   }
 }

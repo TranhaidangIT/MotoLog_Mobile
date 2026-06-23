@@ -6,6 +6,10 @@ import '../theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'maintenance_setup_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'edit_profile_screen.dart';
+import 'app_settings_screen.dart';
+import 'help_center_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -44,13 +48,21 @@ class ProfileScreen extends ConsumerWidget {
             
             const SizedBox(height: 40),
             
-            _buildOptionRow(context, Icons.person_outline, 'Chỉnh sửa thông tin', () {}),
-            _buildOptionRow(context, Icons.lock_outline, 'Đổi mật khẩu', () {}),
+            _buildOptionRow(context, Icons.person_outline, 'Chỉnh sửa thông tin', () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const EditProfileScreen()));
+            }),
+            _buildOptionRow(context, Icons.shield_outlined, 'Quản lý đăng nhập', () {
+              launchUrl(Uri.parse('https://myaccount.google.com/security'));
+            }),
             _buildOptionRow(context, Icons.tune, 'Thiết lập lại mốc bảo dưỡng', () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const MaintenanceSetupScreen(isOnboarding: false)));
             }),
-            _buildOptionRow(context, Icons.settings_outlined, 'Cài đặt ứng dụng', () {}),
-            _buildOptionRow(context, Icons.help_outline, 'Trung tâm trợ giúp', () {}),
+            _buildOptionRow(context, Icons.settings_outlined, 'Cài đặt ứng dụng', () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const AppSettingsScreen()));
+            }),
+            _buildOptionRow(context, Icons.help_outline, 'Trung tâm trợ giúp', () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const HelpCenterScreen()));
+            }),
             
             const SizedBox(height: 20),
             
@@ -75,12 +87,13 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
       bottomNavigationBar: MotoBottomNavBar(
-        currentIndex: 3,
+        currentIndex: 2,
         onTap: (i) {
-          if (i == 0) { context.go('/home'); }
-          else if (i == 1) { context.go('/fuel-history'); }
-          else if (i == 2) { context.go('/expense'); }
-          else if (i == 3) { context.go('/profile'); }
+          if (i == 0) {
+            context.go('/home');
+          } else if (i == 1) {
+            context.go('/fuel-history');
+          }
         },
         onAddTap: () => context.push('/fuel-log'),
       ),

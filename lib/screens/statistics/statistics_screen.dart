@@ -8,6 +8,8 @@ import '../../core/utils/stats_calculator.dart';
 import '../../providers/fuel_provider.dart';
 import '../../providers/maintenance_provider.dart';
 import '../../providers/vehicle_provider.dart';
+import '../../widgets/bottom_nav_bar.dart';
+import 'package:go_router/go_router.dart';
 
 // Time filter options
 enum _TimeFilter { month1, month3, month6, year1 }
@@ -147,7 +149,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: AppColors.surfaceLight,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: AppColors.borderLight),
                       ),
@@ -349,7 +351,7 @@ class _PeriodSummaryFooter extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: AppColors.surfaceLight,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.borderLight),
               boxShadow: [
@@ -389,7 +391,7 @@ class _PeriodSummaryFooter extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: AppColors.surfaceLight,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.borderLight),
               boxShadow: [
@@ -484,7 +486,7 @@ class _DoubleBarChart extends ConsumerWidget {
                   return Container(
                     height: 200,
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      color: AppColors.surfaceLight,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppColors.borderLight),
                     ),
@@ -529,7 +531,7 @@ class _DoubleBarChart extends ConsumerWidget {
 
                 return Container(
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: AppColors.surfaceLight,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.borderLight),
                     boxShadow: [
@@ -740,7 +742,7 @@ class _SummaryCards extends ConsumerWidget {
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: AppColors.surfaceLight,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppColors.borderLight),
             boxShadow: [
@@ -902,7 +904,7 @@ class _DetailSection extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: AppColors.surfaceLight,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.borderLight),
               ),

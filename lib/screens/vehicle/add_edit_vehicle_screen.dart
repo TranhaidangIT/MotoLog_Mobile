@@ -12,8 +12,9 @@ import '../maintenance_setup_screen.dart';
 
 class AddEditVehicleScreen extends ConsumerStatefulWidget {
   final String? vehicleId;
+  final Map<String, String>? prefilledData;
 
-  const AddEditVehicleScreen({super.key, this.vehicleId});
+  const AddEditVehicleScreen({super.key, this.vehicleId, this.prefilledData});
 
   @override
   ConsumerState<AddEditVehicleScreen> createState() =>
@@ -54,7 +55,16 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
   void initState() {
     super.initState();
     _isEdit = widget.vehicleId != null;
-    if (_isEdit) _loadExisting();
+    if (_isEdit) {
+      _loadExisting();
+    } else if (widget.prefilledData != null) {
+      _brandCtrl.text = widget.prefilledData!['brand'] ?? '';
+      _modelCtrl.text = widget.prefilledData!['model'] ?? '';
+      _yearCtrl.text = widget.prefilledData!['year'] ?? '';
+      _selectedVehicleType = widget.prefilledData!['type'] ?? 'Xe tay ga';
+      _selectedColor = widget.prefilledData!['color'] ?? '#003087';
+      _nameCtrl.text = widget.prefilledData!['name'] ?? '${_brandCtrl.text} ${_modelCtrl.text}';
+    }
   }
 
   Future<void> _loadExisting() async {
@@ -186,54 +196,56 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                 items: _vehicleTypes
                     .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                     .toList(),
-                onChanged: (v) => setState(() => _selectedVehicleType = v!),
+                onChanged: widget.prefilledData != null ? null : (v) => setState(() => _selectedVehicleType = v!),
               ),
               const SizedBox(height: 16),
 
-              // Color picker
-              Text(
-                'Màu xe',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 10,
-                children: _colorOptions.map((hex) {
-                  final isSelected = _selectedColor == hex;
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedColor = hex),
-                    child: AnimatedContainer(
-                      duration: AppConstants.animFast,
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: _hexToColor(hex),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isSelected ? Colors.white : Colors.transparent,
-                          width: 3,
+              if (widget.prefilledData == null) ...[
+                // Color picker
+                Text(
+                  'Màu xe',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 10,
+                  children: _colorOptions.map((hex) {
+                    final isSelected = _selectedColor == hex;
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedColor = hex),
+                      child: AnimatedContainer(
+                        duration: AppConstants.animFast,
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: _hexToColor(hex),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isSelected ? Colors.white : Colors.transparent,
+                            width: 3,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                      color:
+                                          _hexToColor(hex).withValues(alpha: 0.5),
+                                      blurRadius: 8)
+                                ]
+                              : null,
                         ),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                    color:
-                                        _hexToColor(hex).withValues(alpha: 0.5),
-                                    blurRadius: 8)
-                              ]
+                        child: isSelected
+                            ? const Icon(Icons.check,
+                                color: Colors.white, size: 18)
                             : null,
                       ),
-                      child: isSelected
-                          ? const Icon(Icons.check,
-                              color: Colors.white, size: 18)
-                          : null,
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 24),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 24),
+              ],
 
               // Form fields
               _buildLabel('Tên xe *'),
@@ -259,6 +271,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                         _buildLabel('Hãng xe *'),
                         TextFormField(
                           controller: _brandCtrl,
+                          enabled: widget.prefilledData == null,
                           validator: (v) =>
                               AppValidators.required(v, fieldName: 'Hãng xe'),
                           decoration: const InputDecoration(
@@ -275,6 +288,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                         _buildLabel('Dòng xe *'),
                         TextFormField(
                           controller: _modelCtrl,
+                          enabled: widget.prefilledData == null,
                           validator: (v) =>
                               AppValidators.required(v, fieldName: 'Dòng xe'),
                           decoration: const InputDecoration(
@@ -308,6 +322,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                         _buildLabel('Năm SX *'),
                         TextFormField(
                           controller: _yearCtrl,
+                          enabled: widget.prefilledData == null,
                           keyboardType: TextInputType.number,
                           validator: AppValidators.vehicleYear,
                           decoration: const InputDecoration(hintText: '2020'),
@@ -344,7 +359,7 @@ class _AddEditVehicleScreenState extends ConsumerState<AddEditVehicleScreen> {
                 items: AppConstants.fuelTypes
                     .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                     .toList(),
-                onChanged: (v) => setState(() => _selectedFuelType = v!),
+                onChanged: widget.prefilledData != null ? null : (v) => setState(() => _selectedFuelType = v!),
               ),
               const SizedBox(height: 32),
 

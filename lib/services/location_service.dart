@@ -5,10 +5,11 @@ import 'package:http/http.dart' as http;
 
 class GasStation {
   final String name;
+  final String? address;
   final double lat;
   final double lon;
 
-  GasStation({required this.name, required this.lat, required this.lon});
+  GasStation({required this.name, this.address, required this.lat, required this.lon});
 }
 
 class LocationService {
@@ -59,8 +60,21 @@ out;
 
         return elements.map((e) {
           final tags = e['tags'] ?? {};
+          final name = tags['name'] ?? tags['brand'] ?? 'Cây xăng';
+          
+          final addressParts = <String>[];
+          if (tags['addr:housenumber'] != null) addressParts.add(tags['addr:housenumber']);
+          if (tags['addr:street'] != null) addressParts.add(tags['addr:street']);
+          if (tags['addr:city'] != null) {
+            addressParts.add(tags['addr:city']);
+          } else if (tags['addr:province'] != null) {
+            addressParts.add(tags['addr:province']);
+          }
+          final address = addressParts.isNotEmpty ? addressParts.join(', ') : null;
+
           return GasStation(
-            name: tags['name'] ?? tags['brand'] ?? 'Cây xăng',
+            name: name,
+            address: address,
             lat: e['lat'],
             lon: e['lon'],
           );

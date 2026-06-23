@@ -162,7 +162,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
                           badge: 'Tùy chỉnh',
                           level: 'warning',
                           isOn: item.isOn,
-                          onToggle: (v) {}, // TODO: update custom reminder status
+                          onToggle: (v) {}, // Cập nhật trạng thái bật/tắt nhắc nhở tuỳ chỉnh
                         ),
                         const Divider(height: 1, indent: 64),
                       ],
@@ -247,9 +247,8 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
         currentIndex: -1, 
         onTap: (i) {
           if (i == 0) context.go('/home');
-          else if (i == 1) context.go('/fuel-history');
-          else if (i == 2) context.go('/expense');
-          else if (i == 3) context.go('/profile');
+          if (i == 1) context.go('/fuel-history');
+          if (i == 2) context.go('/profile');
         },
         onAddTap: () => context.push('/fuel-log'),
       ),

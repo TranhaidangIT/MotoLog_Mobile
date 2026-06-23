@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/vehicle.dart';
 import '../models/fuel_entry.dart';
@@ -38,6 +39,25 @@ class FirestoreService {
   /// Xoá xe khỏi Firestore
   Future<void> deleteVehicle(String vehicleId) async {
     await _vehicles.doc(vehicleId).delete();
+  }
+
+  /// Xoá xe và toàn bộ dữ liệu liên quan (Batch Delete)
+  Future<void> deleteVehicleWithRelatedData(String vehicleId) async {
+    final batch = _db.batch();
+    
+    batch.delete(_vehicles.doc(vehicleId));
+
+    final fuelSnap = await _fuelEntries.where('vehicle_id', isEqualTo: vehicleId).get();
+    for (var doc in fuelSnap.docs) {
+      batch.delete(doc.reference);
+    }
+
+    final maintSnap = await _maintenanceEntries.where('vehicle_id', isEqualTo: vehicleId).get();
+    for (var doc in maintSnap.docs) {
+      batch.delete(doc.reference);
+    }
+
+    await batch.commit();
   }
 
   /// Stream danh sách xe của user
@@ -137,8 +157,38 @@ class FirestoreService {
         }
       }
     } catch (e) {
-      print('Error syncing Firestore to SQLite local: $e');
+      debugPrint('Error syncing Firestore to SQLite local: $e');
       rethrow;
+    }
+  }
+
+  /// Quét SQLite tìm các record chưa được đẩy lên (is_synced = 0) và đẩy lên
+  Future<void> retrySyncOfflineData() async {
+    try {
+      // 1. Vehicles
+      final unsyncedVehicles = await VehicleDao.instance.getUnsynced();
+      for (final v in unsyncedVehicles) {
+        await saveVehicle(v);
+        await VehicleDao.instance.update(v.copyWith(isSynced: 1));
+      }
+
+      // 2. Fuel Entries
+      final unsyncedFuels = await FuelDao.instance.getUnsynced();
+      for (final f in unsyncedFuels) {
+        await saveFuelEntry(f);
+        await FuelDao.instance.update(f.copyWith(isSynced: 1));
+      }
+
+      // 3. Maintenance Entries
+      final unsyncedMaints = await MaintenanceDao.instance.getUnsynced();
+      for (final m in unsyncedMaints) {
+        await saveMaintenanceEntry(m);
+        await MaintenanceDao.instance.update(m.copyWith(isSynced: 1));
+      }
+
+      debugPrint('Successfully synced offline data to Cloud.');
+    } catch (e) {
+      debugPrint('Error running offline sync queue: $e');
     }
   }
 }

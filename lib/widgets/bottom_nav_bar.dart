@@ -41,8 +41,7 @@ class MotoBottomNavBar extends StatelessWidget {
         children: [
           _NavItem(icon: Icons.home_outlined, label: 'Trang chủ', index: 0, current: currentIndex, onTap: onTap),
           _NavItem(icon: Icons.history, label: 'Lịch sử', index: 1, current: currentIndex, onTap: onTap),
-          _NavItem(icon: Icons.bar_chart_outlined, label: 'Thống kê', index: 2, current: currentIndex, onTap: onTap),
-          _NavItem(icon: Icons.person_outline, label: 'Cá nhân', index: 3, current: currentIndex, onTap: onTap),
+          _NavItem(icon: Icons.person_outline, label: 'Cá nhân', index: 2, current: currentIndex, onTap: onTap),
         ],
       ),
     );

@@ -38,7 +38,7 @@ class GarageScreen extends ConsumerWidget {
                 width: 36,
                 height: 36,
                 decoration: const BoxDecoration(
-                  color: Color(0xFFF59E0B), // Màu vàng cam từ mockup
+                  color: Color(0xFFF59E0B),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
