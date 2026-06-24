@@ -1,15 +1,18 @@
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 
 class LocationService {
   Future<Position?> getCurrentPosition() async {
-    final status = await Permission.locationWhenInUse.request();
-    if (status.isDenied) {
-      throw Exception('PERMISSION_DENIED');
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw Exception('PERMISSION_DENIED');
+      }
     }
-    if (status.isPermanentlyDenied) {
+    
+    if (permission == LocationPermission.deniedForever) {
       throw Exception('PERMISSION_DENIED_FOREVER');
     }
 
