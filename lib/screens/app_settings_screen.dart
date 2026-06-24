@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import '../theme/app_theme.dart';
+import '../providers/settings_provider.dart';
+import '../providers/vehicle_provider.dart';
+import '../providers/auth_provider.dart';
+import 'export_data_screen.dart';
 
-class AppSettingsScreen extends StatefulWidget {
+class AppSettingsScreen extends ConsumerStatefulWidget {
   const AppSettingsScreen({super.key});
   @override
-  State<AppSettingsScreen> createState() => _AppSettingsScreenState();
+  ConsumerState<AppSettingsScreen> createState() => _AppSettingsScreenState();
 }
 
-class _AppSettingsScreenState extends State<AppSettingsScreen> {
-  bool _notifOn = true;
-  String _unit = 'km';
-  String _theme = 'Theo hệ thống';
-  String _language = 'Tiếng Việt';
-
+class _AppSettingsScreenState extends ConsumerState<AppSettingsScreen> {
   Widget _sectionTitle(String t) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 18, 16, 6),
     child: Text(t.toUpperCase(), style: GoogleFonts.beVietnamPro(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.primary, letterSpacing: 0.4)),
@@ -43,9 +44,38 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
     if (picked != null) onPicked(picked);
   }
 
+  Future<void> _deleteAllData() async {
+    final uid = ref.read(currentUserProvider)?.uid;
+    if (uid == null) return;
+    
+    // Hiện thông báo đang xử lý
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    // Xóa tất cả các xe (Hàm delete trong vehicleNotifierProvider cũng xóa luôn dữ liệu trên Firestore)
+    final vehicles = await ref.read(vehicleNotifierProvider.future);
+    for (var v in vehicles) {
+      await ref.read(vehicleNotifierProvider.notifier).delete(v.id);
+    }
+    
+    // Đăng xuất và điều hướng về trang Login
+    await ref.read(authNotifierProvider.notifier).signOut();
+    if (mounted) {
+      Navigator.pop(context); // Tắt loading
+      context.go('/login');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final settings = ref.watch(settingsProvider);
+    final settingsNotifier = ref.read(settingsProvider.notifier);
+
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(title: const Text('Cài đặt ứng dụng'), leading: const BackButton()),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 24),
@@ -54,32 +84,39 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
           _tile(
             icon: Icons.notifications_outlined,
             title: 'Thông báo nhắc lịch',
-            trailing: Switch(value: _notifOn, activeColor: AppColors.primary, onChanged: (v) => setState(() => _notifOn = v)),
+            trailing: Switch(
+              value: settings.notifOn, 
+              activeColor: AppColors.primary, 
+              onChanged: (v) => settingsNotifier.updateNotifOn(v),
+            ),
           ),
 
           _sectionTitle('Hiển thị'),
           _tile(
             icon: Icons.straighten_outlined,
             title: 'Đơn vị khoảng cách',
-            trailing: Text(_unit, style: GoogleFonts.beVietnamPro(fontSize: 12, color: AppColors.textSecondary)),
-            onTap: () => _pickOption('Đơn vị', ['km', 'dặm (mi)'], _unit, (v) => setState(() => _unit = v)),
+            trailing: Text(settings.unit, style: GoogleFonts.beVietnamPro(fontSize: 12, color: AppColors.textSecondary)),
+            onTap: () => _pickOption('Đơn vị', ['km', 'dặm (mi)'], settings.unit, (v) => settingsNotifier.updateUnit(v)),
           ),
           _tile(
             icon: Icons.dark_mode_outlined,
             title: 'Giao diện',
-            trailing: Text(_theme, style: GoogleFonts.beVietnamPro(fontSize: 12, color: AppColors.textSecondary)),
-            onTap: () => _pickOption('Giao diện', ['Sáng', 'Tối', 'Theo hệ thống'], _theme, (v) => setState(() => _theme = v)),
+            trailing: Text(settings.theme, style: GoogleFonts.beVietnamPro(fontSize: 12, color: AppColors.textSecondary)),
+            onTap: () => _pickOption('Giao diện', ['Sáng', 'Tối', 'Theo hệ thống'], settings.theme, (v) => settingsNotifier.updateTheme(v)),
           ),
           _tile(
             icon: Icons.language_outlined,
             title: 'Ngôn ngữ',
-            trailing: Text(_language, style: GoogleFonts.beVietnamPro(fontSize: 12, color: AppColors.textSecondary)),
-            onTap: () => _pickOption('Ngôn ngữ', ['Tiếng Việt', 'English'], _language, (v) => setState(() => _language = v)),
+            trailing: Text(settings.language, style: GoogleFonts.beVietnamPro(fontSize: 12, color: AppColors.textSecondary)),
+            onTap: () => _pickOption('Ngôn ngữ', ['Tiếng Việt', 'English'], settings.language, (v) => settingsNotifier.updateLanguage(v)),
           ),
 
           _sectionTitle('Dữ liệu'),
-          _tile(icon: Icons.cloud_sync_outlined, title: 'Sao lưu & đồng bộ', onTap: () {}),
-          _tile(icon: Icons.file_download_outlined, title: 'Xuất dữ liệu (Excel/CSV)', onTap: () {}),
+          _tile(
+            icon: Icons.file_download_outlined, 
+            title: 'Xuất dữ liệu (Excel/CSV)', 
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ExportDataScreen())),
+          ),
           _tile(
             icon: Icons.delete_outline,
             title: 'Xoá toàn bộ dữ liệu',
@@ -87,11 +124,28 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             onTap: () => showDialog(
               context: context,
               builder: (ctx) => AlertDialog(
-                title: const Text('Xoá toàn bộ dữ liệu?'),
-                content: const Text('Hành động này không thể hoàn tác. Toàn bộ lịch sử xăng, bảo dưỡng, phụ tùng sẽ bị xoá.'),
+                title: const Text('Cảnh báo nguy hiểm!'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Hành động này không thể hoàn tác. Toàn bộ lịch sử xăng, bảo dưỡng, phụ tùng của TẤT CẢ các xe sẽ bị xoá hoàn toàn.'),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Vui lòng ĐỒNG BỘ HOẶC XUẤT DỮ LIỆU qua tính năng (Xuất dữ liệu Excel/CSV) trước khi xoá, nếu không dữ liệu sẽ KHÔNG THỂ PHỤC HỒI!',
+                      style: GoogleFonts.beVietnamPro(fontWeight: FontWeight.w600, color: Colors.redAccent),
+                    ),
+                  ],
+                ),
                 actions: [
                   TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Hủy')),
-                  TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Xoá', style: TextStyle(color: Colors.redAccent))),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _deleteAllData();
+                    }, 
+                    child: const Text('Đã hiểu, Xóa', style: TextStyle(color: Colors.redAccent)),
+                  ),
                 ],
               ),
             ),

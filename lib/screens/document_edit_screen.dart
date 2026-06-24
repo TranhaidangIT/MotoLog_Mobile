@@ -22,7 +22,7 @@ class DocumentEditScreen extends ConsumerStatefulWidget {
 class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
   DateTime? _selectedDate;
   bool _isRegistered = true;
-  File? _imageFile;
+  String? _imagePath;
   final _picker = ImagePicker();
 
   @override
@@ -35,15 +35,15 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
           switch (widget.docType) {
             case DocType.inspection:
               _selectedDate = vehicle.inspectionDate;
-              if (vehicle.inspectionImageUrl != null) _imageFile = File(vehicle.inspectionImageUrl!);
+              if (vehicle.inspectionImageUrl != null) _imagePath = vehicle.inspectionImageUrl;
               break;
             case DocType.insurance:
               _selectedDate = vehicle.insuranceDate;
-              if (vehicle.insuranceImageUrl != null) _imageFile = File(vehicle.insuranceImageUrl!);
+              if (vehicle.insuranceImageUrl != null) _imagePath = vehicle.insuranceImageUrl;
               break;
             case DocType.registration:
               _isRegistered = vehicle.isRegistered ?? true;
-              if (vehicle.registrationImageUrl != null) _imageFile = File(vehicle.registrationImageUrl!);
+              if (vehicle.registrationImageUrl != null) _imagePath = vehicle.registrationImageUrl;
               break;
           }
         });
@@ -64,7 +64,7 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
       final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
       if (pickedFile != null) {
         setState(() {
-          _imageFile = File(pickedFile.path);
+          _imagePath = pickedFile.path;
         });
       }
     } catch (e) {
@@ -79,13 +79,13 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
     Vehicle updatedVehicle = vehicle;
     switch (widget.docType) {
       case DocType.inspection:
-        updatedVehicle = vehicle.copyWith(inspectionDate: _selectedDate, inspectionImageUrl: _imageFile?.path);
+        updatedVehicle = vehicle.copyWith(inspectionDate: _selectedDate, inspectionImageUrl: _imagePath);
         break;
       case DocType.insurance:
-        updatedVehicle = vehicle.copyWith(insuranceDate: _selectedDate, insuranceImageUrl: _imageFile?.path);
+        updatedVehicle = vehicle.copyWith(insuranceDate: _selectedDate, insuranceImageUrl: _imagePath);
         break;
       case DocType.registration:
-        updatedVehicle = vehicle.copyWith(isRegistered: _isRegistered, registrationImageUrl: _imageFile?.path);
+        updatedVehicle = vehicle.copyWith(isRegistered: _isRegistered, registrationImageUrl: _imagePath);
         break;
     }
 
@@ -171,7 +171,7 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
             Text('Hình ảnh giấy tờ (1 mặt)', style: GoogleFonts.beVietnamPro(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
             const SizedBox(height: 12),
             
-            if (_imageFile != null)
+            if (_imagePath != null)
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -182,7 +182,9 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
                   children: [
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                      child: Image.file(_imageFile!, width: double.infinity, fit: BoxFit.contain),
+                      child: _imagePath!.startsWith('http')
+                          ? Image.network(_imagePath!, width: double.infinity, fit: BoxFit.contain)
+                          : Image.file(File(_imagePath!), width: double.infinity, fit: BoxFit.contain),
                     ),
                     Row(
                       children: [
@@ -196,7 +198,7 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
                         Container(width: 1, height: 20, color: AppColors.divider),
                         Expanded(
                           child: TextButton.icon(
-                            onPressed: () => setState(() => _imageFile = null),
+                            onPressed: () => setState(() => _imagePath = null),
                             icon: const Icon(Icons.delete, color: Color(0xFFD32F2F)),
                             label: Text('Xoá', style: GoogleFonts.beVietnamPro(color: const Color(0xFFD32F2F))),
                           ),

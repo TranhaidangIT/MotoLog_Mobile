@@ -152,8 +152,10 @@ class GarageScreen extends ConsumerWidget {
                                 ? (vehicle.imageUrl!.startsWith('assets/')
                                     ? Image.asset(vehicle.imageUrl!,
                                         fit: BoxFit.contain)
-                                    : Image.file(File(vehicle.imageUrl!),
-                                        fit: BoxFit.contain))
+                                    : vehicle.imageUrl!.startsWith('http')
+                                        ? Image.network(vehicle.imageUrl!, fit: BoxFit.contain)
+                                        : Image.file(File(vehicle.imageUrl!),
+                                            fit: BoxFit.contain))
                                 : Padding(
                                     padding: const EdgeInsets.all(8),
                                     child: Image.asset(
