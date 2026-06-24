@@ -172,9 +172,13 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
         _isLocating = false;
         final msg = e.toString();
         if (msg.contains('PERMISSION_DENIED')) {
-          _locError = 'Cần quyền vị trí để lấy địa chỉ';
+          _locError = 'Bị từ chối quyền vị trí';
+        } else if (msg.contains('LOCATION_SERVICE_DISABLED')) {
+          _locError = 'Chưa bật GPS/Định vị trên máy';
+        } else if (msg.contains('GPS_TIMEOUT')) {
+          _locError = 'Lỗi GPS (Timeout) - Máy ảo có thể chưa set tọa độ';
         } else {
-          _locError = 'Lỗi hoặc quá thời gian tìm vị trí';
+          _locError = msg;
         }
       });
     }
