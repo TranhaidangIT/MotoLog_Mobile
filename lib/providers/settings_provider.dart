@@ -2,75 +2,72 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'shared_preferences_provider.dart';
 
-// Keys for settings
-const String _keyUnitsSetting = 'settings_units';
-const String _keyLanguageSetting = 'settings_language';
+class AppSettings {
+  final bool notifOn;
+  final String unit;
+  final String theme;
+  final String language;
 
-// Units option helper
-enum UnitsOption {
-  litersVnd('Lít (L) / VNĐ'),
-  gallonsUsd('Gallon (Gal) / USD');
+  AppSettings({
+    this.notifOn = true,
+    this.unit = 'km',
+    this.theme = 'Theo hệ thống',
+    this.language = 'Tiếng Việt',
+  });
 
-  final String label;
-  const UnitsOption(this.label);
+  AppSettings copyWith({
+    bool? notifOn,
+    String? unit,
+    String? theme,
+    String? language,
+  }) {
+    return AppSettings(
+      notifOn: notifOn ?? this.notifOn,
+      unit: unit ?? this.unit,
+      theme: theme ?? this.theme,
+      language: language ?? this.language,
+    );
+  }
 }
 
-// Language option helper
-enum LanguageOption {
-  vietnamese('Tiếng Việt', 'vi'),
-  english('English', 'en');
-
-  final String label;
-  final String code;
-  const LanguageOption(this.label, this.code);
-}
-
-// ─── Units Provider ──────────────────────────────────────────────────────────
-final unitsProvider = StateNotifierProvider<UnitsNotifier, UnitsOption>((ref) {
-  final prefs = ref.watch(sharedPreferencesProvider);
-  return UnitsNotifier(prefs);
-});
-
-class UnitsNotifier extends StateNotifier<UnitsOption> {
+class SettingsNotifier extends StateNotifier<AppSettings> {
   final SharedPreferences _prefs;
 
-  UnitsNotifier(this._prefs) : super(UnitsOption.litersVnd) {
-    final saved = _prefs.getString(_keyUnitsSetting);
-    if (saved != null) {
-      state = UnitsOption.values.firstWhere(
-        (e) => e.name == saved,
-        orElse: () => UnitsOption.litersVnd,
-      );
-    }
+  SettingsNotifier(this._prefs) : super(AppSettings()) {
+    _loadSettings();
   }
 
-  Future<void> setUnits(UnitsOption option) async {
-    state = option;
-    await _prefs.setString(_keyUnitsSetting, option.name);
+  void _loadSettings() {
+    state = AppSettings(
+      notifOn: _prefs.getBool('setting_notif_on') ?? true,
+      unit: _prefs.getString('setting_unit') ?? 'km',
+      theme: _prefs.getString('setting_theme') ?? 'Theo hệ thống',
+      language: _prefs.getString('setting_language') ?? 'Tiếng Việt',
+    );
+  }
+
+  Future<void> updateNotifOn(bool value) async {
+    state = state.copyWith(notifOn: value);
+    await _prefs.setBool('setting_notif_on', value);
+  }
+
+  Future<void> updateUnit(String value) async {
+    state = state.copyWith(unit: value);
+    await _prefs.setString('setting_unit', value);
+  }
+
+  Future<void> updateTheme(String value) async {
+    state = state.copyWith(theme: value);
+    await _prefs.setString('setting_theme', value);
+  }
+
+  Future<void> updateLanguage(String value) async {
+    state = state.copyWith(language: value);
+    await _prefs.setString('setting_language', value);
   }
 }
 
-// ─── Language Provider ───────────────────────────────────────────────────────
-final languageProvider = StateNotifierProvider<LanguageNotifier, LanguageOption>((ref) {
+final settingsProvider = StateNotifierProvider<SettingsNotifier, AppSettings>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
-  return LanguageNotifier(prefs);
+  return SettingsNotifier(prefs);
 });
-
-class LanguageNotifier extends StateNotifier<LanguageOption> {
-  final SharedPreferences _prefs;
-
-  LanguageNotifier(this._prefs) : super(LanguageOption.vietnamese) {
-    final saved = _prefs.getString(_keyLanguageSetting);
-    if (saved != null) {
-      state = LanguageOption.values.firstWhere(
-        (e) => e.name == saved,
-        orElse: () => LanguageOption.vietnamese,
-      );
-    }
-  }
-
-  Future<void> setLanguage(LanguageOption option) async {
-    state = option;
-    await _prefs.setString(_keyLanguageSetting, option.name);
-  }
-}

@@ -103,15 +103,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     color: const Color(0xFF1B1B1B),
                   ),
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  'Theo dõi xăng, bảo dưỡng,\nvà chi phí một cách dễ dàng.',
-                  style: GoogleFonts.beVietnamPro(
-                    fontSize: 15,
-                    color: const Color(0xFF555555),
-                    height: 1.4,
-                  ),
-                ),
               ],
             ),
           ),

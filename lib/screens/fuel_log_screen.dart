@@ -47,7 +47,8 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
   
   bool _isLocating = false;
   String? _locError;
-  GasStation? _selectedStation;
+  double? _lat;
+  double? _lon;
   
   double _odoPrev = 0;
   double _consumption = 0;
@@ -141,7 +142,8 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
     setState(() {
       _isLocating = true;
       _locError = null;
-      _selectedStation = null;
+      _lat = null;
+      _lon = null;
     });
 
     try {
@@ -151,68 +153,31 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
         return;
       }
 
-      final stations = await _locService.findNearbyGasStations(pos.latitude, pos.longitude);
+      final address = await _locService.getCurrentAddress(pos.latitude, pos.longitude);
       if (!mounted) return;
 
-      if (stations.isEmpty) {
-        setState(() {
-          _isLocating = false;
-          _locError = 'Không tìm thấy cây xăng gần đây';
-        });
-      } else if (stations.length == 1) {
-        setState(() {
-          _isLocating = false;
-          _selectedStation = stations.first;
-          _stationCtrl.text = stations.first.name;
-          if (stations.first.address != null) _addressCtrl.text = stations.first.address!;
-        });
-      } else {
-        setState(() { _isLocating = false; });
-        _showStationPicker(stations);
-      }
+      setState(() {
+        _isLocating = false;
+        _lat = pos.latitude;
+        _lon = pos.longitude;
+        if (address != null && address.isNotEmpty) {
+          _addressCtrl.text = address;
+        } else {
+          _locError = 'Không tìm thấy địa chỉ tại tọa độ này';
+        }
+      });
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _isLocating = false;
         final msg = e.toString();
         if (msg.contains('PERMISSION_DENIED')) {
-          _locError = 'Cần quyền vị trí để tự detect cây xăng';
+          _locError = 'Cần quyền vị trí để lấy địa chỉ';
         } else {
           _locError = 'Lỗi hoặc quá thời gian tìm vị trí';
         }
       });
     }
-  }
-
-  void _showStationPicker(List<GasStation> stations) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Chọn cây xăng', style: GoogleFonts.beVietnamPro(fontSize: 16, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              ...stations.map((s) => ListTile(
-                leading: const Icon(Icons.local_gas_station, color: AppColors.primary),
-                title: Text(s.name, style: GoogleFonts.beVietnamPro(fontSize: 14)),
-                onTap: () {
-                  setState(() {
-                    _selectedStation = s;
-                    _stationCtrl.text = s.name;
-                    if (s.address != null) _addressCtrl.text = s.address!;
-                  });
-                  Navigator.pop(context);
-                },
-              )),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   void _calculateConsumption() {
@@ -257,8 +222,8 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
       totalCost: amount,
       stationName: _stationCtrl.text.isNotEmpty ? _stationCtrl.text : null,
       stationAddress: _addressCtrl.text.isNotEmpty ? _addressCtrl.text : null,
-      stationLat: _selectedStation?.lat,
-      stationLon: _selectedStation?.lon,
+      stationLat: _lat,
+      stationLon: _lon,
       fuelType: _selectedFuelType,
       note: _noteCtrl.text,
     );
@@ -465,9 +430,12 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
                     ),
                   ],
                   const SizedBox(height: 12),
-                  _buildTextField(_stationCtrl, 'Tên cây xăng (nhập tay hoặc auto)'),
+                  _buildTextField(_addressCtrl, 'Địa chỉ hiện tại', suffixIcon: IconButton(
+                    icon: const Icon(Icons.my_location, color: AppColors.primary),
+                    onPressed: _detectLocation,
+                  )),
                   const SizedBox(height: 8),
-                  _buildTextField(_addressCtrl, 'Địa chỉ cây xăng (tuỳ chọn)'),
+                  _buildTextField(_stationCtrl, 'Tên cây xăng (tuỳ chọn)'),
                 ],
               ),
             ),
