@@ -86,5 +86,9 @@
 		<string>Ứng dụng cần truy cập thư viện ảnh để chọn ảnh xe từ thiết bị.</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>Ứng dụng cần truy cập micrô nếu bạn quay video.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Ứng dụng cần quyền vị trí để lấy tự động địa chỉ cây xăng nơi bạn đang đứng.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>Ứng dụng cần quyền vị trí để lấy tự động địa chỉ cây xăng.</string>
 	</dict>
 </plist>
