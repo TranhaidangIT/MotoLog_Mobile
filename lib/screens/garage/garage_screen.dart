@@ -7,6 +7,8 @@ import '../../core/constants/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../providers/vehicle_provider.dart';
 
+/// Màn hình Quản lý Garage (Danh sách xe)
+/// Liệt kê các xe đã thêm, cho phép chọn xe mặc định hoặc thêm xe mới.
 class GarageScreen extends ConsumerWidget {
   const GarageScreen({super.key});
 

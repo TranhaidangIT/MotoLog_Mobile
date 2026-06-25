@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 
+/// Tiện ích hỗ trợ định dạng Tiền tệ, Ngày tháng và Số liệu chuẩn Việt Nam
 class AppFormatters {
   AppFormatters._();
 
@@ -18,7 +19,7 @@ class AppFormatters {
   static final DateFormat _monthYearFmt = DateFormat('MM/yyyy');
   static final DateFormat _dbFmt = DateFormat('yyyy-MM-dd');
 
-  /// Format VND currency: 105000 → "105.000 ₫"
+  /// Định dạng tiền tệ VNĐ: 105000 → "105.000 ₫"
   static String currency(num? amount) {
     if (amount == null) return '0 ₫';
     return _currencyFmt.format(amount);

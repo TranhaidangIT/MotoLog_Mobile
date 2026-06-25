@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
 import '../providers/auth_provider.dart';
+import '../providers/vehicle_provider.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'maintenance_setup_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,6 +12,8 @@ import 'edit_profile_screen.dart';
 import 'app_settings_screen.dart';
 import 'help_center_screen.dart';
 
+/// Màn hình Hồ sơ cá nhân
+/// Quản lý thông tin tài khoản, cài đặt hệ thống và chức năng Đăng xuất.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -23,7 +26,16 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Hồ sơ cá nhân'),
         centerTitle: true,
-        leading: const BackButton(),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -95,7 +107,14 @@ class ProfileScreen extends ConsumerWidget {
             context.go('/fuel-history');
           }
         },
-        onAddTap: () => context.push('/fuel-log'),
+        onAddTap: () {
+          if (ref.read(selectedVehicleIdProvider) == null) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm xe trước khi sử dụng')));
+            context.push('/add-vehicle');
+          } else {
+            context.push('/fuel-log');
+          }
+        },
       ),
     );
   }

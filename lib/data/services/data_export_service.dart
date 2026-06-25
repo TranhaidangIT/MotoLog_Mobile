@@ -4,7 +4,11 @@ import '../local/dao/vehicle_dao.dart';
 import '../local/dao/fuel_dao.dart';
 import '../local/dao/maintenance_dao.dart';
 
+/// Dịch vụ xử lý xuất dữ liệu của người dùng ra định dạng CSV
 class DataExportService {
+  /// Hàm tạo file CSV chứa toàn bộ thông tin xe, lịch sử đổ xăng và bảo dưỡng
+  /// [uid] Mã ID của người dùng
+  /// Trả về [File] CSV nếu thành công, hoặc null nếu lỗi/không có dữ liệu
   static Future<File?> generateCsvExport(String uid) async {
     try {
       final vehicles = await VehicleDao.instance.getAll(userId: uid);

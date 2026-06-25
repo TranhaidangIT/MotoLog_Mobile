@@ -15,6 +15,8 @@ import '../providers/vehicle_provider.dart';
 import '../providers/fuel_provider.dart';
 import '../data/models/fuel_entry.dart';
 
+/// Màn hình Nhập liệu Đổ xăng (Fuel Log)
+/// Cho phép người dùng ghi nhận chi phí, số lít và tính toán tự động mức tiêu hao nhiên liệu.
 class FuelLogScreen extends ConsumerStatefulWidget {
   const FuelLogScreen({super.key});
 
@@ -292,7 +294,7 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)],
       ),
       child: child,
     );
@@ -504,7 +506,7 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
             Container(
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.05), borderRadius: BorderRadius.circular(16)),
+              decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(16)),
               child: Row(
                 children: [
                   Expanded(

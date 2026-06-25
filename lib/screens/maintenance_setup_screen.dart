@@ -8,6 +8,9 @@ import '../providers/vehicle_provider.dart';
 
 enum SetupChoice { justDone, neverDone, custom }
 
+/// Màn hình Thiết lập Mốc Bảo dưỡng
+/// Cho phép người dùng khai báo trạng thái hiện tại của từng hạng mục (vừa thay / chưa thay / nhập tay)
+/// và được sử dụng cả trong Onboarding lẫn cài đặt lại từ Hồ sơ cá nhân.
 class MaintenanceSetupScreen extends ConsumerStatefulWidget {
   final bool isOnboarding;
   const MaintenanceSetupScreen({super.key, this.isOnboarding = true});
@@ -122,7 +125,7 @@ class _MaintenanceSetupScreenState extends ConsumerState<MaintenanceSetupScreen>
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
                 ),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Row(children: [

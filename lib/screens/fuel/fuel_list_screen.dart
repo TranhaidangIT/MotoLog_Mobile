@@ -8,6 +8,8 @@ import '../../data/models/fuel_entry.dart';
 import '../../providers/fuel_provider.dart';
 import '../../providers/vehicle_provider.dart';
 
+/// Màn hình Danh sách Đổ xăng
+/// Hiển thị lịch sử các lần đổ xăng của xe hiện tại.
 class FuelListScreen extends ConsumerWidget {
   const FuelListScreen({super.key});
 

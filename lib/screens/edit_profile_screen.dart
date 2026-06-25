@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 
+/// Màn hình Chỉnh sửa Thông tin cá nhân
+/// Cho phép người dùng cập nhật tên hiển thị và số điện thoại.
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
   @override

@@ -2,12 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../../core/constants/vehicle_catalog_data.dart';
 
+/// Model lưu trữ thông tin ảnh đại diện mặc định của một dòng xe từ CSDL (Firebase)
 class VehicleImageEntry {
+  /// Hãng xe (VD: Honda)
   final String brand;
+  /// Dòng xe (VD: Air Blade)
   final String model;
-  final String type; // 'xe_so' | 'tay_ga'
+  /// Phân loại (VD: xe_so, tay_ga, xe_con)
+  final String type; 
+  /// Năm sản xuất bắt đầu áp dụng mẫu thiết kế này
   final int yearFrom;
+  /// Năm sản xuất kết thúc
   final int yearTo;
+  /// Đường dẫn URL ảnh (Firebase Storage hoặc Public URL)
   final String imageUrl;
 
   VehicleImageEntry({
@@ -29,6 +36,7 @@ class VehicleImageEntry {
   );
 }
 
+/// Dịch vụ tra cứu hình ảnh xe dựa trên Hãng, Dòng xe và Năm sản xuất
 class VehicleImageService {
   static final VehicleImageService instance = VehicleImageService._();
   VehicleImageService._();

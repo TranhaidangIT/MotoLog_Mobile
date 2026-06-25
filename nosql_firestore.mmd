@@ -1,0 +1,26 @@
+%%{init: {"flowchart": {"curve": "linear"}}}%%
+graph TD
+    ROOT["🔥 Firestore Database"]
+    ROOT --> USERS["📁 users/ (Collection)"]
+
+    USERS --> UID["📄 {uid} (Document)\n──────────────────\nuid: String\nemail: String\ndisplay_name: String\nphoto_url: String\nupdated_at: Timestamp"]
+
+    UID --> COL_V["📁 vehicles/ (Sub-collection)"]
+    UID --> COL_F["📁 fuel_entries/ (Sub-collection)"]
+    UID --> COL_M["📁 maintenance_entries/ (Sub-collection)"]
+
+    COL_V --> DOC_V["📄 {vehicleId}\n──────────────────\nid · name · brand · model\nplate_number · year\nodometer · fuel_type\nimage_url · color\nregistration_image_url\ninspection_image_url\ninsurance_image_url\nuser_id · created_at"]
+
+    COL_F --> DOC_F["📄 {entryId}\n──────────────────\nid · vehicle_id\ndate · odometer\nliters · price_per_liter\ntotal_cost · station_name\nstation_address\nstation_lat · station_lon\nfuel_type · is_full\nnote · created_at"]
+
+    COL_M --> DOC_M["📄 {entryId}\n──────────────────\nid · vehicle_id\ntype: ROUTINE/REPAIR/PARTS\ntitle · date · odometer\ncost · garage_name\nnext_date · next_due_km\nimage_path\nbefore_image_url\nafter_image_url\nnote · created_at"]
+
+    style ROOT fill:#FF8C00,color:#fff,stroke:#FF8C00
+    style USERS fill:#FFA500,color:#fff,stroke:#FFA500
+    style UID fill:#4A90D9,color:#fff,stroke:#4A90D9
+    style COL_V fill:#27AE60,color:#fff,stroke:#27AE60
+    style COL_F fill:#27AE60,color:#fff,stroke:#27AE60
+    style COL_M fill:#27AE60,color:#fff,stroke:#27AE60
+    style DOC_V fill:#E8F5E9,color:#1a1a1a,stroke:#27AE60
+    style DOC_F fill:#E8F5E9,color:#1a1a1a,stroke:#27AE60
+    style DOC_M fill:#E8F5E9,color:#1a1a1a,stroke:#27AE60

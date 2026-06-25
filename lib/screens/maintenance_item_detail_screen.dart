@@ -9,6 +9,8 @@ import '../providers/maintenance_provider.dart';
 import '../providers/maintenance_item_provider.dart';
 import '../data/models/maintenance_entry.dart';
 
+/// Màn hình Chi tiết Hạng mục Bảo dưỡng
+/// Hiển thị tiến độ bảo dưỡng, lịch sử các lần thực hiện và hình ảnh chứng từ.
 class MaintenanceItemDetailScreen extends ConsumerStatefulWidget {
   final String itemId;
   const MaintenanceItemDetailScreen({super.key, required this.itemId});
@@ -80,7 +82,7 @@ class _MaintenanceItemDetailScreenState extends ConsumerState<MaintenanceItemDet
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)],
               ),
               child: Row(
                 children: [
@@ -138,7 +140,7 @@ class _MaintenanceItemDetailScreenState extends ConsumerState<MaintenanceItemDet
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

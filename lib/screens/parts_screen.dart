@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import '../providers/vehicle_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +11,8 @@ import '../providers/maintenance_provider.dart';
 import '../data/models/maintenance_entry.dart';
 import 'add_part_screen.dart';
 
+/// Màn hình Danh sách Phụ tùng
+/// Liệt kê các phụ tùng đã được ghi nhận, có thể lọc theo thời gian gần đây.
 class PartsScreen extends ConsumerStatefulWidget {
   const PartsScreen({super.key});
   @override
@@ -78,7 +81,7 @@ class _PartsScreenState extends ConsumerState<PartsScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
                       ),
                       child: Row(children: [
                         ClipRRect(
@@ -128,7 +131,14 @@ class _PartsScreenState extends ConsumerState<PartsScreen> {
             context.go('/profile');
           }
         },
-        onAddTap: () => context.push('/fuel-log'),
+        onAddTap: () {
+          if (ref.read(selectedVehicleIdProvider) == null) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm xe trước khi sử dụng')));
+            context.push('/add-vehicle');
+          } else {
+            context.push('/fuel-log');
+          }
+        },
       ),
     );
   }

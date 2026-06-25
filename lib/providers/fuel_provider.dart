@@ -36,11 +36,13 @@ final fuelMonthlyCostsProvider =
 
 // ── CRUD đổ xăng ───────────────────────────────────────────────────────────
 
+/// Provider quản lý danh sách và trạng thái của các lần Đổ xăng theo xe
 final fuelNotifierProvider =
     AsyncNotifierProvider.autoDispose<FuelNotifier, List<FuelEntry>>(
   FuelNotifier.new,
 );
 
+/// Trạng thái quản lý Logic Thêm, Cập nhật, Xoá dữ liệu Đổ xăng và Đồng bộ dữ liệu lên Firestore
 class FuelNotifier extends AutoDisposeAsyncNotifier<List<FuelEntry>> {
   @override
   Future<List<FuelEntry>> build() async {

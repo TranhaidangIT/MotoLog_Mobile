@@ -44,11 +44,13 @@ final maintenanceMonthlyCostsProvider =
 
 // ── CRUD bảo dưỡng ─────────────────────────────────────────────────────────
 
+/// Provider quản lý danh sách và trạng thái các lần Bảo dưỡng / Sửa chữa của xe
 final maintenanceNotifierProvider = AsyncNotifierProvider.autoDispose<
     MaintenanceNotifier, List<MaintenanceEntry>>(
   MaintenanceNotifier.new,
 );
 
+/// Trạng thái quản lý Logic Thêm, Cập nhật, Xoá dữ liệu Bảo dưỡng và Đồng bộ dữ liệu lên Firestore
 class MaintenanceNotifier
     extends AutoDisposeAsyncNotifier<List<MaintenanceEntry>> {
   @override

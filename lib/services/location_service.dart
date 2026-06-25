@@ -3,7 +3,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 
+/// Dịch vụ định vị GPS và chuyển đổi tọa độ thành địa chỉ
 class LocationService {
+  /// Lấy tọa độ GPS hiện tại của thiết bị
+  /// Có xử lý xin quyền và fallback về vị trí lưu lần cuối nếu mất GPS
   Future<Position?> getCurrentPosition() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {

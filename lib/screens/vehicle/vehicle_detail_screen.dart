@@ -8,6 +8,8 @@ import '../../providers/fuel_provider.dart';
 import '../../providers/maintenance_provider.dart';
 import '../../providers/vehicle_provider.dart';
 
+/// Màn hình Chi tiết Xe
+/// Hiển thị thông tin chung, lịch sử bảo dưỡng và chi phí liên quan đến một xe cụ thể.
 class VehicleDetailScreen extends ConsumerWidget {
   final String vehicleId;
 
@@ -255,7 +257,7 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.2),
+        color: AppColors.surfaceLight.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

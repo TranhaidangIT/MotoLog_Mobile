@@ -6,8 +6,11 @@ import 'package:go_router/go_router.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../providers/fuel_provider.dart';
+import '../providers/vehicle_provider.dart';
 import '../data/models/fuel_entry.dart';
 
+/// Màn hình Lịch sử Đổ xăng
+/// Hiển thị toàn bộ lịch sử các lần đổ xăng có thể lọc theo tháng và thống kê tổng quan.
 class FuelHistoryScreen extends ConsumerStatefulWidget {
   const FuelHistoryScreen({super.key});
 
@@ -146,7 +149,14 @@ class _FuelHistoryScreenState extends ConsumerState<FuelHistoryScreen> {
             context.go('/profile');
           }
         },
-        onAddTap: () => context.push('/fuel-log'),
+        onAddTap: () {
+          if (ref.read(selectedVehicleIdProvider) == null) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm xe trước khi sử dụng')));
+            context.push('/add-vehicle');
+          } else {
+            context.push('/fuel-log');
+          }
+        },
       ),
     );
   }

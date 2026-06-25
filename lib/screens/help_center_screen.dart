@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_theme.dart';
 
+/// Màn hình Trung tâm Trợ giúup
+/// Liệt kê hướng dẫn sử dụng, câu hỏi thường gặp (FAQ) và thông tin liên hệ hỗ trợ.
 class HelpCenterScreen extends StatelessWidget {
   const HelpCenterScreen({super.key});
 
@@ -38,7 +40,7 @@ class HelpCenterScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
             ),
             child: Row(children: [
               Container(
@@ -61,7 +63,7 @@ class HelpCenterScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
             ),
             child: Column(children: _faqs.map((f) => ExpansionTile(
               title: Text(f['q']!, style: GoogleFonts.beVietnamPro(fontSize: 12, fontWeight: FontWeight.w600)),
@@ -77,7 +79,7 @@ class HelpCenterScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
             ),
             child: Column(children: [
               ListTile(

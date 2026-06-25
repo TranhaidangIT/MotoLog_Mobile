@@ -6,6 +6,8 @@ import '../../core/constants/app_colors.dart';
 import '../../core/utils/validators.dart';
 import '../../providers/auth_provider.dart';
 
+/// Màn hình Đăng nhập
+/// Cho phép người dùng đăng nhập bằng Email/Mật khẩu hoặc qua các tài khoản mạng xã hội (Google).
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 

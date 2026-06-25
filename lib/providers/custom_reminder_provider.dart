@@ -3,11 +3,13 @@ import '../data/models/custom_reminder.dart';
 import '../data/local/custom_reminder_dao.dart';
 import 'vehicle_provider.dart';
 
+/// Provider theo dõi và quản lý danh sách các Nhắc nhở tuỳ chỉnh của Xe đang được chọn
 final customReminderNotifierProvider = StateNotifierProvider<CustomReminderNotifier, List<CustomReminder>>((ref) {
   final vehicleId = ref.watch(selectedVehicleIdProvider);
   return CustomReminderNotifier(vehicleId);
 });
 
+/// Trạng thái quản lý logic Thêm/Xoá/Sửa các Lịch nhắc nhở (CustomReminder)
 class CustomReminderNotifier extends StateNotifier<List<CustomReminder>> {
   final String? vehicleId;
   final _dao = CustomReminderDao.instance;

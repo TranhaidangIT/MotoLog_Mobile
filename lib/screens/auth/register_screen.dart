@@ -6,6 +6,8 @@ import '../../core/constants/app_colors.dart';
 import '../../core/utils/validators.dart';
 import '../../providers/auth_provider.dart';
 
+/// Màn hình Đăng ký
+/// Cho phép người dùng tạo tài khoản mới bằng Email/Mật khẩu.
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 

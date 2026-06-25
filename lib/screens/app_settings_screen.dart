@@ -8,6 +8,8 @@ import '../providers/vehicle_provider.dart';
 import '../providers/auth_provider.dart';
 import 'export_data_screen.dart';
 
+/// Màn hình Cài đặt Ứng dụng
+/// Cho phép người dùng tùy chỉnh thông báo, đơn vị hiển thị, giao diện, ngôn ngữ và quản lý dữ liệu.
 class AppSettingsScreen extends ConsumerStatefulWidget {
   const AppSettingsScreen({super.key});
   @override

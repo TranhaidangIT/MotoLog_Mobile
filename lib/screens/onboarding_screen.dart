@@ -7,6 +7,8 @@ import '../core/constants/app_constants.dart';
 import '../core/router/app_router.dart';
 import '../theme/app_theme.dart';
 
+/// Màn hình Giới thiệu (Onboarding)
+/// Hiển thị các tính năng nổi bật của ứng dụng trong lần đầu tiên mở app.
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -145,8 +147,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                     width: 48,
                                     height: 48,
                                     decoration: BoxDecoration(
-                                      color: index == 0 ? AppColors.primary.withOpacity(0.8) : 
-                                             (index == 1 ? AppColors.fuelOrange.withOpacity(0.8) : AppColors.maintenanceRed.withOpacity(0.8)),
+                                      color: index == 0 ? AppColors.primary.withValues(alpha: 0.8) : 
+                                             (index == 1 ? AppColors.fuelOrange.withValues(alpha: 0.8) : AppColors.maintenanceRed.withValues(alpha: 0.8)),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(f['icon'], color: Colors.white, size: 24),

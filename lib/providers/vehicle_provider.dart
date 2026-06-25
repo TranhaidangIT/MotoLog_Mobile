@@ -56,12 +56,13 @@ final selectedVehicleProvider = FutureProvider<Vehicle?>((ref) async {
 });
 
 // ── CRUD Xe ────────────────────────────────────────────────────────────────
-
+/// Provider quản lý danh sách Xe theo User hiện tại
 final vehicleNotifierProvider =
     AsyncNotifierProvider<VehicleNotifier, List<Vehicle>>(
   VehicleNotifier.new,
 );
 
+/// Trạng thái quản lý Logic Thêm, Cập nhật, Xoá Xe và Đồng bộ dữ liệu lên Firestore
 class VehicleNotifier extends AsyncNotifier<List<Vehicle>> {
   @override
   Future<List<Vehicle>> build() async {

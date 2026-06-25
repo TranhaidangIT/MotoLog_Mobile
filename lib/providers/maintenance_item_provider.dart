@@ -3,11 +3,13 @@ import '../data/models/maintenance_item.dart';
 import '../data/local/maintenance_item_dao.dart';
 import 'vehicle_provider.dart';
 
+/// Provider theo dõi danh sách các Hạng mục bảo dưỡng (Nhớt máy, lọc gió...) của chiếc xe đang được chọn
 final maintenanceItemNotifierProvider = StateNotifierProvider<MaintenanceItemNotifier, List<MaintenanceItem>>((ref) {
   final vehicleId = ref.watch(selectedVehicleIdProvider);
   return MaintenanceItemNotifier(vehicleId);
 });
 
+/// Trạng thái quản lý logic Tải/Cập nhật/Đánh dấu Hoàn thành Hạng mục bảo dưỡng
 class MaintenanceItemNotifier extends StateNotifier<List<MaintenanceItem>> {
   final String? vehicleId;
   final _dao = MaintenanceItemDao.instance;

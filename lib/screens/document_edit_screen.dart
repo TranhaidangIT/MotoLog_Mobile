@@ -11,6 +11,8 @@ import '../data/models/vehicle.dart';
 
 enum DocType { registration, inspection, insurance }
 
+/// Màn hình Chỉnh sửa Giấy tờ xe
+/// Nhập hạn đăng kiểm, bảo hiểm, đăng ký và cho phép chụp/tải ảnh giấy tờ đính kèm.
 class DocumentEditScreen extends ConsumerStatefulWidget {
   final DocType docType;
   const DocumentEditScreen({super.key, required this.docType});

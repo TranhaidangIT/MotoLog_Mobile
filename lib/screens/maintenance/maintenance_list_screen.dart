@@ -9,6 +9,8 @@ import '../../data/models/maintenance_entry.dart';
 import '../../providers/maintenance_provider.dart';
 import '../../providers/vehicle_provider.dart';
 
+/// Màn hình Danh sách Bảo dưỡng
+/// Hiển thị lịch sử các lần bảo dưỡng và các hạng mục bảo dưỡng sắp tới.
 class MaintenanceListScreen extends ConsumerStatefulWidget {
   const MaintenanceListScreen({super.key});
 

@@ -6,6 +6,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/app_theme.dart';
 import '../providers/vehicle_provider.dart';
 
+/// Màn hình Quản lý Garage (Danh sách xe)
+/// Cho phép người dùng xem toàn bộ xe, chọn xe mặc định, và thêm xe mới.
 class GarageScreen extends ConsumerWidget {
   const GarageScreen({super.key});
 
