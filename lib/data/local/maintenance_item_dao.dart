@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
-import '../../core/constants/app_constants.dart';
-import '../models/maintenance_item.dart';
-import 'database_helper.dart';
+import 'package:motolog_mobile/core/constants/app_constants.dart';
+import 'package:motolog_mobile/data/models/maintenance_item.dart';
+import 'package:motolog_mobile/shared/database/database_helper.dart';
 
 class MaintenanceItemDao {
   MaintenanceItemDao._();

@@ -1,4 +1,4 @@
-import '../../data/models/maintenance_entry.dart';
+import 'package:motolog_mobile/data/models/maintenance_entry.dart';
 
 class ReminderCalculator {
   ReminderCalculator._();

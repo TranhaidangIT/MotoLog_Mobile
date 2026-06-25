@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/app_theme.dart';
+import 'package:motolog_mobile/theme/app_theme.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/auth_provider.dart';
+import 'package:motolog_mobile/features/auth/providers/auth_provider.dart';
 
 /// Màn hình Đăng ký tài khoản
 /// Cho phép người dùng mới tạo tài khoản bằng Họ Tên, Email và Mật khẩu.

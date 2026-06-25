@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../theme/app_theme.dart';
+import 'package:motolog_mobile/theme/app_theme.dart';
 
 /// Component Thanh điều hướng dưới cùng (Bottom Navigation Bar)
 /// Được sử dụng chung trên các màn hình: Trang chủ, Lịch sử, Cá nhân

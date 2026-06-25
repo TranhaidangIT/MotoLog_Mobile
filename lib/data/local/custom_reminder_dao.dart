@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
-import '../../core/constants/app_constants.dart';
-import '../models/custom_reminder.dart';
-import 'database_helper.dart';
+import 'package:motolog_mobile/core/constants/app_constants.dart';
+import 'package:motolog_mobile/data/models/custom_reminder.dart';
+import 'package:motolog_mobile/shared/database/database_helper.dart';
 
 class CustomReminderDao {
   CustomReminderDao._();

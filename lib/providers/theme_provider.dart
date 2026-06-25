@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../core/constants/app_constants.dart';
+import 'package:motolog_mobile/core/constants/app_constants.dart';
 
 /// Provider cung cấp trạng thái Giao diện (Sáng/Tối/Hệ thống) toàn cục
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
