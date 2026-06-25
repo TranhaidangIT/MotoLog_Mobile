@@ -1,7 +1,10 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class AppColors {
   AppColors._();
+
+  static bool get _isDark => PlatformDispatcher.instance.platformBrightness == Brightness.dark;
 
   // === LIGHT MODE ===
   static Color primary = const Color(0xFF4FAF68); // Primary Green
@@ -19,15 +22,19 @@ class AppColors {
   static Color error = const Color(0xFFEF4444);
   static Color errorLight = const Color(0xFFFEE2E2);
 
-  static Color backgroundLight =
-      const Color(0xFFF8F6F0); // Warm White Background
-  static Color surfaceLight = const Color(0xFFFFFFFF);
-  static Color surfaceVariantLight = const Color(0xFFF1EFEA); // Warm Gray
-  static Color borderLight = const Color(0xFFE5E5E5); // Muted Border
+  static Color get backgroundLight =>
+      _isDark ? backgroundDark : const Color(0xFFF8F6F0); // Warm White Background
+  static Color get surfaceLight => _isDark ? surfaceDark : const Color(0xFFFFFFFF);
+  static Color get surfaceVariantLight => _isDark ? surfaceVariantDark : const Color(0xFFF1EFEA); // Warm Gray
+  static Color get borderLight => _isDark ? borderDark : const Color(0xFFE5E5E5); // Muted Border
 
-  static Color textPrimaryLight = const Color(0xFF222222); // Dark text
-  static Color textSecondaryLight = const Color(0xFF6B7280); // Gray text
-  static Color textHintLight = const Color(0xFF9CA3AF); // Hint text
+  // ALIASES to fix undefined getters
+  static Color get background => backgroundLight;
+  static Color get surface => surfaceLight;
+
+  static Color get textPrimaryLight => _isDark ? textPrimaryDark : const Color(0xFF222222); // Dark text
+  static Color get textSecondaryLight => _isDark ? textSecondaryDark : const Color(0xFF6B7280); // Gray text
+  static Color get textHintLight => _isDark ? textHintDark : const Color(0xFF9CA3AF); // Hint text
 
   // === DARK MODE ===
   static Color backgroundDark = const Color(0xFF1F2937);

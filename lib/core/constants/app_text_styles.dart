@@ -1,7 +1,7 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
-
 class AppTextStyles {
   AppTextStyles._();
 
@@ -118,15 +118,13 @@ class AppTextStyles {
       );
 
   // === HELPERS ===
+  static bool get _isDark => PlatformDispatcher.instance.platformBrightness == Brightness.dark;
+
   static Color _primaryText(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? AppColors.textPrimaryDark
-        : AppColors.textPrimaryLight;
+    return _isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
   }
 
   static Color _secondaryText(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
+    return _isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
   }
 }
