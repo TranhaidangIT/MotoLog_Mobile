@@ -2,9 +2,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz_data;
 
+/// Dịch vụ quản lý thông báo nhắc nhở (Local Notifications)
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
+  /// Khởi tạo dịch vụ thông báo và cấu hình múi giờ
   static Future<void> init() async {
     tz_data.initializeTimeZones();
     const AndroidInitializationSettings initAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -13,6 +15,7 @@ class NotificationService {
     await _plugin.initialize(initSettings);
   }
 
+  /// Đặt lịch nhắc nhở đổ xăng dựa trên số km dự kiến còn lại
   static Future<void> scheduleRefuelReminder(int estimatedKmLeft, {int estimateDays = 5}) async {
     // Vì MotoLog chưa có Background Service đọc ODO realtime,
     // ta sử dụng heurictic đếm lùi số ngày tương ứng với số km.

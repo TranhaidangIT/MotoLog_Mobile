@@ -9,6 +9,8 @@ import '../data/models/maintenance_entry.dart';
 import '../providers/maintenance_provider.dart';
 import '../providers/vehicle_provider.dart';
 
+/// Màn hình Thêm Phụ tùng
+/// Ghi nhận một lần thay phụ tùng kèm hình ảnh trước/sau và chi phí thực tế.
 class AddPartScreen extends ConsumerStatefulWidget {
   const AddPartScreen({super.key});
   @override
@@ -162,7 +164,7 @@ class _AddPartScreenState extends ConsumerState<AddPartScreen> {
                   onTap: onClear,
                   child: Container(
                     width: 22, height: 22,
-                    decoration: BoxDecoration(color: Colors.black.withOpacity(0.55), shape: BoxShape.circle),
+                    decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.55), shape: BoxShape.circle),
                     child: const Icon(Icons.close, color: Colors.white, size: 14),
                   ),
                 ),

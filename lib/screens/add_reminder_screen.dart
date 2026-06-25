@@ -6,6 +6,8 @@ import '../data/models/custom_reminder.dart';
 import '../providers/custom_reminder_provider.dart';
 import '../providers/vehicle_provider.dart';
 
+/// Màn hình Thêm Nhắc nhở tùy chỉnh
+/// Hỗ trợ 3 loại nhắc: theo Ngày, theo km ODO, và theo mức Bình xăng.
 class AddReminderScreen extends ConsumerStatefulWidget {
   const AddReminderScreen({super.key});
   @override

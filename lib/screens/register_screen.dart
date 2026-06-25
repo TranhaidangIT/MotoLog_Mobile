@@ -6,6 +6,8 @@ import '../theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 
+/// Màn hình Đăng ký tài khoản
+/// Cho phép người dùng mới tạo tài khoản bằng Họ Tên, Email và Mật khẩu.
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
   @override

@@ -1,11 +1,19 @@
+/// Các loại nhắc nhở tuỳ chỉnh hỗ trợ trong ứng dụng
 enum ReminderType { byKm, byDate, byFuelLevel }
 
+/// Model đại diện cho một Lịch nhắc nhở (đến hạn bảo dưỡng, đóng phí, v.v.)
 class CustomReminder {
+  /// Mã định danh duy nhất của nhắc nhở (UUID)
   final String id;
+  /// Mã ID của xe được gắn nhắc nhở này
   final String vehicleId;
+  /// Tiêu đề nhắc nhở (VD: Hết hạn bảo hiểm)
   final String title;          
+  /// Chi tiết nhắc nhở (VD: Ngày 15/10/2026)
   final String subtitle;       
+  /// Phân loại nhắc nhở (theo ODO, theo Ngày, theo Mức xăng)
   final ReminderType type;
+  /// Cờ hiệu bật/tắt nhắc nhở
   final bool isOn;
 
   CustomReminder({

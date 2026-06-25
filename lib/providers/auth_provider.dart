@@ -24,6 +24,7 @@ final currentUserProvider = Provider<User?>((ref) {
 });
 
 // ─── Auth Notifier ────────────────────────────────────────────────────────────
+/// Trạng thái quản lý toàn bộ các luồng Đăng nhập, Đăng xuất, Đăng ký bằng Email và Google
 class AuthNotifier extends AsyncNotifier<void> {
   FirebaseAuth get _auth => ref.read(firebaseAuthProvider);
 

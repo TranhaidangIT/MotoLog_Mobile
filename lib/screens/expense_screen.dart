@@ -10,6 +10,8 @@ import '../providers/fuel_provider.dart';
 import '../providers/maintenance_provider.dart';
 import 'category_detail_screen.dart';
 
+/// Màn hình Thống kê Chi phí
+/// Thể hiện biểu đồ tổng quan, tỷ lệ các khoản chi, và so sánh tăng/giảm với tháng trước.
 class ExpenseScreen extends ConsumerStatefulWidget {
   const ExpenseScreen({super.key});
   @override

@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import '../models/part_record.dart';
 
+/// Màn hình Chi tiết Phụ tùng
+/// Hiển thị hình ảnh trước/sau khi thay và thông tin chi tiết của một phụ tùng đã ghi nhận.
 class PartDetailScreen extends StatelessWidget {
   final PartRecord part;
   const PartDetailScreen({super.key, required this.part});

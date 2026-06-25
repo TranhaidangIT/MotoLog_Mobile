@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Định nghĩa toàn bộ hằng số Màu sắc (Mã Hex) dùng trong ứng dụng
 class AppColors {
   static const Color primary    = Color(0xFF2E7D32);   // Green 800
   static const Color primaryLight = Color(0xFF4CAF50); // Green 500
@@ -20,6 +21,7 @@ class AppColors {
   static const Color dangerRedBg = Color(0xFFFFEBEE);
 }
 
+/// Định nghĩa Cấu hình Giao diện chung (ThemeData) của ứng dụng (Font, Nút, Input...)
 class AppTheme {
   static ThemeData get theme => ThemeData(
     colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),

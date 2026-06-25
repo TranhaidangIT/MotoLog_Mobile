@@ -42,6 +42,8 @@ extension _TimeFilterExt on _TimeFilter {
   }
 }
 
+/// Màn hình Thống kê tổng hợp
+/// Hiển thị biểu đồ chi phí nhiên liệu và bảo dưỡng theo khoảng thời gian (1M, 3M, 6M, 1Y).
 class StatisticsScreen extends ConsumerStatefulWidget {
   const StatisticsScreen({super.key});
 

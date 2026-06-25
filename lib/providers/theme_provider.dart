@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants/app_constants.dart';
 
-/// Provider cho ThemeMode — Light / Dark
+/// Provider cung cấp trạng thái Giao diện (Sáng/Tối/Hệ thống) toàn cục
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>(
   (ref) => ThemeModeNotifier(),
 );
 
+/// Trạng thái quản lý logic Chuyển đổi và Lưu Giao diện vào SharedPreferences
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   ThemeModeNotifier() : super(ThemeMode.system) {
     _loadTheme();

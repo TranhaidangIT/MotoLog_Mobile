@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
 
+/// Màn hình Lựa chọn Phương thức Thêm Xe
+/// Cho phép người dùng chọn thiết lập xe nhanh từ danh mục mẫu hoặc nhập thủ công.
 class AddVehicleMethodScreen extends StatelessWidget {
   const AddVehicleMethodScreen({super.key});
 

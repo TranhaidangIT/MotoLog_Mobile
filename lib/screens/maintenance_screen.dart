@@ -8,6 +8,8 @@ import '../providers/maintenance_item_provider.dart';
 import '../providers/vehicle_provider.dart';
 import 'maintenance_item_detail_screen.dart';
 
+/// Màn hình Danh sách Hạng mục Bảo dưỡng
+/// Liệt kê các hạng mục cần bảo dưỡng, phân loại theo trạng thái và thanh tiến độ thực tế.
 class MaintenanceScreen extends ConsumerStatefulWidget {
   const MaintenanceScreen({super.key});
 
@@ -118,7 +120,7 @@ class _MaintenanceScreenState extends ConsumerState<MaintenanceScreen> {
                       children: [
                         Container(
                           width: 48, height: 48,
-                          decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
+                          decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), shape: BoxShape.circle),
                           child: Icon(item.icon, color: AppColors.primary, size: 24),
                         ),
                         const SizedBox(width: 12),

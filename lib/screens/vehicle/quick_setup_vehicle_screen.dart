@@ -5,6 +5,8 @@ import '../../theme/app_theme.dart';
 import '../../core/constants/vehicle_catalog_data.dart';
 import 'add_edit_vehicle_screen.dart';
 
+/// Màn hình Cài đặt Xe Nhanh
+/// Hiển thị danh sách các mẫu xe phổ biến để người dùng lựa chọn và tự động điền thông số.
 class QuickSetupVehicleScreen extends StatefulWidget {
   const QuickSetupVehicleScreen({super.key});
 

@@ -10,6 +10,8 @@ import '../data/services/backup_delete_service.dart';
 import 'document_edit_screen.dart';
 import 'vehicle/add_edit_vehicle_screen.dart';
 
+/// Màn hình Chi tiết xe (My Vehicle)
+/// Hiển thị thông tin tổng quan, thông số kỹ thuật và tình trạng giấy tờ của xe đang chọn.
 class MyVehicleScreen extends ConsumerWidget {
   final String? vehicleId;
   const MyVehicleScreen({super.key, this.vehicleId});

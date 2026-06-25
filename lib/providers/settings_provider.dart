@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'shared_preferences_provider.dart';
 
+/// Model đại diện cho trạng thái Cài đặt chung của ứng dụng
 class AppSettings {
   final bool notifOn;
   final String unit;

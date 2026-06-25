@@ -6,10 +6,11 @@ import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../providers/maintenance_item_provider.dart';
 import '../providers/custom_reminder_provider.dart';
-import '../providers/reminder_provider.dart';
 import '../providers/vehicle_provider.dart';
 import 'add_reminder_screen.dart';
 
+/// Màn hình Quản lý Nhắc nhở
+/// Cho phép người dùng bật/tắt các nhắc nhở định kỳ hoặc theo dõi thông báo sắp đến hạn.
 class ReminderScreen extends ConsumerStatefulWidget {
   const ReminderScreen({super.key});
 

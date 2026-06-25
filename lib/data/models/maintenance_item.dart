@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 
+/// Model đại diện cho một Hạng mục Bảo dưỡng (Nhớt máy, Nhớt láp, Nước mát, v.v.)
 class MaintenanceItem {
+  /// Mã định danh duy nhất của hạng mục bảo dưỡng
   final String id;
+  /// Mã ID của xe đang sở hữu hạng mục này
   final String vehicleId;
+  /// Tên hạng mục (VD: Nhớt máy, Nhớt láp)
   final String name;            
+  /// Mã icon hiển thị trên UI
   final String iconCode; 
+  /// Chu kỳ bảo dưỡng tính theo Số Km (VD: 2000 km)
   final int intervalKm;         
+  /// Số ODO tại thời điểm thực hiện bảo dưỡng lần cuối cùng
   final int lastDoneOdo;        
+  /// Cờ bật/tắt tính năng gửi thông báo nhắc nhở
   final bool isReminderOn;      
 
   MaintenanceItem({

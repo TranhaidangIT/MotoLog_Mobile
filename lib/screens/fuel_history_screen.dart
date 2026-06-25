@@ -9,6 +9,8 @@ import '../providers/fuel_provider.dart';
 import '../providers/vehicle_provider.dart';
 import '../data/models/fuel_entry.dart';
 
+/// Màn hình Lịch sử Đổ xăng
+/// Hiển thị toàn bộ lịch sử các lần đổ xăng có thể lọc theo tháng và thống kê tổng quan.
 class FuelHistoryScreen extends ConsumerStatefulWidget {
   const FuelHistoryScreen({super.key});
 

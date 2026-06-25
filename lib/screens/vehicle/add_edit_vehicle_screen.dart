@@ -10,6 +10,9 @@ import '../../providers/vehicle_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../maintenance_setup_screen.dart';
 
+/// Màn hình Thêm / Chỉnh sửa Xe
+/// Dùng chung cho cả luồng Thêm xe mới và Chỉnh sửa xe hiện có.
+/// Hỗ trợ điền sẵn dữ liệu từ catalog (prefilledData).
 class AddEditVehicleScreen extends ConsumerStatefulWidget {
   final String? vehicleId;
   final Map<String, String>? prefilledData;

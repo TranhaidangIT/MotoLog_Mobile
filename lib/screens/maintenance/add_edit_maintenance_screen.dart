@@ -9,6 +9,8 @@ import '../../data/models/maintenance_entry.dart';
 import '../../providers/maintenance_provider.dart';
 import '../../providers/vehicle_provider.dart';
 
+/// Màn hình Thêm / Chỉnh sửa Bảo dưỡng
+/// Dùng chung cho việc ghi nhận một lần bảo dưỡng hoặc sửa lịch sử cũ.
 class AddEditMaintenanceScreen extends ConsumerStatefulWidget {
   final String? maintenanceId;
 

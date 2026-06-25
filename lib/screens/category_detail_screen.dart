@@ -30,6 +30,8 @@ const _styles = {
   ),
 };
 
+/// Màn hình Chi tiết Danh mục Chi phí
+/// Hiển thị biểu đồ xu hướng và danh sách giao dịch theo từng danh mục (Xăng, Bảo dưỡng, Khác).
 class CategoryDetailScreen extends ConsumerStatefulWidget {
   final ExpenseCategory category;
   const CategoryDetailScreen({super.key, required this.category});

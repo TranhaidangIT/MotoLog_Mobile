@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 
+/// Màn hình Đăng nhập
+/// Xử lý logic đăng nhập tài khoản qua Email/Mật khẩu hoặc qua tài khoản Google.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 

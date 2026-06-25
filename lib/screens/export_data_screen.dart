@@ -6,6 +6,8 @@ import '../theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 import '../data/services/data_export_service.dart';
 
+/// Màn hình Xuất Dữ liệu qua Email
+/// Tổng hợp toàn bộ dữ liệu thành file CSV và gửi qua ứng dụng Email của thiết bị.
 class ExportDataScreen extends ConsumerStatefulWidget {
   const ExportDataScreen({super.key});
 

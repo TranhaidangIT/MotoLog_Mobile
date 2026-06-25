@@ -26,6 +26,7 @@ import '../../screens/garage_screen.dart';
 import '../../screens/parts_screen.dart';
 import '../../screens/add_part_screen.dart';
 
+/// Định nghĩa tên các màn hình (Route Names) sử dụng trong toàn bộ ứng dụng
 class AppRoutes {
   AppRoutes._();
   static const String onboarding = '/onboarding';
@@ -49,6 +50,8 @@ class AppRoutes {
   static const String profile = '/profile';
 }
 
+/// Provider cấu hình và quản lý hệ thống định tuyến (Routing) của ứng dụng bằng GoRouter.
+/// Tự động chuyển hướng (Redirect) dựa trên Trạng thái Đăng nhập và Onboarding.
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
   final prefs = ref.watch(sharedPreferencesProvider);

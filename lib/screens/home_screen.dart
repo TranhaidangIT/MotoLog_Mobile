@@ -13,6 +13,8 @@ import '../providers/auth_provider.dart';
 import '../data/services/firestore_service.dart';
 import '../data/models/vehicle.dart';
 
+/// Màn hình Trang chủ (Dashboard)
+/// Hiển thị tổng quan danh sách xe, thống kê chi phí trong tháng và các phím tắt chức năng nhanh.
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 

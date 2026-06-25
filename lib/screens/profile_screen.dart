@@ -12,6 +12,8 @@ import 'edit_profile_screen.dart';
 import 'app_settings_screen.dart';
 import 'help_center_screen.dart';
 
+/// Màn hình Hồ sơ cá nhân
+/// Quản lý thông tin tài khoản, cài đặt hệ thống và chức năng Đăng xuất.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -24,6 +26,16 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Hồ sơ cá nhân'),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),

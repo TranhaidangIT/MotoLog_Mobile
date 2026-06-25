@@ -36,7 +36,46 @@ graph TD
 
 ---
 
-## 2. Bảng liệt kê các chức năng đã hoàn thành
+## 2. Sơ đồ điều hướng các màn hình (Navigation Flow)
+
+Ứng dụng sử dụng `go_router` để quản lý các tuyến đường (routes). Dưới đây là sơ đồ luồng di chuyển giữa các màn hình chi tiết trong ứng dụng:
+
+```mermaid
+%%{init: {"flowchart": {"curve": "linear"}}}%%
+graph TD
+    AppStart([Khởi động App]) --> CheckAuth{Trạng thái Auth?}
+    CheckAuth -- "Chưa đăng nhập" --> CheckOnboarding{Đã xem Onboarding?}
+    CheckOnboarding -- "Chưa" --> OnboardingScreen[Màn hình Giới thiệu]
+    CheckOnboarding -- "Rồi" --> LoginScreen[Đăng nhập / Đăng ký]
+    LoginScreen --> RegisterScreen[Đăng ký Tài khoản]
+    
+    CheckAuth -- "Đã đăng nhập" --> HomeScreen[Trang chủ Dashboard]
+    LoginScreen -- "Thành công" --> HomeScreen
+    
+    HomeScreen --> AddFuelScreen[Đổ Xăng - FuelLogScreen]
+    HomeScreen --> FuelHistory[Lịch sử Đổ Xăng]
+    
+    HomeScreen --> MaintenanceScreen[Bảo Dưỡng]
+    MaintenanceScreen --> AddMaintenanceScreen[Thêm/Sửa Bảo Dưỡng]
+    MaintenanceScreen --> PartsScreen[Quản lý Phụ Tùng]
+    PartsScreen --> AddPartScreen[Thêm Phụ Tùng]
+    
+    HomeScreen --> ReminderScreen[Lịch Nhắc nhở]
+    HomeScreen --> StatisticsScreen[Thống kê Chi phí]
+    
+    HomeScreen --> GarageScreen[Garage Quản lý Xe]
+    GarageScreen --> AddVehicleMethod[Chọn cách thêm Xe]
+    AddVehicleMethod --> AddEditVehicle[Nhập Xe Thủ Công]
+    AddVehicleMethod --> QuickSetupVehicle[Cài đặt Xe Nhanh]
+    
+    HomeScreen --> ProfileScreen[Tài khoản & Cài đặt]
+    ProfileScreen --> ExportData[Xuất file CSV / Gửi Email]
+    ProfileScreen -- "Đăng xuất" --> LoginScreen
+```
+
+---
+
+## 3. Bảng liệt kê các chức năng đã hoàn thành
 
 | STT | Chức năng | Mô tả chi tiết |
 | :---: | :--- | :--- |
@@ -50,7 +89,7 @@ graph TD
 
 ---
 
-## 3. Mô hình CSDL (Database Schema)
+## 4. Mô hình CSDL (Database Schema)
 
 Ứng dụng sử dụng **SQLite** làm cơ sở dữ liệu chính (Local Truth), gồm 5 bảng (Table) có quan hệ chặt chẽ với nhau thông qua `vehicle_id`.
 
@@ -99,9 +138,54 @@ erDiagram
     }
 ```
 
+### Sơ đồ Luồng Dữ liệu Đồng bộ (Data Flow)
+
+Dưới đây là sơ đồ kiến trúc luồng dữ liệu chuẩn xác nhất đang được triển khai trong ứng dụng, thể hiện rõ quá trình thao tác từ Màn hình (UI) -> SQLite (Local) -> Firebase Cloud.
+
+```mermaid
+%%{init: {"flowchart": {"curve": "linear"}}}%%
+graph LR
+    subgraph UI [Màn hình / Chức năng]
+        F[Đổ xăng]
+        M[Bảo dưỡng & Phụ tùng]
+        S[Thống kê / Chi phí]
+        V[Xe của tôi]
+        A[Xác thực]
+    end
+
+    subgraph Local [Cơ sở dữ liệu: SQLite Local]
+        T_F[(fuel_entries)]
+        T_M[(maintenance_entries)]
+        T_V[(vehicles)]
+    end
+
+    subgraph Cloud [Máy chủ: Firebase Cloud]
+        FS[(Cloud Firestore)]
+        ST[(Firebase Storage)]
+        FA[(Firebase Auth)]
+    end
+
+    F -->|Lưu Offline| T_F
+    M -->|Lưu chữ Offline| T_M
+    M -->|Upload Ảnh hóa đơn| ST
+    
+    S -.->|Truy vấn gộp| T_F
+    S -.->|Truy vấn gộp| T_M
+    
+    V -->|Lưu thông tin xe| T_V
+    V -->|Upload Ảnh xe| ST
+    
+    A -->|Cấp UID| FA
+    FA -.->|Gắn UID| T_V
+    
+    T_F <-->|Auto Sync| FS
+    T_M <-->|Auto Sync| FS
+    T_V <-->|Auto Sync| FS
+```
+
 ---
 
-## 4. Mô tả cơ bản kỹ thuật nâng cao đã tự nghiên cứu
+## 5. Mô tả cơ bản kỹ thuật nâng cao đã tự nghiên cứu
 
 Để ứng dụng đạt tiêu chuẩn thương mại thực tế, các kỹ thuật nâng cao (vượt ngoài giáo trình cơ bản) sau đây đã được áp dụng:
 

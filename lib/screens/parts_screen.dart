@@ -11,6 +11,8 @@ import '../providers/maintenance_provider.dart';
 import '../data/models/maintenance_entry.dart';
 import 'add_part_screen.dart';
 
+/// Màn hình Danh sách Phụ tùng
+/// Liệt kê các phụ tùng đã được ghi nhận, có thể lọc theo thời gian gần đây.
 class PartsScreen extends ConsumerStatefulWidget {
   const PartsScreen({super.key});
   @override
@@ -79,7 +81,7 @@ class _PartsScreenState extends ConsumerState<PartsScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
                       ),
                       child: Row(children: [
                         ClipRRect(

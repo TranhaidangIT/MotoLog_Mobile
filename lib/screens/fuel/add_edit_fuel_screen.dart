@@ -8,6 +8,8 @@ import '../../data/models/fuel_entry.dart';
 import '../../providers/fuel_provider.dart';
 import '../../providers/vehicle_provider.dart';
 
+/// Màn hình Thêm / Chỉnh sửa Lịch sử Đổ xăng
+/// Dùng chung cho việc thêm mới hoặc cập nhật thông tin một lần đổ xăng cụ thể.
 class AddEditFuelScreen extends ConsumerStatefulWidget {
   final String? fuelId;
 

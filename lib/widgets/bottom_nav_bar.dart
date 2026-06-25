@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 
+/// Component Thanh điều hướng dưới cùng (Bottom Navigation Bar)
+/// Được sử dụng chung trên các màn hình: Trang chủ, Lịch sử, Cá nhân
 class MotoBottomNavBar extends StatelessWidget {
-  final int currentIndex; // 0=Trang chủ 1=Lịch sử 2=Thống kê 3=Cá nhân (KHÔNG tính nút +)
+  /// Chỉ số màn hình đang chọn: 0=Trang chủ, 1=Lịch sử, 2=Cá nhân
+  final int currentIndex;
+  /// Callback khi nhấn chuyển Tab
   final ValueChanged<int> onTap;
   final VoidCallback onAddTap;
 

@@ -11,6 +11,8 @@ import '../providers/maintenance_item_provider.dart';
 import '../providers/fuel_provider.dart';
 import '../data/models/maintenance_entry.dart';
 
+/// Màn hình Thêm lịch sử Bảo dưỡng
+/// Ghi nhận một lần thực hiện bảo dưỡng, cập nhật ODO và kết nối với hạng mục bảo dưỡng.
 class AddMaintenanceScreen extends ConsumerStatefulWidget {
   const AddMaintenanceScreen({super.key});
   @override
