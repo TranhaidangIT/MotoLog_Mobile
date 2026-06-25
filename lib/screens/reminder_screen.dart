@@ -225,7 +225,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: OutlinedButton.icon(
                 onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AddReminderScreen())),
-                icon: const Icon(Icons.add, color: AppColors.primary, size: 18),
+                icon: Icon(Icons.add, color: AppColors.primary, size: 18),
                 label: Text(
                   'Thêm nhắc lịch',
                   style: GoogleFonts.beVietnamPro(
@@ -235,7 +235,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
                 ),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
-                  side: const BorderSide(color: AppColors.primary, width: 1.5),
+                  side: BorderSide(color: AppColors.primary, width: 1.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -339,7 +339,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
           Switch(
             value: isOn,
             onChanged: onToggle,
-            activeColor: AppColors.primary,
+            activeThumbColor: AppColors.primary,
           ),
         ],
       ),

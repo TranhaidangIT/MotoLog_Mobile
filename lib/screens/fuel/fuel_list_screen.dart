@@ -39,7 +39,7 @@ class FuelListScreen extends ConsumerWidget {
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.filter_list_rounded,
+                icon: Icon(Icons.filter_list_rounded,
                     color: AppColors.textPrimaryLight),
                 onPressed: () {},
               ),
@@ -52,7 +52,7 @@ class FuelListScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.two_wheeler_rounded,
+                    Icon(Icons.two_wheeler_rounded,
                         size: 60, color: AppColors.textHintLight),
                     const SizedBox(height: 12),
                     Text(
@@ -68,7 +68,7 @@ class FuelListScreen extends ConsumerWidget {
             )
           else
             fuelAsync.when(
-              loading: () => const SliverFillRemaining(
+              loading: () => SliverFillRemaining(
                 child: Center(
                     child: CircularProgressIndicator(color: AppColors.primary)),
               ),
@@ -383,7 +383,7 @@ class _FuelEntryTile extends StatelessWidget {
                       color: AppColors.fuelBg,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.local_gas_station_rounded,
+                    child: Icon(Icons.local_gas_station_rounded,
                         color: AppColors.fuelText, size: 20),
                   ),
                   const SizedBox(width: 12),
@@ -460,7 +460,7 @@ class _FuelEntryTile extends StatelessWidget {
               ),
             ),
             if (!isLast)
-              const Divider(
+              Divider(
                   height: 1,
                   indent: 68,
                   endIndent: 16,
@@ -510,11 +510,11 @@ class _EmptyFuelState extends StatelessWidget {
           Container(
             width: 100,
             height: 100,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.fuelBg,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.local_gas_station_rounded,
+            child: Icon(Icons.local_gas_station_rounded,
                 size: 52, color: AppColors.fuelText),
           ),
           const SizedBox(height: 20),

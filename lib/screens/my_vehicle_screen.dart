@@ -8,7 +8,6 @@ import '../widgets/bottom_nav_bar.dart';
 import '../providers/vehicle_provider.dart';
 import '../data/services/backup_delete_service.dart';
 import 'document_edit_screen.dart';
-import 'vehicle/add_edit_vehicle_screen.dart';
 
 /// Màn hình Chi tiết xe (My Vehicle)
 /// Hiển thị thông tin tổng quan, thông số kỹ thuật và tình trạng giấy tờ của xe đang chọn.
@@ -63,7 +62,7 @@ class MyVehicleScreen extends ConsumerWidget {
     final dateFmt = DateFormat('dd/MM/yyyy');
 
     // Logic tính ngày còn lại của đăng kiểm, bảo hiểm
-    String _getBadge(DateTime? date) {
+    String getBadge(DateTime? date) {
       if (date == null) return 'Chưa có';
       final diff = date.difference(DateTime.now()).inDays;
       if (diff < 0) return 'Hết hạn';
@@ -71,20 +70,20 @@ class MyVehicleScreen extends ConsumerWidget {
       return 'Còn hạn';
     }
 
-    Color _getBadgeColor(String badge) {
+    Color getBadgeColor(String badge) {
       if (badge == 'Chưa có' || badge == 'Hết hạn') return const Color(0xFFD32F2F);
       if (badge.startsWith('Sắp hết')) return const Color(0xFFF57C00);
       return AppColors.primary;
     }
 
-    Color _getBadgeBg(String badge) {
+    Color getBadgeBg(String badge) {
       if (badge == 'Chưa có' || badge == 'Hết hạn') return const Color(0xFFFFEBEE);
       if (badge.startsWith('Sắp hết')) return const Color(0xFFFFF3E0);
       return const Color(0xFFE8F5E9);
     }
 
-    final insBadge = _getBadge(vehicle.insuranceDate);
-    final inspBadge = _getBadge(vehicle.inspectionDate);
+    final insBadge = getBadge(vehicle.insuranceDate);
+    final inspBadge = getBadge(vehicle.inspectionDate);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -186,8 +185,8 @@ class MyVehicleScreen extends ConsumerWidget {
             title: 'Đăng kiểm', 
             sub: vehicle.inspectionDate != null ? 'Hết hạn: ${dateFmt.format(vehicle.inspectionDate!)}' : 'Chưa nhập thông tin', 
             badge: inspBadge, 
-            badgeColor: _getBadgeColor(inspBadge), 
-            badgeBg: _getBadgeBg(inspBadge),
+            badgeColor: getBadgeColor(inspBadge), 
+            badgeBg: getBadgeBg(inspBadge),
             hasImage: vehicle.inspectionImageUrl != null && vehicle.inspectionImageUrl!.isNotEmpty,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DocumentEditScreen(docType: DocType.inspection, vehicle: vehicle))),
           ),
@@ -197,8 +196,8 @@ class MyVehicleScreen extends ConsumerWidget {
             title: 'Bảo hiểm xe', 
             sub: vehicle.insuranceDate != null ? 'Hết hạn: ${dateFmt.format(vehicle.insuranceDate!)}' : 'Chưa nhập thông tin', 
             badge: insBadge, 
-            badgeColor: _getBadgeColor(insBadge), 
-            badgeBg: _getBadgeBg(insBadge),
+            badgeColor: getBadgeColor(insBadge), 
+            badgeBg: getBadgeBg(insBadge),
             hasImage: vehicle.insuranceImageUrl != null && vehicle.insuranceImageUrl!.isNotEmpty,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DocumentEditScreen(docType: DocType.insurance, vehicle: vehicle))),
           ),
@@ -225,12 +224,7 @@ class MyVehicleScreen extends ConsumerWidget {
           if (i == 2) context.go('/profile');
         },
         onAddTap: () {
-          if (vehicle == null) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm xe trước khi sử dụng')));
-            context.push('/add-vehicle');
-          } else {
-            context.push('/fuel-log');
-          }
+          context.push('/fuel-log');
         },
       ),
     );
@@ -333,7 +327,7 @@ class _DocCard extends StatelessWidget {
                 Text(title, style: GoogleFonts.beVietnamPro(fontSize: 12, fontWeight: FontWeight.w600)),
                 if (hasImage) ...[
                   const SizedBox(width: 4),
-                  const Icon(Icons.image_outlined, size: 12, color: AppColors.primary),
+                  Icon(Icons.image_outlined, size: 12, color: AppColors.primary),
                 ],
               ],
             ),

@@ -1,52 +1,52 @@
 class AppConstants {
   AppConstants._();
 
-  static const String appName = 'MotoLog';
-  static const String appTagline = 'Nhật ký xe cá nhân';
-  static const String appVersion = '1.0.0';
+  static String appName = 'MotoLog';
+  static String appTagline = 'Nhật ký xe cá nhân';
+  static String appVersion = '1.0.0';
 
   // Database
-  static const String dbName = 'motolog.db';
+  static String dbName = 'motolog.db';
   static const int dbVersion = 12;
 
   // Tables
-  static const String tableVehicles = 'vehicles';
-  static const String tableFuelEntries = 'fuel_entries';
-  static const String tableMaintenanceEntries = 'maintenance_entries';
-  static const String tableMaintenanceItems = 'maintenance_items';
-  static const String tableCustomReminders = 'custom_reminders';
+  static String tableVehicles = 'vehicles';
+  static String tableFuelEntries = 'fuel_entries';
+  static String tableMaintenanceEntries = 'maintenance_entries';
+  static String tableMaintenanceItems = 'maintenance_items';
+  static String tableCustomReminders = 'custom_reminders';
 
   // Shared Preferences Keys
-  static const String keyThemeMode = 'theme_mode';
-  static const String keySelectedVehicleId = 'selected_vehicle_id';
-  static const String keyOnboardingDone = 'onboarding_done';
-  static const String keyUserId = 'user_id';
+  static String keyThemeMode = 'theme_mode';
+  static String keySelectedVehicleId = 'selected_vehicle_id';
+  static String keyOnboardingDone = 'onboarding_done';
+  static String keyUserId = 'user_id';
 
   // Fuel Types
-  static const String fuelGasoline = 'Xăng';
-  static const String fuelElectric = 'Điện';
-  static const String fuelDiesel = 'Diesel';
-  static const List<String> fuelTypes = [
+  static String fuelGasoline = 'Xăng';
+  static String fuelElectric = 'Điện';
+  static String fuelDiesel = 'Diesel';
+  static List<String> fuelTypes = [
     fuelGasoline,
     fuelElectric,
     fuelDiesel
   ];
 
   // Maintenance Types
-  static const String maintenanceRoutine = 'ROUTINE';
-  static const String maintenanceRepair = 'REPAIR';
-  static const String maintenanceParts = 'PARTS';
+  static String maintenanceRoutine = 'ROUTINE';
+  static String maintenanceRepair = 'REPAIR';
+  static String maintenanceParts = 'PARTS';
 
-  static const Map<String, String> maintenanceTypeLabels = {
+  static Map<String, String> maintenanceTypeLabels = {
     maintenanceRoutine: 'Bảo dưỡng định kỳ',
     maintenanceRepair: 'Sửa chữa',
     maintenanceParts: 'Thay phụ tùng',
   };
 
   // Animation durations
-  static const Duration animFast = Duration(milliseconds: 200);
-  static const Duration animNormal = Duration(milliseconds: 350);
-  static const Duration animSlow = Duration(milliseconds: 500);
+  static Duration animFast = const Duration(milliseconds: 200);
+  static Duration animNormal = const Duration(milliseconds: 350);
+  static Duration animSlow = const Duration(milliseconds: 500);
 
   // Border radius
   static const double radiusSmall = 8.0;

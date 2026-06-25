@@ -118,7 +118,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 8)],
                 ),
-                child: const Icon(Icons.person_outline, color: AppColors.textPrimary),
+                child: Icon(Icons.person_outline, color: AppColors.textPrimary),
               ),
             ),
           ]),
@@ -137,7 +137,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       child: Column(
         children: [
-          const Icon(Icons.directions_car_filled_outlined, size: 48, color: AppColors.textSecondary),
+          Icon(Icons.directions_car_filled_outlined, size: 48, color: AppColors.textSecondary),
           const SizedBox(height: 12),
           Text('Chưa có xe nào', style: GoogleFonts.beVietnamPro(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
@@ -285,7 +285,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Container(
                 width: 44, height: 44,
-                decoration: const BoxDecoration(color: AppColors.greenChip, shape: BoxShape.circle),
+                decoration: BoxDecoration(color: AppColors.greenChip, shape: BoxShape.circle),
                 child: Icon(a['icon'] as IconData, color: AppColors.primary, size: 22),
               ),
               const SizedBox(height: 8),

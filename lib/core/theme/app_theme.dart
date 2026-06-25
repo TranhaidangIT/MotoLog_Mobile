@@ -37,7 +37,7 @@ class AppTheme {
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimaryLight,
           ),
-          iconTheme: const IconThemeData(color: AppColors.textPrimaryLight),
+          iconTheme: IconThemeData(color: AppColors.textPrimaryLight),
           systemOverlayStyle: SystemUiOverlayStyle.dark,
         ),
         cardTheme: CardThemeData(
@@ -45,7 +45,7 @@ class AppTheme {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
-            side: const BorderSide(color: AppColors.borderLight, width: 1),
+            side: BorderSide(color: AppColors.borderLight, width: 1),
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -66,7 +66,7 @@ class AppTheme {
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.primary,
-            side: const BorderSide(color: AppColors.primary, width: 1.5),
+            side: BorderSide(color: AppColors.primary, width: 1.5),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
@@ -96,19 +96,19 @@ class AppTheme {
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
             borderSide:
-                const BorderSide(color: AppColors.borderLight, width: 1),
+                BorderSide(color: AppColors.borderLight, width: 1),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-            borderSide: const BorderSide(color: AppColors.primary, width: 2),
+            borderSide: BorderSide(color: AppColors.primary, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-            borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+            borderSide: BorderSide(color: AppColors.error, width: 1.5),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-            borderSide: const BorderSide(color: AppColors.error, width: 2),
+            borderSide: BorderSide(color: AppColors.error, width: 2),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -121,7 +121,7 @@ class AppTheme {
             color: AppColors.textSecondaryLight,
           ),
         ),
-        dividerTheme: const DividerThemeData(
+        dividerTheme: DividerThemeData(
           color: AppColors.borderLight,
           thickness: 1,
         ),
@@ -148,7 +148,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
           ),
         ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           elevation: 4,
@@ -201,7 +201,7 @@ class AppTheme {
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimaryDark,
           ),
-          iconTheme: const IconThemeData(color: AppColors.textPrimaryDark),
+          iconTheme: IconThemeData(color: AppColors.textPrimaryDark),
           systemOverlayStyle: SystemUiOverlayStyle.light,
         ),
         cardTheme: CardThemeData(
@@ -209,7 +209,7 @@ class AppTheme {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
-            side: const BorderSide(color: AppColors.borderDark, width: 1),
+            side: BorderSide(color: AppColors.borderDark, width: 1),
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -230,7 +230,7 @@ class AppTheme {
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.primaryLight,
-            side: const BorderSide(color: AppColors.primaryLight, width: 1.5),
+            side: BorderSide(color: AppColors.primaryLight, width: 1.5),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
@@ -259,20 +259,20 @@ class AppTheme {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-            borderSide: const BorderSide(color: AppColors.borderDark, width: 1),
+            borderSide: BorderSide(color: AppColors.borderDark, width: 1),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
             borderSide:
-                const BorderSide(color: AppColors.primaryLight, width: 2),
+                BorderSide(color: AppColors.primaryLight, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-            borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+            borderSide: BorderSide(color: AppColors.error, width: 1.5),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-            borderSide: const BorderSide(color: AppColors.error, width: 2),
+            borderSide: BorderSide(color: AppColors.error, width: 2),
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -285,7 +285,7 @@ class AppTheme {
             color: AppColors.textSecondaryDark,
           ),
         ),
-        dividerTheme: const DividerThemeData(
+        dividerTheme: DividerThemeData(
           color: AppColors.borderDark,
           thickness: 1,
         ),
@@ -315,7 +315,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
           ),
         ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: AppColors.primaryLight,
           foregroundColor: Colors.white,
           elevation: 4,

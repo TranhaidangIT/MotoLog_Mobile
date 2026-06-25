@@ -75,8 +75,8 @@ class AddVehicleMethodScreen extends StatelessWidget {
                       children: [
                         Container(
                           width: 80, height: 80,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE8F0FE), // Màu nền icon
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFE8F0FE), // Màu nền icon
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(Icons.two_wheeler_rounded, size: 40, color: Color(0xFF1976D2)),
@@ -133,8 +133,8 @@ class AddVehicleMethodScreen extends StatelessWidget {
                       children: [
                         Container(
                           width: 80, height: 80,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE8F5E9), // Nền icon xanh lá
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFE8F5E9), // Nền icon xanh lá
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(Icons.edit_outlined, size: 36, color: Color(0xFF388E3C)),

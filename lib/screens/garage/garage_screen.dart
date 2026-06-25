@@ -204,7 +204,7 @@ class GarageScreen extends ConsumerWidget {
                               const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.speed_rounded,
                                     size: 14,
                                     color: AppColors.textHintLight,

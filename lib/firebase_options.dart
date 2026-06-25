@@ -27,7 +27,7 @@ class DefaultFirebaseOptions {
   }
 
   // ─── Android (lấy từ google-services.json) ──────────────────────────────────
-  static const FirebaseOptions android = FirebaseOptions(
+  static FirebaseOptions android = const FirebaseOptions(
     apiKey: 'AIzaSyAVERAmMkWCwxvoPQaes9smIffsjX1yoK0',
     appId: '1:430239783730:android:1281e72c9366246d29d52b',
     messagingSenderId: '430239783730',
@@ -36,7 +36,7 @@ class DefaultFirebaseOptions {
   );
 
   // ─── iOS (lấy từ GoogleService-Info.plist) ──────────────────────────────────
-  static const FirebaseOptions ios = FirebaseOptions(
+  static FirebaseOptions ios = const FirebaseOptions(
     apiKey: 'AIzaSyBky9DlxmBal4jYNgjuNZCc9gLDsQ6iVU0',
     appId: '1:430239783730:ios:7b37b2404715408829d52b',
     messagingSenderId: '430239783730',

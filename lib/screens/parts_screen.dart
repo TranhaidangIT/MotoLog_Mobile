@@ -87,9 +87,9 @@ class _PartsScreenState extends ConsumerState<PartsScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: p.afterImageUrl != null && p.afterImageUrl!.isNotEmpty
-                            ? Image.file(File(p.afterImageUrl!), width: 56, height: 56, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(width: 56, height: 56, color: AppColors.greenChip, child: const Icon(Icons.settings_input_component_outlined, color: AppColors.primary)))
+                            ? Image.file(File(p.afterImageUrl!), width: 56, height: 56, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(width: 56, height: 56, color: AppColors.greenChip, child: Icon(Icons.settings_input_component_outlined, color: AppColors.primary)))
                             : Container(width: 56, height: 56, color: AppColors.greenChip,
-                                child: const Icon(Icons.settings_input_component_outlined, color: AppColors.primary)),
+                                child: Icon(Icons.settings_input_component_outlined, color: AppColors.primary)),
                         ),
                         const SizedBox(width: 12),
                         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -100,7 +100,7 @@ class _PartsScreenState extends ConsumerState<PartsScreen> {
                         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
                           Text(costText, style: GoogleFonts.beVietnamPro(fontSize: 13, fontWeight: FontWeight.w700)),
                           const SizedBox(height: 4),
-                          const Icon(Icons.chevron_right, size: 16, color: AppColors.textSecondary),
+                          Icon(Icons.chevron_right, size: 16, color: AppColors.textSecondary),
                         ]),
                       ]),
                     ),

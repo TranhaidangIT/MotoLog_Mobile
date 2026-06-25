@@ -123,8 +123,8 @@ class _AddPartScreenState extends ConsumerState<AddPartScreen> {
     filled: true,
     fillColor: Colors.white,
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.divider)),
-    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.divider)),
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.divider)),
+    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.divider)),
   );
 
   Widget _label(String text) => Padding(
@@ -152,7 +152,7 @@ class _AddPartScreenState extends ConsumerState<AddPartScreen> {
               child: photo != null
                 ? Image.file(photo, fit: BoxFit.cover, width: double.infinity, height: double.infinity)
                 : Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    const Icon(Icons.camera_alt_outlined, color: AppColors.textSecondary, size: 26),
+                    Icon(Icons.camera_alt_outlined, color: AppColors.textSecondary, size: 26),
                     const SizedBox(height: 6),
                     Text(label, textAlign: TextAlign.center, style: GoogleFonts.beVietnamPro(fontSize: 11, color: AppColors.textSecondary)),
                   ]),

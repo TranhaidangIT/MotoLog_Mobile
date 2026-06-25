@@ -196,8 +196,8 @@ class _FuelRecordTile extends StatelessWidget {
         Container(
           width: 38,
           height: 38,
-          decoration: const BoxDecoration(color: AppColors.greenChip, shape: BoxShape.circle),
-          child: const Icon(Icons.local_gas_station_outlined, color: AppColors.primary, size: 20),
+          decoration: BoxDecoration(color: AppColors.greenChip, shape: BoxShape.circle),
+          child: Icon(Icons.local_gas_station_outlined, color: AppColors.primary, size: 20),
         ),
         const SizedBox(width: 12),
 

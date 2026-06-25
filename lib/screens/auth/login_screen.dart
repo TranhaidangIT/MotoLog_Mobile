@@ -118,7 +118,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             color: AppColors.primary.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.two_wheeler_rounded,
                             size: 48,
                             color: AppColors.primary,
@@ -129,7 +129,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 8),
                     // Brand Name
                     Text.rich(
-                      const TextSpan(
+                      TextSpan(
                         children: [
                           TextSpan(
                             text: 'Moto',
@@ -192,7 +192,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         validator: AppValidators.email,
                         decoration: InputDecoration(
                           hintText: 'Nhập email của bạn',
-                          prefixIcon: const Icon(Icons.email_outlined,
+                          prefixIcon: Icon(Icons.email_outlined,
                               color: AppColors.textSecondaryLight),
                           fillColor: AppColors.surface,
                           filled: true,
@@ -201,16 +201,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                                 color: AppColors.primary, width: 1.5),
                           ),
                         ),
@@ -235,7 +235,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         onFieldSubmitted: (_) => _login(),
                         decoration: InputDecoration(
                           hintText: 'Nhập mật khẩu',
-                          prefixIcon: const Icon(Icons.lock_outline,
+                          prefixIcon: Icon(Icons.lock_outline,
                               color: AppColors.textSecondaryLight),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -254,16 +254,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                                 color: AppColors.primary, width: 1.5),
                           ),
                         ),
@@ -323,7 +323,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       // Social Login Divider
                       Row(
                         children: [
-                          const Expanded(
+                          Expanded(
                               child: Divider(color: AppColors.borderLight)),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -335,7 +335,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                             ),
                           ),
-                          const Expanded(
+                          Expanded(
                               child: Divider(color: AppColors.borderLight)),
                         ],
                       ),
@@ -349,7 +349,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           onPressed: isLoading ? null : _loginWithGoogle,
                           style: OutlinedButton.styleFrom(
                             side:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),

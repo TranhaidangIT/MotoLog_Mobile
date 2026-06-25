@@ -8,7 +8,7 @@ class ScheduleItem {
   final String frequencyLabel; // Nhãn hiển thị định kỳ
   final List<String> keywords;
 
-  const ScheduleItem({
+  ScheduleItem({
     required this.id,
     required this.title,
     required this.imageAsset,
@@ -21,7 +21,7 @@ class ScheduleItem {
 class MaintenanceSchedule {
   MaintenanceSchedule._();
 
-  static const List<ScheduleItem> items = [
+  static List<ScheduleItem> items = [
     ScheduleItem(
       id: 'thay_nhot_may',
       title: 'Thay nhớt máy',

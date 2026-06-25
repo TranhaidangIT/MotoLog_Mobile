@@ -131,7 +131,7 @@ class _MaintenanceSetupScreenState extends ConsumerState<MaintenanceSetupScreen>
                   Row(children: [
                     Container(
                       width: 38, height: 38,
-                      decoration: const BoxDecoration(color: AppColors.greenChip, shape: BoxShape.circle),
+                      decoration: BoxDecoration(color: AppColors.greenChip, shape: BoxShape.circle),
                       child: Icon(item.icon, color: AppColors.primary, size: 20),
                     ),
                     const SizedBox(width: 10),
@@ -154,8 +154,8 @@ class _MaintenanceSetupScreenState extends ConsumerState<MaintenanceSetupScreen>
                         filled: true,
                         fillColor: const Color(0xFFFAFAFA),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.divider)),
-                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.divider)),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: AppColors.divider)),
+                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: AppColors.divider)),
                       ),
                     ),
                   ],

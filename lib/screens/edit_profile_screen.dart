@@ -42,7 +42,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   },
                   child: Container(
                     width: 30, height: 30,
-                    decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle, border: Border.fromBorderSide(BorderSide(color: Colors.white, width: 2))),
+                    decoration: BoxDecoration(color: AppColors.primary, shape: BoxShape.circle, border: const Border.fromBorderSide(BorderSide(color: Colors.white, width: 2))),
                     child: const Icon(Icons.camera_alt, color: Colors.white, size: 15),
                   ),
                 ),

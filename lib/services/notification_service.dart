@@ -9,9 +9,9 @@ class NotificationService {
   /// Khởi tạo dịch vụ thông báo và cấu hình múi giờ
   static Future<void> init() async {
     tz_data.initializeTimeZones();
-    const AndroidInitializationSettings initAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const DarwinInitializationSettings initIOS = DarwinInitializationSettings();
-    const InitializationSettings initSettings = InitializationSettings(android: initAndroid, iOS: initIOS);
+    AndroidInitializationSettings initAndroid = const AndroidInitializationSettings('@mipmap/ic_launcher');
+    DarwinInitializationSettings initIOS = const DarwinInitializationSettings();
+    InitializationSettings initSettings = InitializationSettings(android: initAndroid, iOS: initIOS);
     await _plugin.initialize(initSettings);
   }
 
@@ -21,13 +21,13 @@ class NotificationService {
     // ta sử dụng heurictic đếm lùi số ngày tương ứng với số km.
     final scheduleTime = tz.TZDateTime.now(tz.local).add(Duration(days: estimateDays));
     
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    AndroidNotificationDetails androidDetails = const AndroidNotificationDetails(
       'refuel_channel', 'Nhắc nhở đổ xăng',
       channelDescription: 'Thông báo khi gần hết xăng',
       importance: Importance.high,
       priority: Priority.high,
     );
-    const NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
+    NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
     
     await _plugin.zonedSchedule(
       0,

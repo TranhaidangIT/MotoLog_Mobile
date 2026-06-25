@@ -48,8 +48,8 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
     filled: true,
     fillColor: AppColors.surface,
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.divider)),
-    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: AppColors.divider)),
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.divider)),
+    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColors.divider)),
   );
 
   Widget _label(String text) => Padding(
@@ -68,7 +68,7 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
         children: [
           _label('Hạng mục bảo dưỡng'),
           DropdownButtonFormField<String>(
-            value: _selectedItemId,
+            initialValue: _selectedItemId,
             decoration: _decoration('Chọn hạng mục'),
             isExpanded: true,
             items: maintenanceItems.map((item) => DropdownMenuItem(
@@ -144,12 +144,12 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _pickImage(ImageSource.camera),
-                    icon: const Icon(Icons.camera_alt, color: AppColors.primary),
-                    label: const Text('Chụp ảnh', style: TextStyle(color: AppColors.primary)),
+                    icon: Icon(Icons.camera_alt, color: AppColors.primary),
+                    label: Text('Chụp ảnh', style: TextStyle(color: AppColors.primary)),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      side: const BorderSide(color: AppColors.primary),
+                      side: BorderSide(color: AppColors.primary),
                     ),
                   ),
                 ),
@@ -157,12 +157,12 @@ class _AddMaintenanceScreenState extends ConsumerState<AddMaintenanceScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _pickImage(ImageSource.gallery),
-                    icon: const Icon(Icons.photo_library, color: AppColors.primary),
-                    label: const Text('Thư viện', style: TextStyle(color: AppColors.primary)),
+                    icon: Icon(Icons.photo_library, color: AppColors.primary),
+                    label: Text('Thư viện', style: TextStyle(color: AppColors.primary)),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      side: const BorderSide(color: AppColors.primary),
+                      side: BorderSide(color: AppColors.primary),
                     ),
                   ),
                 ),

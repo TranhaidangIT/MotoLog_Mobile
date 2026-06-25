@@ -1,7 +1,7 @@
 /// Dịch vụ cung cấp thông tin giá xăng dầu hiện tại
 class FuelPriceService {
   /// Danh sách giá xăng dầu mặc định (đơn vị: VNĐ)
-  static const Map<String, int> _defaultPrices = {
+  static final Map<String, int> _defaultPrices = {
     'RON 95-III': 22320,
     'E5 RON 92-II': 21310,
     'Dầu diesel': 18950,

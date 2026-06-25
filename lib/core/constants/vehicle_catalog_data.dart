@@ -1,5 +1,5 @@
 // Dữ liệu xe máy gán cứng (Offline First)
-const List<Map<String, dynamic>> localVehicleCatalog = [
+List<Map<String, dynamic>> localVehicleCatalog = [
   // LEAD 2026
   {
     'brand': 'Honda', 'model': 'LEAD', 'type': 'Xe tay ga', 'year': 2026,

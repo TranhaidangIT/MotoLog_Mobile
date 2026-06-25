@@ -8,7 +8,6 @@ import '../data/models/vehicle.dart';
 import '../data/services/firestore_service.dart';
 import '../data/services/storage_service.dart';
 import '../data/services/vehicle_image_service.dart';
-import 'auth_provider.dart';
 
 // ── Xe đang được chọn ──────────────────────────────────────────────────────
 

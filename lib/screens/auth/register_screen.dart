@@ -81,7 +81,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                 // Back button icon
                 IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                  icon: Icon(Icons.arrow_back_ios_new_rounded,
                       color: AppColors.textPrimaryLight),
                   onPressed: () => context.pop(),
                   padding: EdgeInsets.zero,
@@ -131,7 +131,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             AppValidators.required(v, fieldName: 'Họ tên'),
                         decoration: InputDecoration(
                           hintText: 'Nhập họ và tên',
-                          prefixIcon: const Icon(Icons.person_outline,
+                          prefixIcon: Icon(Icons.person_outline,
                               color: AppColors.textSecondaryLight),
                           fillColor: AppColors.surface,
                           filled: true,
@@ -140,16 +140,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                                 color: AppColors.primary, width: 1.5),
                           ),
                         ),
@@ -173,7 +173,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         validator: AppValidators.email,
                         decoration: InputDecoration(
                           hintText: 'example@gmail.com',
-                          prefixIcon: const Icon(Icons.email_outlined,
+                          prefixIcon: Icon(Icons.email_outlined,
                               color: AppColors.textSecondaryLight),
                           fillColor: AppColors.surface,
                           filled: true,
@@ -182,16 +182,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                                 color: AppColors.primary, width: 1.5),
                           ),
                         ),
@@ -215,7 +215,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         validator: AppValidators.password,
                         decoration: InputDecoration(
                           hintText: 'Nhập mật khẩu (tối thiểu 6 ký tự)',
-                          prefixIcon: const Icon(Icons.lock_outline,
+                          prefixIcon: Icon(Icons.lock_outline,
                               color: AppColors.textSecondaryLight),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -234,16 +234,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                                 color: AppColors.primary, width: 1.5),
                           ),
                         ),
@@ -269,7 +269,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         onFieldSubmitted: (_) => _register(),
                         decoration: InputDecoration(
                           hintText: 'Nhập lại mật khẩu',
-                          prefixIcon: const Icon(Icons.lock_outline,
+                          prefixIcon: Icon(Icons.lock_outline,
                               color: AppColors.textSecondaryLight),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -288,16 +288,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide:
-                                const BorderSide(color: AppColors.borderLight),
+                                BorderSide(color: AppColors.borderLight),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                                 color: AppColors.primary, width: 1.5),
                           ),
                         ),

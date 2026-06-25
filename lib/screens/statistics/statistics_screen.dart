@@ -8,8 +8,6 @@ import '../../core/utils/stats_calculator.dart';
 import '../../providers/fuel_provider.dart';
 import '../../providers/maintenance_provider.dart';
 import '../../providers/vehicle_provider.dart';
-import '../../widgets/bottom_nav_bar.dart';
-import 'package:go_router/go_router.dart';
 
 // Time filter options
 enum _TimeFilter { month1, month3, month6, year1 }
@@ -105,7 +103,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
             elevation: 0,
             leading: Navigator.of(context).canPop()
                 ? IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                    icon: Icon(Icons.arrow_back_ios_new_rounded,
                         color: AppColors.textPrimaryLight),
                     onPressed: () => Navigator.of(context).pop(),
                   )
@@ -126,7 +124,7 @@ class _StatisticsScreenState extends ConsumerState<StatisticsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.bar_chart_rounded,
+                    Icon(Icons.bar_chart_rounded,
                         size: 60, color: AppColors.textHintLight),
                     const SizedBox(height: 12),
                     Text(
@@ -467,18 +465,18 @@ class _DoubleBarChart extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         fuelDataAsync.when(
-          loading: () => const Center(
+          loading: () => Center(
             child: Padding(
-              padding: EdgeInsets.all(40),
+              padding: const EdgeInsets.all(40),
               child: CircularProgressIndicator(color: AppColors.primary),
             ),
           ),
           error: (_, __) => const SizedBox(),
           data: (fuelData) {
             return maintDataAsync.when(
-              loading: () => const Center(
+              loading: () => Center(
                 child: Padding(
-                  padding: EdgeInsets.all(40),
+                  padding: const EdgeInsets.all(40),
                   child: CircularProgressIndicator(color: AppColors.primary),
                 ),
               ),
@@ -621,7 +619,7 @@ class _DoubleBarChart extends ConsumerWidget {
                               show: true,
                               drawVerticalLine: false,
                               horizontalInterval: maxY > 0 ? maxY / 4 : 100000,
-                              getDrawingHorizontalLine: (_) => const FlLine(
+                              getDrawingHorizontalLine: (_) => FlLine(
                                 color: AppColors.borderLight,
                                 strokeWidth: 1,
                                 dashArray: [4, 4],
@@ -668,11 +666,11 @@ class _DoubleBarChart extends ConsumerWidget {
 
                       // Legend
                       const SizedBox(height: 12),
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _Legend(color: AppColors.primary, label: 'Tiền xăng'),
-                          SizedBox(width: 24),
+                          const SizedBox(width: 24),
                           _Legend(
                               color: AppColors.secondary, label: 'Bảo dưỡng'),
                         ],
@@ -766,7 +764,7 @@ class _SummaryCards extends ConsumerWidget {
                 format: AppFormatters.currency,
                 isFirst: true,
               ),
-              const Divider(
+              Divider(
                   height: 1,
                   indent: 68,
                   endIndent: 16,
@@ -779,7 +777,7 @@ class _SummaryCards extends ConsumerWidget {
                 valueAsync: maintCostAsync,
                 format: AppFormatters.currency,
               ),
-              const Divider(
+              Divider(
                   height: 1,
                   indent: 68,
                   endIndent: 16,
@@ -919,7 +917,7 @@ class _DetailSection extends ConsumerWidget {
                       color: AppColors.fuelBg,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.speed_rounded,
+                    child: Icon(Icons.speed_rounded,
                         color: AppColors.fuelText, size: 20),
                   ),
                   const SizedBox(width: 12),

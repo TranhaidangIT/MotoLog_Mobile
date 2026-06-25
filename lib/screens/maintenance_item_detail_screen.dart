@@ -88,7 +88,7 @@ class _MaintenanceItemDetailScreenState extends ConsumerState<MaintenanceItemDet
                 children: [
                   Container(
                     width: 60, height: 60,
-                    decoration: const BoxDecoration(color: AppColors.greenChip, shape: BoxShape.circle),
+                    decoration: BoxDecoration(color: AppColors.greenChip, shape: BoxShape.circle),
                     child: Icon(item.icon, color: AppColors.primary, size: 30),
                   ),
                   const SizedBox(width: 16),

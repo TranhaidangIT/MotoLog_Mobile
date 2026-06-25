@@ -41,7 +41,7 @@ class PartDetailScreen extends StatelessWidget {
                     ? CachedNetworkImage(imageUrl: path, fit: BoxFit.cover, errorWidget: (c,u,e) => const Icon(Icons.broken_image))
                     : Image.file(File(path), fit: BoxFit.cover))
                 : Container(color: AppColors.greenChip,
-                    child: const Icon(Icons.image_not_supported_outlined, color: AppColors.primary)),
+                    child: Icon(Icons.image_not_supported_outlined, color: AppColors.primary)),
             ),
           ),
         ),
@@ -72,7 +72,7 @@ class PartDetailScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(14),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
             ),
             child: Column(children: [
               _InfoRow(icon: Icons.calendar_today_outlined, label: 'Ngày thay', value: dateText),

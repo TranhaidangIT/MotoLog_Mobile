@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../theme/app_theme.dart';
@@ -357,7 +356,7 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _selectedFuelType,
+                          initialValue: _selectedFuelType,
                           decoration: InputDecoration(
                             filled: true, fillColor: AppColors.surface,
                             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -402,14 +401,14 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.location_on, color: AppColors.primary, size: 20),
+                      Icon(Icons.location_on, color: AppColors.primary, size: 20),
                       const SizedBox(width: 8),
                       Expanded(child: Text('Địa điểm', style: GoogleFonts.beVietnamPro(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary))),
                       if (_isLocating) 
-                        const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
+                        SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
                       else 
                         IconButton(
-                          icon: const Icon(Icons.refresh, color: AppColors.textSecondary, size: 20),
+                          icon: Icon(Icons.refresh, color: AppColors.textSecondary, size: 20),
                           constraints: const BoxConstraints(),
                           padding: EdgeInsets.zero,
                           onPressed: _detectLocation,
@@ -437,7 +436,7 @@ class _FuelLogScreenState extends ConsumerState<FuelLogScreen> {
                   ],
                   const SizedBox(height: 12),
                   _buildTextField(_addressCtrl, 'Địa chỉ hiện tại', suffixIcon: IconButton(
-                    icon: const Icon(Icons.my_location, color: AppColors.primary),
+                    icon: Icon(Icons.my_location, color: AppColors.primary),
                     onPressed: _detectLocation,
                   )),
                   const SizedBox(height: 8),

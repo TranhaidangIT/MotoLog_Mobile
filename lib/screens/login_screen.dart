@@ -112,7 +112,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 controller: _emailCtrl,
                 keyboardType: TextInputType.emailAddress,
                 enabled: !isLoading,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   prefixIcon: Icon(Icons.email_outlined, color: AppColors.textSecondary),
                   hintText: 'Nhập email của bạn',
                 ),
@@ -125,7 +125,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 obscureText: _obscure,
                 enabled: !isLoading,
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.lock_outlined, color: AppColors.textSecondary),
+                  prefixIcon: Icon(Icons.lock_outlined, color: AppColors.textSecondary),
                   hintText: 'Nhập mật khẩu',
                   suffixIcon: IconButton(
                     icon: Icon(_obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppColors.textSecondary),
@@ -216,7 +216,7 @@ class _SocialButton extends StatelessWidget {
       label: Text(label, style: GoogleFonts.beVietnamPro(fontWeight: FontWeight.w500, color: AppColors.textPrimary)),
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(double.infinity, 50),
-        side: const BorderSide(color: AppColors.divider),
+        side: BorderSide(color: AppColors.divider),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );

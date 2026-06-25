@@ -24,7 +24,7 @@ class GarageScreen extends ConsumerWidget {
         leading: const BackButton(),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: AppColors.primary),
+            icon: Icon(Icons.add, color: AppColors.primary),
             onPressed: () => context.push('/add-vehicle'),
           ),
         ],
@@ -57,7 +57,7 @@ class GarageScreen extends ConsumerWidget {
               final isDefault = v.id == selectedVehicleId;
               
               // Không dùng ảnh asset fallback nữa, sử dụng Icon
-              final Widget defaultImage = const Icon(Icons.two_wheeler, size: 40, color: AppColors.primary);
+              final Widget defaultImage = Icon(Icons.two_wheeler, size: 40, color: AppColors.primary);
 
               return GestureDetector(
                 onTap: () {

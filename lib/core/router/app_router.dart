@@ -29,25 +29,25 @@ import '../../screens/add_part_screen.dart';
 /// Định nghĩa tên các màn hình (Route Names) sử dụng trong toàn bộ ứng dụng
 class AppRoutes {
   AppRoutes._();
-  static const String onboarding = '/onboarding';
-  static const String login = '/login';
-  static const String home = '/home';
-  static const String addFuel = '/fuel-log';
-  static const String fuelHistory = '/fuel-history';
-  static const String maintenance = '/maintenance';
-  static const String reminder = '/reminder';
-  static const String expense = '/expense';
-  static const String statistics = '/statistics';
-  static const String myVehicle = '/my-vehicle';
-  static const String garage = '/garage';
-  static const String register = '/register';
-  static const String addMaintenance = '/add-maintenance';
-  static const String addVehicle = '/add-vehicle';
-  static const String addVehicleManual = '/add-vehicle-manual';
-  static const String quickSetupVehicle = '/quick-setup-vehicle';
-  static const String parts = '/parts';
-  static const String addPart = '/add-part';
-  static const String profile = '/profile';
+  static String onboarding = '/onboarding';
+  static String login = '/login';
+  static String home = '/home';
+  static String addFuel = '/fuel-log';
+  static String fuelHistory = '/fuel-history';
+  static String maintenance = '/maintenance';
+  static String reminder = '/reminder';
+  static String expense = '/expense';
+  static String statistics = '/statistics';
+  static String myVehicle = '/my-vehicle';
+  static String garage = '/garage';
+  static String register = '/register';
+  static String addMaintenance = '/add-maintenance';
+  static String addVehicle = '/add-vehicle';
+  static String addVehicleManual = '/add-vehicle-manual';
+  static String quickSetupVehicle = '/quick-setup-vehicle';
+  static String parts = '/parts';
+  static String addPart = '/add-part';
+  static String profile = '/profile';
 }
 
 /// Provider cấu hình và quản lý hệ thống định tuyến (Routing) của ứng dụng bằng GoRouter.

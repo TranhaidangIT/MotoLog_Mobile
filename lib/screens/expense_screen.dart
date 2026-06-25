@@ -86,9 +86,9 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
           Container(color: AppColors.surface,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              IconButton(onPressed: () => _changeMonth(-1), icon: const Icon(Icons.chevron_left, color: AppColors.textSecondary)),
+              IconButton(onPressed: () => _changeMonth(-1), icon: Icon(Icons.chevron_left, color: AppColors.textSecondary)),
               Text('Tháng ${_month.month} / ${_month.year}', style: GoogleFonts.beVietnamPro(fontSize: 13, fontWeight: FontWeight.w600)),
-              IconButton(onPressed: () => _changeMonth(1), icon: const Icon(Icons.chevron_right, color: AppColors.textSecondary)),
+              IconButton(onPressed: () => _changeMonth(1), icon: Icon(Icons.chevron_right, color: AppColors.textSecondary)),
             ]),
           ),
 
@@ -139,7 +139,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                 const SizedBox(height: 5),
                 _LegendRow(color: const Color(0xFFFF6F00), name: 'Bảo dưỡng', value: '${fmt.format(totalMaint)}đ (${(pMaint * 100).toStringAsFixed(1)}%)'),
                 const SizedBox(height: 5),
-                _LegendRow(color: const Color(0xFFE0E0E0), name: 'Khác', value: '0 đ'),
+                const _LegendRow(color: Color(0xFFE0E0E0), name: 'Khác', value: '0 đ'),
               ])),
             ]),
           ),
@@ -272,7 +272,7 @@ class _CostCard extends StatelessWidget {
           Text(percent, style: GoogleFonts.beVietnamPro(fontSize: 10, color: AppColors.textSecondary)),
         ]),
         const SizedBox(width: 4),
-        const Icon(Icons.chevron_right, size: 16, color: AppColors.textSecondary),
+        Icon(Icons.chevron_right, size: 16, color: AppColors.textSecondary),
       ]),
     );
   }

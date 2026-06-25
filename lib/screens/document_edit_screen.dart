@@ -132,7 +132,7 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
                     Text('Đầy đủ / Hợp lệ', style: GoogleFonts.beVietnamPro(fontSize: 15, fontWeight: FontWeight.w500)),
                     Switch(
                       value: _isRegistered,
-                      activeColor: AppColors.primary,
+                      activeThumbColor: AppColors.primary,
                       onChanged: (v) => setState(() => _isRegistered = v),
                     ),
                   ],
@@ -164,7 +164,7 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
                           color: _selectedDate != null ? AppColors.textPrimary : AppColors.textSecondary
                         ),
                       ),
-                      const Icon(Icons.calendar_month, color: AppColors.primary),
+                      Icon(Icons.calendar_month, color: AppColors.primary),
                     ],
                   ),
                 ),
@@ -180,7 +180,7 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
                 ),
                 child: Column(
                   children: [
@@ -204,7 +204,7 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
                         Expanded(
                           child: TextButton.icon(
                             onPressed: () => _pickImage(ImageSource.camera),
-                            icon: const Icon(Icons.camera_alt, color: AppColors.textPrimary),
+                            icon: Icon(Icons.camera_alt, color: AppColors.textPrimary),
                             label: Text('Chụp lại', style: GoogleFonts.beVietnamPro(color: AppColors.textPrimary)),
                           ),
                         ),
@@ -227,12 +227,12 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () => _pickImage(ImageSource.camera),
-                      icon: const Icon(Icons.camera_alt, color: AppColors.primary),
+                      icon: Icon(Icons.camera_alt, color: AppColors.primary),
                       label: Text('Chụp ảnh', style: GoogleFonts.beVietnamPro(color: AppColors.primary)),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        side: const BorderSide(color: AppColors.primary),
+                        side: BorderSide(color: AppColors.primary),
                       ),
                     ),
                   ),
@@ -240,12 +240,12 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () => _pickImage(ImageSource.gallery),
-                      icon: const Icon(Icons.photo_library, color: AppColors.primary),
+                      icon: Icon(Icons.photo_library, color: AppColors.primary),
                       label: Text('Thư viện', style: GoogleFonts.beVietnamPro(color: AppColors.primary)),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        side: const BorderSide(color: AppColors.primary),
+                        side: BorderSide(color: AppColors.primary),
                       ),
                     ),
                   ),

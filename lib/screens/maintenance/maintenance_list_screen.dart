@@ -47,7 +47,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen> {
             elevation: 0,
             leading: Navigator.of(context).canPop()
                 ? IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                    icon: Icon(Icons.arrow_back_ios_new_rounded,
                         color: AppColors.textPrimaryLight),
                     onPressed: () => context.pop(),
                   )
@@ -68,7 +68,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.two_wheeler_rounded,
+                    Icon(Icons.two_wheeler_rounded,
                         size: 60, color: AppColors.textHintLight),
                     const SizedBox(height: 12),
                     Text(
@@ -82,7 +82,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen> {
             )
           else
             maintAsync.when(
-              loading: () => const SliverFillRemaining(
+              loading: () => SliverFillRemaining(
                 child: Center(
                     child: CircularProgressIndicator(color: AppColors.primary)),
               ),
@@ -335,7 +335,7 @@ class _ScheduleCard extends StatelessWidget {
             child: Image.asset(
               status.item.imageAsset,
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const Icon(Icons.build_rounded, color: AppColors.textHintLight),
+              errorBuilder: (_, __, ___) => Icon(Icons.build_rounded, color: AppColors.textHintLight),
             ),
           ),
           const SizedBox(width: 16),
@@ -429,7 +429,7 @@ class _HistoryTile extends StatelessWidget {
                     color: AppColors.maintBg,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.build_rounded, color: AppColors.maintText, size: 22),
+                  child: Icon(Icons.build_rounded, color: AppColors.maintText, size: 22),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -473,7 +473,7 @@ class _HistoryTile extends StatelessWidget {
                             ),
                             child: Text(
                               entry.type.label,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.maintText,
@@ -493,7 +493,7 @@ class _HistoryTile extends StatelessWidget {
               ],
             ),
           ),
-          if (!isLast) const Divider(height: 1, indent: 72, endIndent: 16, color: AppColors.borderLight),
+          if (!isLast) Divider(height: 1, indent: 72, endIndent: 16, color: AppColors.borderLight),
         ],
       ),
     );

@@ -26,7 +26,7 @@ class _AppSettingsScreenState extends ConsumerState<AppSettingsScreen> {
     return ListTile(
       leading: Icon(icon, color: color ?? AppColors.primary, size: 22),
       title: Text(title, style: GoogleFonts.beVietnamPro(fontSize: 13, color: color)),
-      trailing: trailing ?? const Icon(Icons.chevron_right, size: 18, color: AppColors.textSecondary),
+      trailing: trailing ?? Icon(Icons.chevron_right, size: 18, color: AppColors.textSecondary),
       onTap: onTap,
       tileColor: Colors.white,
     );
@@ -38,7 +38,7 @@ class _AppSettingsScreenState extends ConsumerState<AppSettingsScreen> {
       builder: (ctx) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: options.map((o) => ListTile(
           title: Text(o),
-          trailing: o == current ? const Icon(Icons.check, color: AppColors.primary) : null,
+          trailing: o == current ? Icon(Icons.check, color: AppColors.primary) : null,
           onTap: () => Navigator.pop(ctx, o),
         )).toList()),
       ),
@@ -88,7 +88,7 @@ class _AppSettingsScreenState extends ConsumerState<AppSettingsScreen> {
             title: 'Thông báo nhắc lịch',
             trailing: Switch(
               value: settings.notifOn, 
-              activeColor: AppColors.primary, 
+              activeThumbColor: AppColors.primary, 
               onChanged: (v) => settingsNotifier.updateNotifOn(v),
             ),
           ),

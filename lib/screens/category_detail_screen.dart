@@ -151,13 +151,13 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                 ),
               ]),
               const SizedBox(height: 6),
-              Text('Tổng chi phí', style: GoogleFonts.beVietnamPro(fontSize: 12, color: Colors.white.withOpacity(0.8))),
+              Text('Tổng chi phí', style: GoogleFonts.beVietnamPro(fontSize: 12, color: Colors.white.withValues(alpha: 0.8))),
               const SizedBox(height: 2),
               Text('${NumberFormat('#,###', 'vi_VN').format(totalCost)} đ', style: GoogleFonts.beVietnamPro(fontSize: 30, fontWeight: FontWeight.w700, color: Colors.white)),
               const SizedBox(height: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(20)),
+                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20)),
                 child: Text('Dữ liệu thống kê tháng', style: GoogleFonts.beVietnamPro(fontSize: 11, color: Colors.white)),
               ),
             ]),
@@ -173,7 +173,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 10, offset: const Offset(0, 4))],
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 10, offset: const Offset(0, 4))],
                 ),
                 child: Row(children: _quickStats(widget.category, stat1.toString(), stat2String, stat3String).map((s) => Expanded(
                   child: Column(children: [
@@ -195,7 +195,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
               ),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text('Xu hướng chi tiêu theo tuần', style: GoogleFonts.beVietnamPro(fontSize: 13, fontWeight: FontWeight.w600)),
@@ -215,7 +215,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                               height: h,
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter,
-                                  colors: [style.color, style.color.withOpacity(0.5)]),
+                                  colors: [style.color, style.color.withValues(alpha: 0.5)]),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                             ))),
@@ -240,7 +240,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 30),
               child: Column(children: [
-                Icon(style.icon, size: 36, color: style.color.withOpacity(0.3)),
+                Icon(style.icon, size: 36, color: style.color.withValues(alpha: 0.3)),
                 const SizedBox(height: 8),
                 Text('Chưa có giao dịch nào trong tháng này',
                   style: GoogleFonts.beVietnamPro(fontSize: 12, color: AppColors.textSecondary)),
@@ -255,7 +255,7 @@ class _CategoryDetailScreenState extends ConsumerState<CategoryDetailScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
                 ),
                 child: Row(children: [
                   Container(

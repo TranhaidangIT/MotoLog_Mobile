@@ -84,10 +84,10 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Lỗi: Không tìm thấy ứng dụng Mail nào trên máy. Vui lòng cài đặt và đăng nhập ứng dụng Mail trước.'),
+          const SnackBar(
+            content: Text('Lỗi: Không tìm thấy ứng dụng Mail nào trên máy. Vui lòng cài đặt và đăng nhập ứng dụng Mail trước.'),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
+            duration: Duration(seconds: 4),
           ),
         );
       }
@@ -116,7 +116,7 @@ class _ExportDataScreenState extends ConsumerState<ExportDataScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline, color: AppColors.primary),
+                  Icon(Icons.info_outline, color: AppColors.primary),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
