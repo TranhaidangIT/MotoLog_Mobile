@@ -189,7 +189,7 @@ class MyVehicleScreen extends ConsumerWidget {
             badgeColor: _getBadgeColor(inspBadge), 
             badgeBg: _getBadgeBg(inspBadge),
             hasImage: vehicle.inspectionImageUrl != null && vehicle.inspectionImageUrl!.isNotEmpty,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DocumentEditScreen(docType: DocType.inspection))),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DocumentEditScreen(docType: DocType.inspection, vehicle: vehicle))),
           ),
           const SizedBox(height: 6),
           _DocCard(
@@ -200,7 +200,7 @@ class MyVehicleScreen extends ConsumerWidget {
             badgeColor: _getBadgeColor(insBadge), 
             badgeBg: _getBadgeBg(insBadge),
             hasImage: vehicle.insuranceImageUrl != null && vehicle.insuranceImageUrl!.isNotEmpty,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DocumentEditScreen(docType: DocType.insurance))),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DocumentEditScreen(docType: DocType.insurance, vehicle: vehicle))),
           ),
           const SizedBox(height: 6),
           _DocCard(
@@ -211,7 +211,7 @@ class MyVehicleScreen extends ConsumerWidget {
             badgeColor: (vehicle.isRegistered ?? true) ? AppColors.primary : const Color(0xFFD32F2F), 
             badgeBg: (vehicle.isRegistered ?? true) ? const Color(0xFFE8F5E9) : const Color(0xFFFFEBEE),
             hasImage: vehicle.registrationImageUrl != null && vehicle.registrationImageUrl!.isNotEmpty,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DocumentEditScreen(docType: DocType.registration))),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DocumentEditScreen(docType: DocType.registration, vehicle: vehicle))),
           ),
 
           const SizedBox(height: 16),

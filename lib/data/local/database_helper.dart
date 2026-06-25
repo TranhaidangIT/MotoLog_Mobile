@@ -94,6 +94,8 @@ class DatabaseHelper {
         next_due_km   REAL,
         note          TEXT,
         image_path    TEXT,
+        before_image_url TEXT,
+        after_image_url TEXT,
         created_at    TEXT NOT NULL,
         is_synced     INTEGER DEFAULT 1,
         FOREIGN KEY (vehicle_id) REFERENCES ${AppConstants.tableVehicles}(id) ON DELETE CASCADE
@@ -209,6 +211,14 @@ class DatabaseHelper {
     }
     if (oldVersion < 11) {
       await db.execute('ALTER TABLE ${AppConstants.tableFuelEntries} ADD COLUMN station_address TEXT');
+    }
+    if (oldVersion < 12) {
+      try {
+        await db.execute('ALTER TABLE ${AppConstants.tableMaintenanceEntries} ADD COLUMN before_image_url TEXT');
+      } catch (_) {}
+      try {
+        await db.execute('ALTER TABLE ${AppConstants.tableMaintenanceEntries} ADD COLUMN after_image_url TEXT');
+      } catch (_) {}
     }
   }
 
