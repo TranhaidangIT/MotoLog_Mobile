@@ -16,7 +16,8 @@ enum DocType { registration, inspection, insurance }
 /// Nhập hạn đăng kiểm, bảo hiểm, đăng ký và cho phép chụp/tải ảnh giấy tờ đính kèm.
 class DocumentEditScreen extends ConsumerStatefulWidget {
   final DocType docType;
-  const DocumentEditScreen({super.key, required this.docType});
+  final Vehicle? vehicle;
+  const DocumentEditScreen({super.key, required this.docType, this.vehicle});
 
   @override
   ConsumerState<DocumentEditScreen> createState() => _DocumentEditScreenState();
@@ -32,7 +33,7 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final vehicle = ref.read(selectedVehicleProvider).valueOrNull;
+      final vehicle = widget.vehicle ?? ref.read(selectedVehicleProvider).valueOrNull;
       if (vehicle != null) {
         setState(() {
           switch (widget.docType) {
