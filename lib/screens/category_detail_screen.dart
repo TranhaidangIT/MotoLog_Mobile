@@ -18,14 +18,14 @@ class _CategoryStyle {
   const _CategoryStyle({required this.title, required this.color, required this.bgLight, required this.icon});
 }
 
-const _styles = {
+Map<ExpenseCategory, _CategoryStyle> get _styles => {
   ExpenseCategory.fuel: _CategoryStyle(
-    title: 'Chi phí xăng', color: AppColors.primary, bgLight: Color(0xFFE8F5E9), icon: Icons.local_gas_station,
+    title: 'Chi phí xăng', color: AppColors.primary, bgLight: const Color(0xFFE8F5E9), icon: Icons.local_gas_station,
   ),
-  ExpenseCategory.maintenance: _CategoryStyle(
+  ExpenseCategory.maintenance: const _CategoryStyle(
     title: 'Chi phí bảo dưỡng', color: Color(0xFFE65100), bgLight: Color(0xFFFFF3E0), icon: Icons.build,
   ),
-  ExpenseCategory.other: _CategoryStyle(
+  ExpenseCategory.other: const _CategoryStyle(
     title: 'Chi phí khác', color: Color(0xFF1565C0), bgLight: Color(0xFFE3F2FD), icon: Icons.more_horiz,
   ),
 };

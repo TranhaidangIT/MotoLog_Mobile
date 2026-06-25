@@ -196,7 +196,7 @@ class _DonutPainter extends CustomPainter {
   final List<double> segments; // tổng = 1.0, theo thứ tự xanh/cam/xám
   const _DonutPainter({required this.segments});
 
-  static const _colors = [AppColors.primary, Color(0xFFFF6F00), Color(0xFFE0E0E0)];
+  static List<Color> get _colors => [AppColors.primary, const Color(0xFFFF6F00), const Color(0xFFE0E0E0)];
 
   @override
   void paint(Canvas canvas, Size size) {
