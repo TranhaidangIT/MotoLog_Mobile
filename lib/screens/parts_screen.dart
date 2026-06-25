@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/maintenance_provider.dart';
 import '../data/models/maintenance_entry.dart';
 import 'add_part_screen.dart';
+import 'part_detail_screen.dart';
 
 /// Màn hình Danh sách Phụ tùng
 /// Liệt kê các phụ tùng đã được ghi nhận, có thể lọc theo thời gian gần đây.
@@ -73,8 +74,7 @@ class _PartsScreenState extends ConsumerState<PartsScreen> {
                   
                   return GestureDetector(
                     onTap: () {
-                      // Navigator.push(context, MaterialPageRoute(builder: (_) => PartDetailScreen(part: p)));
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tính năng xem chi tiết đang được cập nhật')));
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => PartDetailScreen(entry: p)));
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10),
