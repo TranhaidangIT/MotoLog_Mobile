@@ -63,7 +63,7 @@ class LocationService {
       print('Native geocoding failed: $e. Falling back to HTTP API...');
     }
 
-    // 2. Fallback API: Nominatim OpenStreetMap (Rất nhạy trên máy ảo)
+    // 2. Fallback API: Nominatim OpenStreetMap 
     try {
       final url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=$lat&lon=$lon');
       final response = await http.get(url, headers: {
