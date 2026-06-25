@@ -204,7 +204,14 @@ class _MaintenanceScreenState extends ConsumerState<MaintenanceScreen> {
           if (i == 1) context.go('/fuel-history');
           if (i == 2) context.go('/profile');
         },
-        onAddTap: () => context.push('/fuel-log'),
+        onAddTap: () {
+          if (ref.read(selectedVehicleIdProvider) == null) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm xe trước khi sử dụng')));
+            context.push('/add-vehicle');
+          } else {
+            context.push('/fuel-log');
+          }
+        },
       ),
     );
   }

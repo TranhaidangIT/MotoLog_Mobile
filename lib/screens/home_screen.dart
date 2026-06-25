@@ -61,7 +61,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
             
-            SliverToBoxAdapter(child: _buildQuickActions()),
+            SliverToBoxAdapter(child: _buildQuickActions(selectedId)),
             SliverToBoxAdapter(child: _buildMonthlySummary(selectedId)),
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
           ],
@@ -78,7 +78,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             setState(() => _navIndex = i);
           }
         },
-        onAddTap: () => context.push('/fuel-log'),
+        onAddTap: () {
+          if (selectedId == null) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm xe trước khi sử dụng')));
+            context.push('/add-vehicle');
+          } else {
+            context.push('/fuel-log');
+          }
+        },
       ),
     );
   }
@@ -232,7 +239,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ]);
   }
 
-  Widget _buildQuickActions() {
+  Widget _buildQuickActions(String? selectedId) {
     final actions = [
       {'icon': Icons.local_gas_station, 'label': 'Đổ xăng',  'route': '/fuel-log'},
       {'icon': Icons.build_outlined,     'label': 'Bảo dưỡng', 'route': '/maintenance'},
@@ -254,6 +261,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: actions.map((a) => GestureDetector(
           onTap: () {
             if (a['route'] != null) {
+              if (selectedId == null && a['route'] != '/garage') {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm xe trước khi sử dụng')));
+                context.push('/add-vehicle');
+                return;
+              }
+              
               if (a['route'] == '/expense') {
                 context.go('/expense'); // Chuyển Tab
               } else {

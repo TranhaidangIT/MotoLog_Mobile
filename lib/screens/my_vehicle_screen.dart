@@ -35,12 +35,21 @@ class MyVehicleScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Vui lòng thêm hoặc chọn xe', style: GoogleFonts.beVietnamPro(color: AppColors.textSecondary)),
+              Text('Bạn chưa có xe nào', style: GoogleFonts.beVietnamPro(color: AppColors.textSecondary, fontSize: 16)),
               const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: () => context.push('/add-vehicle'),
-                icon: const Icon(Icons.add),
-                label: const Text('Thêm xe mới'),
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton.icon(
+                  onPressed: () => context.push('/add-vehicle'),
+                  icon: const Icon(Icons.add, color: Colors.white),
+                  label: Text('Thêm xe mới', style: GoogleFonts.beVietnamPro(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    minimumSize: const Size(0, 0), // Bỏ giới hạn full width của theme
+                  ),
+                ),
               ),
             ],
           ),
@@ -213,7 +222,14 @@ class MyVehicleScreen extends ConsumerWidget {
           if (i == 1) context.go('/fuel-history');
           if (i == 2) context.go('/profile');
         },
-        onAddTap: () => context.push('/fuel-log'),
+        onAddTap: () {
+          if (vehicle == null) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm xe trước khi sử dụng')));
+            context.push('/add-vehicle');
+          } else {
+            context.push('/fuel-log');
+          }
+        },
       ),
     );
   }

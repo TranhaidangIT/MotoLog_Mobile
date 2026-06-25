@@ -175,13 +175,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 color: const Color(0xFF4285F4),
                 onTap: isLoading ? () {} : _loginGoogle,
               ),
-              const SizedBox(height: 10),
-              _SocialButton(
-                label: 'Đăng nhập với Facebook',
-                icon: Icons.facebook,
-                color: const Color(0xFF1877F2),
-                onTap: () {},
-              ),
+
               const SizedBox(height: 24),
 
               // Register
