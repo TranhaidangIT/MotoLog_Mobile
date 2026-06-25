@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../providers/vehicle_provider.dart';
@@ -155,7 +156,15 @@ class GarageScreen extends ConsumerWidget {
                                     ? Image.asset(vehicle.imageUrl!,
                                         fit: BoxFit.contain)
                                     : vehicle.imageUrl!.startsWith('http')
-                                        ? Image.network(vehicle.imageUrl!, fit: BoxFit.contain)
+                                        ? CachedNetworkImage(
+                                            imageUrl: vehicle.imageUrl!,
+                                            fit: BoxFit.contain,
+                                            placeholder: (context, url) => const Padding(
+                                              padding: EdgeInsets.all(8),
+                                              child: Center(child: CircularProgressIndicator()),
+                                            ),
+                                            errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.grey),
+                                          )
                                         : Image.file(File(vehicle.imageUrl!),
                                             fit: BoxFit.contain))
                                 : Padding(

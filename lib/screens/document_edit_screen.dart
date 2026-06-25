@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/app_theme.dart';
 import '../providers/vehicle_provider.dart';
 import '../data/models/vehicle.dart';
@@ -185,7 +186,16 @@ class _DocumentEditScreenState extends ConsumerState<DocumentEditScreen> {
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                       child: _imagePath!.startsWith('http')
-                          ? Image.network(_imagePath!, width: double.infinity, fit: BoxFit.contain)
+                          ? CachedNetworkImage(
+                              imageUrl: _imagePath!,
+                              width: double.infinity,
+                              fit: BoxFit.contain,
+                              placeholder: (context, url) => const Padding(
+                                padding: EdgeInsets.all(20),
+                                child: Center(child: CircularProgressIndicator()),
+                              ),
+                              errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                            )
                           : Image.file(File(_imagePath!), width: double.infinity, fit: BoxFit.contain),
                     ),
                     Row(
